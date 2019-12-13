@@ -10,6 +10,6 @@ server.use(express.json());
 
 server.get('/', (req, res) => {
     res.send({up: `workout or stay-out!!!`})
-})
+});
 
 module.exports = server;
