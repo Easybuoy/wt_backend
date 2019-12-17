@@ -13,7 +13,7 @@ module.exports = {
 
       const user = new User({
         email: input.email,
-        password: hashedPassword
+        password: hashedPassword,
       });
 
       const savedUser = await user.save();
@@ -23,5 +23,5 @@ module.exports = {
       throw err;
     }
   },
-  
+
 };

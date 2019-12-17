@@ -20,7 +20,7 @@ server.use('/api', graphQLHttp({
 }));
 
 server.get('/', (req, res) => {
-  res.send({ up: `workout or stay-out!!!` })
+  res.send({ up: 'workout or stay-out!!!' });
 });
 
 module.exports = server;
