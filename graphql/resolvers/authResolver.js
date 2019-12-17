@@ -57,7 +57,7 @@ module.exports = {
         // data contains the accessToken, refreshToken and profile from passport
         const { data, info } = await authenticateFacebook(req, res);
         if (data) {
-          const user = await User.upsertFbUser(data);
+          const user = await User.asFacebookUser(data);
           if (user) {
             return genAuthenticationResponse(user);
           }
@@ -86,7 +86,7 @@ module.exports = {
         // data contains the accessToken, refreshToken and profile from passport
         const { data, info } = await authenticateGoogle(req, res);
         if (data) {
-          const user = await User.upsertGoogleUser(data);
+          const user = await User.asGoogleUser(data);
           if (user) {
             return genAuthenticationResponse(user);
           }
