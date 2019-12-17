@@ -1,47 +1,48 @@
-const { buildSchema } = require('graphql');
+const { gql } = require('apollo-server-express');
 
-module.exports = buildSchema(`
-
+module.exports = gql`
   type User {
     _id: ID!
+    name: String
     email: String!
     password: String
-    type: String
-    googleId: String
-    facebookId: String
+    google: UserPlatform
+    facebook: UserPlatform
   }
 
-  input CreateUserInput {
-    type: String!
+  type UserPlatform {
+    id: String
+    token: String
+  }
+  
+  input UserSignupInput {
+    name: String
+    email: String!
+    password: String
+  }
+  
+  type UserAuthResponse {
+    id: String
+    name: String
+    token: String
+  }
+
+  input UserPlatformAuthInput {
+    accessToken: String!
+  }
+
+  input UserFormLoginInput {
     email: String
     password: String
-    googleId: String
-    facebookId: String
   }
 
-  input LoginInput {
-    type: String
-    email: String
-    password: String
-    googleId: String
-    facebookId: String
+  type Query {
+    authForm(input: UserFormLoginInput!): UserAuthResponse
   }
 
-  type UserLoginData {
-    id: String!
-    token: String!
+  type Mutation {
+    addUser(input: UserSignupInput!): User
+    authFacebook(input: UserPlatformAuthInput!): UserAuthResponse
+    authGoogle(input: UserPlatformAuthInput!): UserAuthResponse
   }
-
-  type RootQuery {
-    login(input: LoginInput): UserLoginData!
-  }
-
-  type RootMutation {
-    createUser(input: CreateUserInput): User
-  }
-
-  schema {
-    query: RootQuery
-    mutation: RootMutation
-  }
-`);
+`;
