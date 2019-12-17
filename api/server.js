@@ -19,4 +19,8 @@ server.use('/api', graphQLHttp({
   graphiql: true
 }));
 
+server.get('/', (req, res) => {
+  res.send({ up: `workout or stay-out!!!` })
+});
+
 module.exports = server;
