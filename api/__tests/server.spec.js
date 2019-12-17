@@ -1,4 +1,4 @@
-const { env } = require('config');
+const { env } = require('../../config');
 const request = require('supertest');
 const server = require('../server');
 
