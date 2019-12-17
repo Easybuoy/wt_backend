@@ -52,7 +52,7 @@ UserSchema.methods.validPassword = async (password) => {
   return isEqual;
 }
 
-UserSchema.statics.asFacebookUser = async ({ accessToken, refreshToken, profile }) => {
+UserSchema.statics.asFacebookUser = async function ({ accessToken, refreshToken, profile }) {
   const User = this;
   const user = await User.findOne({ 'facebook.id': profile.id });
   if (!user) { // no user was found, lets create a new one
@@ -70,7 +70,7 @@ UserSchema.statics.asFacebookUser = async ({ accessToken, refreshToken, profile 
   return user;
 };
 
-UserSchema.statics.asGoogleUser = async ({ accessToken, refreshToken, profile }) => {
+UserSchema.statics.asGoogleUser = async function ({ accessToken, refreshToken, profile }) {
   const User = this;
   const existingUser = await User.findOne({ 'google.id': profile.id });
   if (!existingUser) { // no user was found, lets create a new one
