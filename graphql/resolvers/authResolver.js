@@ -1,33 +1,9 @@
+const config = require('../../config');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 const User = require('../../models/user');
-
-passport.use(new LocalStrategy((username, password, done) => {
-    User.findOne({ email: username }, (err, user) => {
-      if (err) {
-        return done(err);
-      }
-      if (!user) {
-        return done(null, false);
-      }
-      if (!user.verifyPassword(password)) {
-        return done(null, false);
-      }
-      return done(null, user);
-    });
-  }
-));
-
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
-    done(err, user);
-  });
-});
 
 module.exports = {
   createUser: async ({ input }) => {
@@ -40,7 +16,8 @@ module.exports = {
 
       const user = new User({
         email: input.email,
-        password: hashedPassword
+        password: hashedPassword,
+        type: input.type,
       });
 
       const savedUser = await user.save();
@@ -50,8 +27,26 @@ module.exports = {
       throw err;
     }
   },
-  login: async () => {
-
-    return {}
+  login: async ({ input }, context, info) => {
+    const user = await User.findOne({ email: input.email });
+    if (!user) {
+      throw new Error('User does not exist!');
+    }
+    const isEqual = await bcrypt.compare(input.password, user.password);
+    if (!isEqual) {
+      throw new Error('Password is incorrect!');
+    }
+    const token = jwt.sign(
+      { 
+        type: user.type, 
+        userId: user.id, 
+        email: user.email
+      },
+      config.jwtSecret,
+      { 
+        expiresIn: '1h'
+      }
+    );
+    return { id: user.id, token: token, tokenExpiration: 1 };
   }
 };

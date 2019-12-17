@@ -6,11 +6,25 @@ module.exports = buildSchema(`
     _id: ID!
     email: String!
     password: String
+    type: String
+    googleId: String
+    facebookId: String
   }
 
-  input UserInput {
-    email: String!
-    password: String!
+  input CreateUserInput {
+    type: String!
+    email: String
+    password: String
+    googleId: String
+    facebookId: String
+  }
+
+  input LoginInput {
+    type: String
+    email: String
+    password: String
+    googleId: String
+    facebookId: String
   }
 
   type UserLoginData {
@@ -19,11 +33,11 @@ module.exports = buildSchema(`
   }
 
   type RootQuery {
-    login(email: String!, password: String!): UserLoginData!
+    login(input: LoginInput): UserLoginData!
   }
 
   type RootMutation {
-    createUser(input: UserInput): User
+    createUser(input: CreateUserInput): User
   }
 
   schema {
