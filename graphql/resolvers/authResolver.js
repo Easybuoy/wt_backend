@@ -2,16 +2,16 @@ const { authenticateFacebook, authenticateGoogle } = require('../../middleware/a
 
 const User = require('../../models/user');
 
-const genAuthenticationResponse = (user) => ({
+const genAuthenticationResponse = (user, remember) => ({
   id: user.id,
   name: user.name,
-  token: user.generateJWT(),
+  token: user.generateJWT(remember || false),
 });
 
 module.exports = {
   Query: {
     // Login with a normal form
-    authForm: async (_, { input: { email, password } }) => {
+    authForm: async (_, { input: { email, password, remember } }) => {
       const user = await User.findOne({ email });
       if (!user) {
         throw new Error('User does not exist!');
@@ -19,7 +19,7 @@ module.exports = {
       if (!user.validPassword(password)) {
         throw new Error('Password is incorrect!');
       }
-      return genAuthenticationResponse(user);
+      return genAuthenticationResponse(user, remember);
     },
   },
   Mutation: {

@@ -42,6 +42,7 @@ module.exports = gql`
   input UserFormLoginInput {
     email: String
     password: String
+    remember: Boolean
   }
 
   input UserUpdateInput {

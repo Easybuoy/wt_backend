@@ -6,8 +6,8 @@
   "scripts": {
     "server": "nodemon index.js",
     "start": "node index.js",
-    "test": "cross-env NODE_ENV=testing jest --coverage",
-    "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "test": "cross-env NODE_ENV=testing jest",
+    "coverage": "cross-env NODE_ENV=testing jest --coverage && cat ./coverage/lcov.info | coveralls",
     "lint:fix": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix"
   },
   "jest": {
@@ -54,7 +54,6 @@
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "nodemon": "^2.0.2",
-    "nyc": "^14.1.1",
     "supertest": "^4.0.2"
   }
 }
