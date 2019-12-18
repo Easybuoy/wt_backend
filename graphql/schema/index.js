@@ -6,8 +6,16 @@ module.exports = gql`
     name: String
     email: String!
     password: String
+    height: Float
+    heightUnit: String
+    weight: Float
+    weightUnit: String
+    goal: String
+    equipment: String
+    experience: String
     google: UserPlatform
     facebook: UserPlatform
+    photo: String
   }
 
   type UserPlatform {
@@ -37,6 +45,20 @@ module.exports = gql`
     remember: Boolean
   }
 
+  input UserUpdateInput {
+    id: String!
+    name: String
+    password: String
+    height: Float
+    heightUnit: String
+    weight: Float
+    weightUnit: String
+    goal: String
+    equipment: String
+    experience: String
+    photo: String
+  }
+
   type Query {
     authForm(input: UserFormLoginInput!): UserAuthResponse
   }
@@ -45,5 +67,8 @@ module.exports = gql`
     addUser(input: UserSignupInput!): User
     authFacebook(input: UserPlatformAuthInput!): UserAuthResponse
     authGoogle(input: UserPlatformAuthInput!): UserAuthResponse
+    updateUser(input: UserUpdateInput!): User
   }
+
+
 `;

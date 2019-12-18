@@ -98,5 +98,21 @@ module.exports = {
         return error;
       }
     },
+    //
+    updateUser: async (_, { input }) => {
+      // find user by id
+      // if user doesn't exist, return error
+      // update user based on input
+      // return the updated user
+      const newData = { ...input };
+      delete newData.id;
+      try {
+        const updatedUser = await User.findByIdAndUpdate(input.id, newData, { new: true });
+
+        return { ...updatedUser._doc, password: null, _id: updatedUser.id };
+      } catch (err) {
+        throw err;
+      }
+    }
   }
 };

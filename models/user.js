@@ -20,6 +20,29 @@ const UserSchema = new Schema({
   password: {
     type: String,
   },
+  height: {
+    type: Number,
+  },
+  heightUnit: {
+    type: Schema.Types.ObjectId,
+    ref: 'Unit'
+  },
+  weight: {
+    type: Number,
+  },
+  weightUnit: {
+    type: Schema.Types.ObjectId,
+    ref: 'Unit'
+  },
+  goal: {
+    type: String,
+  },
+  equipment: {
+    type: Boolean,
+  },
+  experience: {
+    type: String,
+  },
   google: {
     id: String,
     token: String,
@@ -28,6 +51,9 @@ const UserSchema = new Schema({
     id: String,
     token: String,
   },
+  photo: {
+    type: String
+  }
 });
 
 UserSchema.pre('save', async function (next) {

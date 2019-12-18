@@ -2,6 +2,7 @@ module.exports = {
   extends: 'airbnb-base',
   plugins: ['jest'],
   rules: {
+    'func-names': 'off',
     'no-unused-vars': 'warn',
     'linebreak-style': 'off',
     'comma-dangle': 'off',
