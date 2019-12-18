@@ -1,8 +1,11 @@
-const { authenticateFacebook, authenticateGoogle } = require('../../middleware/passport');
+const {
+  authenticateFacebook,
+  authenticateGoogle
+} = require('../../middleware/passport');
 
 const User = require('../../models/user');
 
-const genAuthenticationResponse = (user, remember = false) => ({
+const genAuthResponse = (user, remember = false) => ({
   id: user.id,
   name: user.name,
   token: user.generateJWT(remember),
@@ -20,7 +23,7 @@ module.exports = {
       if (!user.validPassword(password)) {
         throw new Error('Password is incorrect!');
       }
-      return genAuthenticationResponse(user, remember);
+      return genAuthResponse(user, remember);
     },
   },
   Mutation: {
@@ -55,7 +58,7 @@ module.exports = {
         if (data) {
           const user = await User.asFacebookUser(data);
           if (user) {
-            return genAuthenticationResponse(user);
+            return genAuthResponse(user);
           }
         }
         if (info) {
@@ -83,7 +86,7 @@ module.exports = {
         if (data) {
           const user = await User.asGoogleUser(data);
           if (user) {
-            return genAuthenticationResponse(user);
+            return genAuthResponse(user);
           }
         }
         if (info) {
