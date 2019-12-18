@@ -20,4 +20,4 @@ module.exports = {
   facebookAppSecret: FACEBOOK_APP_SECRET,
   googleAppId: GOOGLE_APP_ID,
   googleAppSecret: GOOGLE_APP_SECRET,
-}
+};

@@ -1,5 +1,5 @@
-const config = require('./config');
 const mongoose = require('mongoose');
+const config = require('./config');
 const server = require('./api/server');
 
 mongoose.connect(
@@ -9,8 +9,8 @@ mongoose.connect(
     useUnifiedTopology: true,
   },
 ).then(() => {
-  console.log(`Successfully connected to the database!`)
-  server.listen(config.port, (req, res, next) => {
+  console.log('Successfully connected to the database!');
+  server.listen(config.port, () => {
     console.log(`Successfully connected to localhost:${config.port}`);
   });
 }).catch((err) => {

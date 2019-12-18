@@ -1,7 +1,7 @@
-const config = require('../config');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const config = require('../config');
 
 mongoose.promise = global.Promise;
 mongoose.set('debug', config.env !== 'production');
@@ -30,27 +30,25 @@ const UserSchema = new Schema({
   },
 });
 
-UserSchema.pre('save', async function (next, data) {
+UserSchema.pre('save', async function (next) {
   const user = this;
   if (!user.isModified('password')) return next();
   const hashedPassword = await bcrypt.hash(user.password, 12);
   user.password = hashedPassword;
-  next();
+  return next();
 });
 
-UserSchema.methods.generateJWT = () => {
-  return jwt.sign({
-    email: this.email,
-    id: this._id,
-  }, config.jwtSecret, {
-    expiresIn: '1h'
-  });
-}
+UserSchema.methods.generateJWT = () => jwt.sign({
+  email: this.email,
+  id: this._id,
+}, config.jwtSecret, {
+  expiresIn: '1h'
+});
 
-UserSchema.methods.validPassword = async (password) => {
+UserSchema.methods.validPassword = async function (password) {
   const isEqual = await bcrypt.compare(password, this.password);
   return isEqual;
-}
+};
 
 UserSchema.statics.asFacebookUser = async function ({ accessToken, refreshToken, profile }) {
   const User = this;

@@ -1,23 +1,18 @@
-const config = require('../../config');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const { authenticateFacebook, authenticateGoogle } = require('../../middleware/authentication');
 
 const User = require('../../models/user');
 
-const genAuthenticationResponse = (user) => {
-  return {
-    id: user.id,
-    name: user.name,
-    token: user.generateJWT(),
-  }
-}
+const genAuthenticationResponse = (user) => ({
+  id: user.id,
+  name: user.name,
+  token: user.generateJWT(),
+});
 
 module.exports = {
   Query: {
     // Login with a normal form
-    authForm: async (_, { input: { email, password } }, { req, res }) => {
-      const user = await User.findOne({ email: email });
+    authForm: async (_, { input: { email, password } }) => {
+      const user = await User.findOne({ email });
       if (!user) {
         throw new Error('User does not exist!');
       }
@@ -29,7 +24,7 @@ module.exports = {
   },
   Mutation: {
     // Sign up with a normal form
-    addUser: async (_, { input }, { req, res }) => {
+    addUser: async (_, { input }) => {
       try {
         const userAlreadyExists = await User.findOne({ email: input.email });
         if (userAlreadyExists) {
@@ -63,7 +58,6 @@ module.exports = {
           }
         }
         if (info) {
-          console.log(info);
           switch (info.code) {
             case 'ETIMEDOUT':
               return (new Error('Failed to reach Facebook: Try Again'));
@@ -92,7 +86,6 @@ module.exports = {
           }
         }
         if (info) {
-          console.log(info);
           switch (info.code) {
             case 'ETIMEDOUT':
               return (new Error('Failed to reach Google: Try Again'));

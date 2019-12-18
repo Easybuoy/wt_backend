@@ -1,8 +1,7 @@
-const config = require('../config');
-const User = require('../models/user');
 const passport = require('passport');
 const FacebookTokenStrategy = require('passport-facebook-token');
 const { Strategy: GoogleTokenStrategy } = require('passport-google-token');
+const config = require('../config');
 
 const FacebookTokenStrategyCallback = (accessToken, refreshToken, profile, done) => done(null, {
   accessToken,
