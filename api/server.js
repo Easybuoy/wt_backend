@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const { ApolloServer } = require('apollo-server-express');
 const typeDefs = require('../graphql/schema');
 const resolvers = require('../graphql/resolvers');
+const { graphiql } = require('../config');
 
 
 const app = express();
@@ -20,6 +21,8 @@ const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req, res }) => ({ req, res }), // adds request and response to graphQL context
+  introspection: graphiql,
+  playground: graphiql,
 });
 
 apolloServer.applyMiddleware({ app, path: '/api' });

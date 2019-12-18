@@ -64,12 +64,9 @@ UserSchema.pre('save', async function (next) {
   return next();
 });
 
-UserSchema.methods.generateJWT = () => jwt.sign({
-  email: this.email,
+UserSchema.methods.generateJWT = (remember = false) => jwt.sign({
   id: this._id,
-}, config.jwtSecret, {
-  expiresIn: '1h'
-});
+}, config.jwtSecret, (!remember ? { expiresIn: '1h' } : null));
 
 UserSchema.methods.validPassword = async function (password) {
   const isEqual = await bcrypt.compare(password, this.password);
