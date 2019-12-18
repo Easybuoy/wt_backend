@@ -1,24 +1,30 @@
 const authSchema = `
   extend type Query {
-    authForm(input: UserFormLoginInput!): UserAuthResponse
+    "Login - Authenticates a user with a json web token"
+    authForm(input: UserFormLoginInput!): UserAuthResponse!
   }
 
   extend type Mutation {
-    addUser(input: UserSignupInput!): User
-    authFacebook(input: UserPlatformAuthInput!): UserAuthResponse
-    authGoogle(input: UserPlatformAuthInput!): UserAuthResponse
-    updateUser(input: UserUpdateInput!): User
+    "Sign up - Creates a new user"
+    addUser(input: UserSignupInput!): User!
+    "Login with Facebook account - Authenticates a user with a json web token"
+    authFacebook(input: UserPlatformAuthInput!): UserAuthResponse!
+    "Login with Google account - Authenticates a user with a json web token"
+    authGoogle(input: UserPlatformAuthInput!): UserAuthResponse!
+    "Update user data by id"
+    updateUser(input: UserUpdateInput!): User!
   }
 
   type User {
     id: ID!
-    name: String
+    firstname: String
+    lastname: String
     email: String!
     password: String
     height: Float
-    heightUnit: String
+    heightUnit: Unit
     weight: Float
-    weightUnit: String
+    weightUnit: Unit
     goal: String
     equipment: Boolean
     experience: String
@@ -29,7 +35,8 @@ const authSchema = `
 
   input UserUpdateInput {
     id: String!
-    name: String
+    firstname: String
+    lastname: String
     password: String
     height: Float
     heightUnit: String
@@ -47,9 +54,11 @@ const authSchema = `
   }
 
   input UserSignupInput {
-    name: String
+    firstname: String!
+    lastname: String!
     email: String!
-    password: String
+    password: String!
+    rePassword: String!
   }
 
   type UserAuthResponse {
