@@ -1,26 +1,17 @@
-/* eslint-disable no-console */
 const mongoose = require('mongoose');
-
-const {
-  port,
-  mongoUser,
-  mongoPassword,
-  mongoCluster,
-  mongoDatabase,
-} = require('./config');
-
+const config = require('./config');
 const server = require('./api/server');
 
 mongoose.connect(
-  `mongodb+srv://${mongoUser}:${mongoPassword}@${mongoCluster}/${mongoDatabase}?retryWrites=true`,
+  config.mongoConnect,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   },
 ).then(() => {
   console.log('Successfully connected to the database!');
-  server.listen(port, () => {
-    console.log(`Successfully connected to localhost:${port}`);
+  server.listen(config.port, () => {
+    console.log(`Successfully connected to localhost:${config.port}`);
   });
 }).catch((err) => {
   console.log(err);

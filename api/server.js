@@ -1,26 +1,27 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const { ApolloServer } = require('apollo-server-express');
+const typeDefs = require('../graphql/schema');
+const resolvers = require('../graphql/resolvers');
 
-const graphQLHttp = require('express-graphql');
 
-const graphQLSchema = require('../graphql/schema/index');
-const graphQLResolvers = require('../graphql/resolvers/index');
+const app = express();
 
-const server = express();
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-server.use(helmet());
-server.use(cors());
-server.use(express.json());
-
-server.use('/api', graphQLHttp({
-  schema: graphQLSchema,
-  rootValue: graphQLResolvers,
-  graphiql: true
-}));
-
-server.get('/', (req, res) => {
+app.get('/', (req, res) => {
   res.send({ up: 'workout or stay-out!!!' });
 });
 
-module.exports = server;
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req, res }) => ({ req, res }), // adds request and response to graphQL context
+});
+
+apolloServer.applyMiddleware({ app, path: '/api' });
+
+module.exports = app;

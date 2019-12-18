@@ -1,19 +1,23 @@
 require('dotenv').config();
 
 const {
-  PORT,
-  MONGO_CLUSTER,
-  MONGO_USER,
-  MONGO_PASSWORD,
-  MONGO_DB,
   NODE_ENV,
+  PORT,
+  MONGO_CONNECT,
+  JWT_SECRET,
+  FACEBOOK_APP_ID,
+  FACEBOOK_APP_SECRET,
+  GOOGLE_APP_ID,
+  GOOGLE_APP_SECRET,
 } = process.env;
 
 module.exports = {
   env: NODE_ENV || 'development',
   port: PORT,
-  mongoCluster: MONGO_CLUSTER,
-  mongoUser: MONGO_USER,
-  mongoPassword: MONGO_PASSWORD,
-  mongoDatabase: MONGO_DB,
+  jwtSecret: JWT_SECRET,
+  mongoConnect: MONGO_CONNECT,
+  facebookAppId: FACEBOOK_APP_ID,
+  facebookAppSecret: FACEBOOK_APP_SECRET,
+  googleAppId: GOOGLE_APP_ID,
+  googleAppSecret: GOOGLE_APP_SECRET,
 };

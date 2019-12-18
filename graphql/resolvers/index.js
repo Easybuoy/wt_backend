@@ -1,7 +1,12 @@
 const authResolver = require('./authResolver');
 
 const rootResolver = {
-  ...authResolver,
+  Query: {
+    ...authResolver.Query
+  },
+  Mutation: {
+    ...authResolver.Mutation
+  }
 };
 
 module.exports = rootResolver;
