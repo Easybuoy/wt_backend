@@ -8,7 +8,10 @@ mongoose.promise = global.Promise;
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-  name: {
+  firstname: {
+    type: String,
+  },
+  lastname: {
     type: String,
   },
   email: {
@@ -79,7 +82,8 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
   // no user was found, create a new one
   if (!user) {
     const newUser = await User.create({
-      name: profile.displayName || `${profile.familyName} ${profile.givenName}`,
+      firstname: profile.displayName || profile.givenName,
+      lastname: profile.familyName,
       email: profile.emails[0].value,
       facebook: {
         id: profile.id,
@@ -98,7 +102,8 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
   // no user was found, create a new one
   if (!existingUser) {
     const newUser = await User.create({
-      name: profile.displayName || `${profile.familyName} ${profile.givenName}`,
+      firstname: profile.displayName || profile.givenName,
+      lastname: profile.familyName,
       email: profile.emails[0].value,
       google: {
         id: profile.id,
