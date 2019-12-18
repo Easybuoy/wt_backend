@@ -9,6 +9,7 @@ const isAuthenticated = rule()(
 const permissions = shield(
   {
     Query: {
+      units: allow,
       authForm: allow,
     },
     Mutation: {

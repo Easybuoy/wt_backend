@@ -1,4 +1,4 @@
-const authResolver = require('./authResolver');
+const authResolver = require('./auth');
 
 const rootResolver = {
   Query: {
