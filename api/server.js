@@ -6,6 +6,7 @@ const { ApolloServer, makeExecutableSchema } = require('apollo-server-express');
 const { applyMiddleware } = require('graphql-middleware');
 const typeDefs = require('../graphql/schema');
 const resolvers = require('../graphql/resolvers');
+const validators = require('../middleware/validator');
 const permissions = require('../middleware/shield');
 const User = require('../models/user');
 const { jwtSecret, graphiql } = require('../config');
@@ -21,7 +22,7 @@ app.get('/', (req, res) => {
 });
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
-const schemaWithMiddleware = applyMiddleware(schema, permissions);
+const schemaWithMiddleware = applyMiddleware(schema, validators, permissions);
 const apolloServer = new ApolloServer({
   schema: schemaWithMiddleware,
   context: async (args) => {
