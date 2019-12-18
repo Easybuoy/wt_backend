@@ -6,13 +6,13 @@ mongoose.connect(
   config.mongoConnect,
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true
-  }
+    useUnifiedTopology: true,
+  },
 ).then(() => {
   console.log(`Successfully connected to the database!`)
   server.listen(config.port, (req, res, next) => {
     console.log(`Successfully connected to localhost:${config.port}`);
   });
-}).catch(err => {
+}).catch((err) => {
   console.log(err);
 });
