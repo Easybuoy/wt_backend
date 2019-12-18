@@ -1,0 +1,11 @@
+const unitSchema = `
+  extend type Query {
+    units: [Unit!]!
+  }
+  
+  type Unit {
+    id: ID!
+    name: String!
+  }
+`;
+module.exports = unitSchema;
