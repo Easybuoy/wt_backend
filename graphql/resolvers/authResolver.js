@@ -1,12 +1,12 @@
-const { authenticateFacebook, authenticateGoogle } = require('../../middleware/authentication');
+const { authenticateFacebook, authenticateGoogle } = require('../../middleware/passport');
 
 const User = require('../../models/user');
 
-const genAuthenticationResponse = (user, remember) => ({
+const genAuthenticationResponse = (user, remember = false) => ({
   id: user.id,
   name: user.name,
-  token: user.generateJWT(remember || false),
-  isNewUser: user.isNew,
+  token: user.generateJWT(remember),
+  isNewUser: !user.goal,
 });
 
 module.exports = {
@@ -109,7 +109,6 @@ module.exports = {
       delete newData.id;
       try {
         const updatedUser = await User.findByIdAndUpdate(input.id, newData, { new: true });
-
         return { ...updatedUser._doc, password: null, _id: updatedUser.id };
       } catch (err) {
         throw err;

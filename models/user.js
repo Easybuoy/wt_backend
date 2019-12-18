@@ -64,19 +64,21 @@ UserSchema.pre('save', async function (next) {
   return next();
 });
 
-UserSchema.methods.generateJWT = (remember = false) => jwt.sign({
-  id: this._id,
-}, config.jwtSecret, (!remember ? { expiresIn: '1h' } : null));
+UserSchema.methods.generateJWT = function (remember = false) {
+  return jwt.sign({ id: this._id }, config.jwtSecret, (!remember ? { expiresIn: '1h' } : null));
+};
 
 UserSchema.methods.validPassword = async function (password) {
   const isEqual = await bcrypt.compare(password, this.password);
   return isEqual;
 };
 
-UserSchema.statics.asFacebookUser = async function ({ accessToken, refreshToken, profile }) {
+// refreshToken is also available along with the accessToken
+UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
   const User = this;
   const user = await User.findOne({ 'facebook.id': profile.id });
-  if (!user) { // no user was found, lets create a new one
+  // no user was found, create a new one
+  if (!user) {
     const newUser = await User.create({
       name: profile.displayName || `${profile.familyName} ${profile.givenName}`,
       email: profile.emails[0].value,
@@ -85,16 +87,17 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, refreshToken,
         token: accessToken,
       },
     });
-
     return newUser;
   }
   return user;
 };
 
-UserSchema.statics.asGoogleUser = async function ({ accessToken, refreshToken, profile }) {
+// refreshToken is also available along with the accessToken
+UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
   const User = this;
   const existingUser = await User.findOne({ 'google.id': profile.id });
-  if (!existingUser) { // no user was found, lets create a new one
+  // no user was found, create a new one
+  if (!existingUser) {
     const newUser = await User.create({
       name: profile.displayName || `${profile.familyName} ${profile.givenName}`,
       email: profile.emails[0].value,
