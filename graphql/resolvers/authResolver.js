@@ -6,6 +6,7 @@ const genAuthenticationResponse = (user, remember) => ({
   id: user.id,
   name: user.name,
   token: user.generateJWT(remember || false),
+  isNewUser: user.isNew,
 });
 
 module.exports = {

@@ -25,6 +25,7 @@ module.exports = gql`
     id: String
     name: String
     token: String
+    isNewUser: Boolean
   }
 
   input UserPlatformAuthInput {
