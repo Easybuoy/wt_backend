@@ -1,0 +1,13 @@
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
+
+const UnitSchema = new Schema({
+  name: {
+    type: String,
+    require: true,
+    unique: true
+  }
+});
+
+module.exports = mongoose.model('Unit', UnitSchema);
