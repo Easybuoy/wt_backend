@@ -4,13 +4,14 @@ const helmet = require('helmet');
 const { ApolloServer } = require('apollo-server-express');
 const typeDefs = require('../graphql/schema');
 const resolvers = require('../graphql/resolvers');
-
+const authMiddleware = require('../middleware/authentication');
 
 const app = express();
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(authMiddleware);
 
 app.get('/', (req, res) => {
   res.send({ up: 'workout or stay-out!!!' });
@@ -19,7 +20,7 @@ app.get('/', (req, res) => {
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req, res }) => ({ req, res }), // adds request and response to graphQL context
+  context: ({ req, res }) => ({ req, res }) // adds request and response to graphQL context
 });
 
 apolloServer.applyMiddleware({ app, path: '/api' });
