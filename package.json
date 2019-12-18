@@ -44,7 +44,9 @@
     "mongoose": "^5.8.1",
     "passport": "^0.4.1",
     "passport-facebook-token": "^3.3.0",
-    "passport-google-token": "^0.1.2"
+    "passport-google-token": "^0.1.2",
+    "password-validator": "^5.0.3",
+    "validator": "^12.1.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.9",
