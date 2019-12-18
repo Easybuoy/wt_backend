@@ -2,10 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const jwt = require('jsonwebtoken');
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer, makeExecutableSchema } = require('apollo-server-express');
+const { applyMiddleware } = require('graphql-middleware');
 const typeDefs = require('../graphql/schema');
 const resolvers = require('../graphql/resolvers');
-// const authMiddleware = require('../middleware/authentication');
+const permissions = require('../middleware/shield');
 const User = require('../models/user');
 const { jwtSecret, graphiql } = require('../config');
 
@@ -19,23 +20,25 @@ app.get('/', (req, res) => {
   res.send({ up: 'workout or stay-out!!!' });
 });
 
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+const schemaWithMiddleware = applyMiddleware(schema, permissions);
 const apolloServer = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: async ({ req, res }) => {
+  schema: schemaWithMiddleware,
+  context: async (args) => {
+    const { req, res } = args;
     // if an authorization token is sent
     // authentication token will be validated
     const token = req.headers.authorization;
-    let user;
+    let user = null;
     if (token) {
       try {
         const decodedToken = jwt.verify(token, jwtSecret);
-        user = await User.findById(decodedToken.id);
-        if (user) {
-          user = { ...user._doc, _id: user.id };
-        } else {
-          throw new Error('Forbidden access!');
-        }
+        if (decodedToken && decodedToken.id) {
+          user = await User.findById(decodedToken.id);
+          if (user && user.id) {
+            user = { ...user._doc, _id: user.id };
+          } else throw new Error('User does not exist!');
+        } else throw new Error('Invalid token!');
       } catch (err) {
         throw err;
       }

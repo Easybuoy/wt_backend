@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const config = require('../config');
+const { jwtSecret } = require('../config');
 
 mongoose.promise = global.Promise;
-mongoose.set('debug', config.env !== 'production');
 
 const { Schema } = mongoose;
 
@@ -65,7 +64,7 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.methods.generateJWT = function (remember = false) {
-  return jwt.sign({ id: this._id }, config.jwtSecret, (!remember ? { expiresIn: '1h' } : null));
+  return jwt.sign({ id: this._id }, jwtSecret, (!remember ? { expiresIn: '1h' } : null));
 };
 
 UserSchema.methods.validPassword = async function (password) {

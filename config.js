@@ -13,6 +13,7 @@ const {
 } = process.env;
 
 module.exports = {
+  isProduction: NODE_ENV === 'production',
   env: NODE_ENV || 'development',
   port: PORT,
   jwtSecret: JWT_SECRET,
