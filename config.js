@@ -9,7 +9,7 @@ const {
   FACEBOOK_APP_SECRET,
   GOOGLE_APP_ID,
   GOOGLE_APP_SECRET,
-  GRAPHIQL,
+  GRAPHIQL_PLAYGROUND,
 } = process.env;
 
 module.exports = {
@@ -21,5 +21,5 @@ module.exports = {
   facebookAppSecret: FACEBOOK_APP_SECRET,
   googleAppId: GOOGLE_APP_ID,
   googleAppSecret: GOOGLE_APP_SECRET,
-  graphiql: GRAPHIQL,
+  graphiql: GRAPHIQL_PLAYGROUND,
 };
