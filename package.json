@@ -12,6 +12,7 @@
     "docs": "graphql-markdown --update-file \"README.md\" --title \"API\" \"http://localhost:4000/api\""
   },
   "jest": {
+    "setupFiles": ["helpers/tests.js"],
     "testEnvironment": "node"
   },
   "husky": {
