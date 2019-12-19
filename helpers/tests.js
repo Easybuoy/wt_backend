@@ -46,5 +46,6 @@ module.exports = {
     });
     return true;
   },
-  query: (query) => request(server).post('/api').send({ query })
+  query: (query) => request(server).post('/api').send({ query }),
+  dropAllCollections
 };
