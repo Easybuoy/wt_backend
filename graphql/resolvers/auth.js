@@ -40,7 +40,7 @@ module.exports = {
 
         const savedUser = await user.save();
 
-        return { ...savedUser._doc, password: null, _id: savedUser.id };
+        return { ...savedUser._doc, password: null, id: savedUser.id };
       } catch (err) {
         throw err;
       }
@@ -105,7 +105,7 @@ module.exports = {
       try {
         const updatedUser = await User.findByIdAndUpdate(input.id, newData, { new: true });
         if (updatedUser) {
-          return { ...updatedUser._doc, password: null, _id: updatedUser.id };
+          return { ...updatedUser._doc, password: null, id: updatedUser.id };
         }
         throw new Error('Could not update user!');
       } catch (err) {

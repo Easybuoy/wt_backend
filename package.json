@@ -9,9 +9,12 @@
     "test": "cross-env NODE_ENV=testing jest",
     "coverage": "cross-env NODE_ENV=testing jest --coverage && cat ./coverage/lcov.info | coveralls",
     "lint:fix": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix",
-    "docs": "graphql-markdown --update-file \"README.md\" --title \"API\" \"http://localhost:4000/api\""
+    "docs": "graphql-markdown --update-file \"README.md\" --title \"API\" \"http://localhost:4000/api\"",
+    "seed": "node -e \"require('./helpers/seed.js')(() => process.exit());\"",
+    "seed:test": "cross-env NODE_ENV=testing npm run seed"
   },
   "jest": {
+    "setupFiles": ["./helpers/tests.js"],
     "testEnvironment": "node"
   },
   "husky": {
