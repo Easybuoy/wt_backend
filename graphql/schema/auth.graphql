@@ -17,7 +17,7 @@ const authSchema = `
 
   "Application user"
   type User {
-    id: ID!
+    id: String!
     firstname: String
     lastname: String
     email: String!

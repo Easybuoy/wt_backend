@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const {
   mongoConnect,
   mongoConnectTest,
-  isProduction,
   isTesting
 } = require('../config');
 
@@ -14,6 +13,5 @@ module.exports = mongoose.connect(
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
-    debug: isProduction,
   },
 );
