@@ -1,12 +1,22 @@
-const authResolver = require('./authResolver');
+const authResolver = require('./auth');
+const unitResolver = require('./unit');
 
-const rootResolver = {
-  Query: {
-    ...authResolver.Query
-  },
-  Mutation: {
-    ...authResolver.Mutation
-  }
-};
+const rootResolver = [
+  authResolver,
+  unitResolver
+].reduce((rootR, resolver) => {
+  const finalResolver = rootR;
+  Object.keys(resolver).forEach((key) => {
+    if (!finalResolver[key]) {
+      finalResolver[key] = {};
+    }
+    finalResolver[key] = {
+      ...finalResolver[key],
+      ...resolver[key]
+    };
+  });
+  return finalResolver;
+}, {});
+
 
 module.exports = rootResolver;

@@ -1,16 +1,20 @@
-const { authenticateFacebook, authenticateGoogle } = require('../../middleware/authentication');
+const {
+  authenticateFacebook,
+  authenticateGoogle
+} = require('../../middleware/passport');
 
 const User = require('../../models/user');
+const UnitDataLoader = require('../dataloaders/unit');
 
-const genAuthenticationResponse = (user, remember) => ({
+const genAuthResponse = (user, remember = false) => ({
   id: user.id,
   name: user.name,
-  token: user.generateJWT(remember || false),
+  token: user.generateJWT(remember),
+  isNewUser: !user.goal,
 });
 
 module.exports = {
   Query: {
-    // Login with a normal form
     authForm: async (_, { input: { email, password, remember } }) => {
       const user = await User.findOne({ email });
       if (!user) {
@@ -19,11 +23,10 @@ module.exports = {
       if (!user.validPassword(password)) {
         throw new Error('Password is incorrect!');
       }
-      return genAuthenticationResponse(user, remember);
+      return genAuthResponse(user, remember);
     },
   },
   Mutation: {
-    // Sign up with a normal form
     addUser: async (_, { input }) => {
       try {
         const userAlreadyExists = await User.findOne({ email: input.email });
@@ -42,7 +45,6 @@ module.exports = {
         throw err;
       }
     },
-    // Sign up / Login with a facebook account
     authFacebook: async (_, { input: { accessToken } }, { req, res }) => {
       req.body = {
         ...req.body,
@@ -54,7 +56,7 @@ module.exports = {
         if (data) {
           const user = await User.asFacebookUser(data);
           if (user) {
-            return genAuthenticationResponse(user);
+            return genAuthResponse(user);
           }
         }
         if (info) {
@@ -70,7 +72,6 @@ module.exports = {
         return error;
       }
     },
-    // Sign up / Login with a google account
     authGoogle: async (_, { input: { accessToken } }, { req, res }) => {
       req.body = {
         ...req.body,
@@ -82,7 +83,7 @@ module.exports = {
         if (data) {
           const user = await User.asGoogleUser(data);
           if (user) {
-            return genAuthenticationResponse(user);
+            return genAuthResponse(user);
           }
         }
         if (info) {
@@ -98,21 +99,22 @@ module.exports = {
         return error;
       }
     },
-    //
     updateUser: async (_, { input }) => {
-      // find user by id
-      // if user doesn't exist, return error
-      // update user based on input
-      // return the updated user
       const newData = { ...input };
       delete newData.id;
       try {
         const updatedUser = await User.findByIdAndUpdate(input.id, newData, { new: true });
-
-        return { ...updatedUser._doc, password: null, _id: updatedUser.id };
+        if (updatedUser) {
+          return { ...updatedUser._doc, password: null, _id: updatedUser.id };
+        }
+        throw new Error('Could not update user!');
       } catch (err) {
         throw err;
       }
     }
+  },
+  User: {
+    heightUnit: ({ heightUnit }, args, context) => UnitDataLoader(context).load(heightUnit),
+    weightUnit: ({ weightUnit }, args, context) => UnitDataLoader(context).load(weightUnit),
   }
 };
