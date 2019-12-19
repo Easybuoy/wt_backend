@@ -6,6 +6,7 @@ const server = require('./api/server');
 mongoose.connect(
   mongoConnect,
   {
+    useFindAndModify: false,
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,

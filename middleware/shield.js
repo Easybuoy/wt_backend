@@ -21,7 +21,7 @@ const permissions = shield(
   {
     debug: true,
     allowExternalErrors: true,
-    fallbackError: 'Unauthorized!',
+    fallbackError: 'Not Authorized!',
     fallbackRule: isAuthenticated,
   }
 );
