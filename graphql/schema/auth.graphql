@@ -15,6 +15,7 @@ const authSchema = `
     updateUser(input: UserUpdateInput!): User!
   }
 
+  "Application user"
   type User {
     id: ID!
     firstname: String
@@ -33,6 +34,7 @@ const authSchema = `
     photo: String
   }
 
+  "Object parameter for updating user"
   input UserUpdateInput {
     id: String!
     firstname: String
@@ -48,11 +50,13 @@ const authSchema = `
     photo: String
   }
 
+  "Application user login platform"
   type UserPlatform {
     id: String
     token: String
   }
 
+  "Object parameter for creating user"
   input UserSignupInput {
     firstname: String!
     lastname: String!
@@ -61,19 +65,23 @@ const authSchema = `
     rePassword: String!
   }
 
+  "Object response for authentication requests"
   type UserAuthResponse {
     id: String
     name: String
     token: String
+    "A boolean value that determines if a new user was created"
     isNewUser: Boolean
   }
 
+  "Object parameter for user login"
   input UserFormLoginInput {
     email: String
     password: String
     remember: Boolean
   }
 
+  "Object parameter for user platform authentication"
   input UserPlatformAuthInput {
     accessToken: String!
   }
