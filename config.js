@@ -13,11 +13,13 @@ const {
 } = process.env;
 
 module.exports = {
+  isTesting: NODE_ENV === 'testing',
   isProduction: NODE_ENV === 'production',
   env: NODE_ENV || 'development',
   port: PORT,
   jwtSecret: JWT_SECRET,
   mongoConnect: MONGO_CONNECT,
+  mongoConnectTest: MONGO_CONNECT.replace('/trackdrills', '/trackdrillstesting'),
   facebookAppId: FACEBOOK_APP_ID,
   facebookAppSecret: FACEBOOK_APP_SECRET,
   googleAppId: GOOGLE_APP_ID,

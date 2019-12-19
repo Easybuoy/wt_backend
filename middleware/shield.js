@@ -9,10 +9,12 @@ const isAuthenticated = rule()(
 const permissions = shield(
   {
     Query: {
+      '*': isAuthenticated,
       units: allow,
       authForm: allow,
     },
     Mutation: {
+      '*': isAuthenticated,
       addUser: allow,
       authGoogle: allow,
       authFacebook: allow,
@@ -22,7 +24,6 @@ const permissions = shield(
     debug: true,
     allowExternalErrors: true,
     fallbackError: 'Not Authorized!',
-    fallbackRule: isAuthenticated,
   }
 );
 
