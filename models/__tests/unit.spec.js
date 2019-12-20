@@ -8,7 +8,7 @@ describe('Unit', () => {
     const unit = new Unit({ name: 'kg' });
     await unit.save();
     const units = await Unit.find();
-    done();
     expect(units).toHaveLength(1);
+    done();
   });
 });
