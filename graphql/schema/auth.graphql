@@ -6,13 +6,13 @@ const authSchema = `
 
   extend type Mutation {
     "Sign up - Creates a new user"
-    addUser(input: UserSignupInput!): User!
+    addUser(input: UserSignupInput!): UserAuthResponse!
+    "Update user data by id"
+    updateUser(input: UserUpdateInput!): User!
     "Login with Facebook account - Authenticates a user with a json web token"
     authFacebook(input: UserPlatformAuthInput!): UserAuthResponse!
     "Login with Google account - Authenticates a user with a json web token"
     authGoogle(input: UserPlatformAuthInput!): UserAuthResponse!
-    "Update user data by id"
-    updateUser(input: UserUpdateInput!): User!
   }
 
   "Application user"
@@ -45,13 +45,19 @@ const authSchema = `
     weight: Float
     weightUnit: String
     goal: String
-    equipment: String
+    equipment: Boolean
     experience: String
+    google: UserPlatformInput
+    facebook: UserPlatformInput
     photo: String
   }
 
   "Application user login platform"
   type UserPlatform {
+    id: String
+    token: String
+  }
+  input UserPlatformInput {
     id: String
     token: String
   }
@@ -68,7 +74,8 @@ const authSchema = `
   "Object response for authentication requests"
   type UserAuthResponse {
     id: String
-    name: String
+    firstname: String
+    lastname: String
     token: String
     "A boolean value that determines if a new user was created"
     isNewUser: Boolean

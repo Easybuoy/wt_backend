@@ -8,7 +8,8 @@ const UnitDataLoader = require('../dataloaders/unit');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
-  name: user.name,
+  firstname: user.firstname,
+  lastname: user.lastname,
   token: user.generateJWT(remember),
   isNewUser: !user.goal,
 });
@@ -40,7 +41,7 @@ module.exports = {
 
         const savedUser = await user.save();
 
-        return { ...savedUser._doc, password: null, id: savedUser.id };
+        return genAuthResponse(savedUser);
       } catch (err) {
         throw err;
       }
