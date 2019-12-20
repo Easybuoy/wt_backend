@@ -14,7 +14,9 @@
     "seed:test": "cross-env NODE_ENV=testing npm run seed"
   },
   "jest": {
-    "setupFiles": ["./helpers/tests.js"],
+    "setupFiles": [
+      "./helpers/tests.js"
+    ],
     "testEnvironment": "node"
   },
   "husky": {
