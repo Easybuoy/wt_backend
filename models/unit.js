@@ -9,6 +9,10 @@ const UnitSchema = new Schema({
     type: String,
     require: true,
     unique: true
+  },
+  type: {
+    type: String,
+    require: true,
   }
 });
 
