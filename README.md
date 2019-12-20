@@ -20,6 +20,7 @@
   * [Inputs](#inputs)
     * [UserFormLoginInput](#userformlogininput)
     * [UserPlatformAuthInput](#userplatformauthinput)
+    * [UserPlatformInput](#userplatforminput)
     * [UserSignupInput](#usersignupinput)
     * [UserUpdateInput](#userupdateinput)
   * [Scalars](#scalars)
@@ -104,7 +105,7 @@ Get an array of Unit objects
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>addUser</strong></td>
-<td valign="top"><a href="#user">User</a>!</td>
+<td valign="top"><a href="#userauthresponse">UserAuthResponse</a>!</td>
 <td>
 
 Sign up - Creates a new user
@@ -114,6 +115,20 @@ Sign up - Creates a new user
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#usersignupinput">UserSignupInput</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateUser</strong></td>
+<td valign="top"><a href="#user">User</a>!</td>
+<td>
+
+Update user data by id
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#userupdateinput">UserUpdateInput</a>!</td>
 <td></td>
 </tr>
 <tr>
@@ -144,20 +159,6 @@ Login with Google account - Authenticates a user with a json web token
 <td valign="top"><a href="#userplatformauthinput">UserPlatformAuthInput</a>!</td>
 <td></td>
 </tr>
-<tr>
-<td colspan="2" valign="top"><strong>updateUser</strong></td>
-<td valign="top"><a href="#user">User</a>!</td>
-<td>
-
-Update user data by id
-
-</td>
-</tr>
-<tr>
-<td colspan="2" align="right" valign="top">input</td>
-<td valign="top"><a href="#userupdateinput">UserUpdateInput</a>!</td>
-<td></td>
-</tr>
 </tbody>
 </table>
 
@@ -184,6 +185,11 @@ Application measurement units
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>name</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>type</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
@@ -302,7 +308,12 @@ Object response for authentication requests
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>name</strong></td>
+<td colspan="2" valign="top"><strong>firstname</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>lastname</strong></td>
 <td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
@@ -399,6 +410,30 @@ Object parameter for user platform authentication
 <tr>
 <td colspan="2" valign="top"><strong>accessToken</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### UserPlatformInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>token</strong></td>
+<td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
 </tbody>
@@ -505,12 +540,22 @@ Object parameter for updating user
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>equipment</strong></td>
-<td valign="top"><a href="#string">String</a></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
 <td></td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>experience</strong></td>
 <td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>google</strong></td>
+<td valign="top"><a href="#userplatforminput">UserPlatformInput</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>facebook</strong></td>
+<td valign="top"><a href="#userplatforminput">UserPlatformInput</a></td>
 <td></td>
 </tr>
 <tr>

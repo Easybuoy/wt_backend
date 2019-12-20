@@ -32,10 +32,10 @@ module.exports = async (onEnd = false) => {
   ];
 
   const units = [
-    { name: 'kg' },
-    { name: 'pounds' },
-    { name: 'inches' },
-    { name: 'centimetres' },
+    { name: 'kg', type: 'weight' },
+    { name: 'pounds', type: 'weight' },
+    { name: 'inches', type: 'height' },
+    { name: 'centimetres', type: 'height' },
   ];
 
   console.log('Seeding users collection...');
