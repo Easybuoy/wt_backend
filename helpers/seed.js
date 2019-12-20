@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const { dropAllCollections } = require('./tests');
+const { dropAllCollections } = require('./helpers');
 const connect = require('../api/database');
 const User = require('../models/user');
 const Unit = require('../models/unit');

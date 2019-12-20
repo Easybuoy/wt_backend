@@ -206,7 +206,7 @@ Application user
 <tbody>
 <tr>
 <td colspan="2" valign="top"><strong>id</strong></td>
-<td valign="top"><a href="#id">ID</a>!</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 <tr>
