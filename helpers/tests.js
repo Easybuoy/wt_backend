@@ -1,10 +1,23 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const request = require('supertest');
 const mongoose = require('mongoose');
+const passport = require('passport');
 const server = require('../api/server');
 const connect = require('../api/database');
 const { removeAllCollections } = require('./helpers');
 
+
+passport.authenticate = jest.fn((authType, options, callback) => () => {
+  callback(null, {
+    accessToken: true,
+    profile: {
+      id: 12345,
+      displayName: 'Test',
+      familyName: 'User',
+      emails: [{ value: 'test@user1.com' }]
+    }
+  }, null);
+});
 
 module.exports = {
   initTest: () => {

@@ -3,9 +3,6 @@ const User = require('../../models/user');
 
 initTest();
 
-const getGoogleToken = () => 'ya29.Il-2B_WdBM0Im6bKt3FFg9WJXmplf5A7krvwjufD3ZT86obfHtSBXSvJ88fgJr4_TpdTrAEWMacHXFrvDrU4pMmrCaDaO7ovydSPeROrBE75pa9Q-2LO4uqTJqfq_QpGng';
-const getFacebookToken = () => 'ya29.Il-2B_WdBM0Im6bKt3FFg9WJXmplf5A7krvwjufD3ZT86obfHtSBXSvJ88fgJr4_TpdTrAEWMacHXFrvDrU4pMmrCaDaO7ovydSPeROrBE75pa9Q-2LO4uqTJqfq_QpGng';
-
 const createUser = () => query(`
   mutation {
     addUser(input: { 
@@ -34,15 +31,15 @@ describe('User model', () => {
     const addGoogleUser = await query(`
       mutation {
         authGoogle(input: {
-          accessToken: ${getGoogleToken()}
+          accessToken: ""
         }) {
           id
           token
         }
       }
     `);
-    const { authGoogle } = JSON.parse(addGoogleUser.res.text).data;
-    const user = await User.findById(authGoogle.id);
+    const { data } = JSON.parse(addGoogleUser.res.text);
+    const user = await User.findById(data.authGoogle.id);
     expect(user.id).toBeDefined();
     expect(user.google.id).toBeDefined();
     expect(user.google.token).toBeDefined();
@@ -52,15 +49,15 @@ describe('User model', () => {
     const addFacebookUser = await query(`
       mutation {
         authFacebook(input: {
-          accessToken: ${getFacebookToken()}
+          accessToken: ""
         }) {
           id
           token
         }
       }
     `);
-    const { authFacebook } = JSON.parse(addFacebookUser.res.text).data;
-    const user = await User.findById(authFacebook.id);
+    const { data } = JSON.parse(addFacebookUser.res.text);
+    const user = await User.findById(data.authFacebook.id);
     expect(user.id).toBeDefined();
     expect(user.facebook.id).toBeDefined();
     expect(user.facebook.token).toBeDefined();
