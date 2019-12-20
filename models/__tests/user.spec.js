@@ -38,7 +38,7 @@ describe('User model', () => {
         }
       }
     `);
-    const { errors, data } = JSON.parse(addGoogleUser.res.text);
+    const { data } = JSON.parse(addGoogleUser.res.text);
     const user = await User.findById(data.authGoogle.id);
     expect(user.id).toBeDefined();
     expect(user.google.id).toBeDefined();
