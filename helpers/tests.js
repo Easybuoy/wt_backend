@@ -3,28 +3,23 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const server = require('../api/server');
 const connect = require('../api/database');
-const { dropAllCollections, removeAllCollections } = require('./helpers');
+const { removeAllCollections } = require('./helpers');
 
 
 module.exports = {
   initTest: () => {
     // wait for the DB to connect
-    beforeAll(async () => {
-      await connect;
-    });
+    beforeAll(() => connect);
 
     // clear all collection rows
-    afterEach(async () => {
-      await removeAllCollections();
-    });
+    afterEach(() => removeAllCollections());
 
     // Disconnect Mongoose
     afterAll(async () => {
-      await dropAllCollections();
+      await removeAllCollections();
       await mongoose.connection.close();
     });
     return true;
   },
-  query: (query) => request(server).post('/api').send({ query }),
-  dropAllCollections
+  query: (query, authToken = '') => request(server).post('/api').send({ query }).set('Authorization', authToken),
 };
