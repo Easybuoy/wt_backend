@@ -1,30 +1,19 @@
-const { initTest, query } = require('../../helpers/tests');
+const {
+  initTest,
+  query,
+  createUser,
+  testUser
+} = require('../../helpers/tests');
 const User = require('../../models/user');
 
 initTest();
 
-const createUser = () => query(`
-  mutation {
-    addUser(input: { 
-      firstname:"Melquisedeque", 
-      lastname:"Pereira"
-      email: "melqui@test.com", 
-      password:"tester12T$" 
-      rePassword:"tester12T$"
-    }) {
-      id
-      firstname
-      lastname
-      token
-    }
-  }
-`);
-
 describe('User model', () => {
   it('Should save user to database', async (done) => {
     await createUser();
-    const user = await User.findOne({ email: 'melqui@test.com' });
-    expect(user.firstname).toBe('Melquisedeque');
+    const user = await User.findOne({ email: testUser.email });
+    expect(user).toBeDefined();
+    expect(user.firstname).toBe(testUser.firstname);
     done();
   });
   it('Should save google user to database', async (done) => {
