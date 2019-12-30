@@ -51,22 +51,25 @@ module.exports = {
   },
   query,
   testUser,
-  createUser: () => query(`
-    mutation {
-      addUser(input: { 
-        firstname:"${testUser.firstname}"
-        lastname:"${testUser.lastname}"
-        email:"${testUser.email}"
-        password:"${testUser.password}" 
-        rePassword:"${testUser.password}"
-      }) {
-        id
-        firstname
-        lastname
-        token
+  createUser: async () => {
+    const newUser = await query(`
+      mutation {
+        addUser(input: { 
+          firstname:"${testUser.firstname}"
+          lastname:"${testUser.lastname}"
+          email:"${testUser.email}"
+          password:"${testUser.password}" 
+          rePassword:"${testUser.password}"
+        }) {
+          id
+          firstname
+          lastname
+          token
+        }
       }
-    }
-  `),
+    `);
+    return JSON.parse(newUser.res.text).data.addUser;
+  },
   getUnits: async () => {
     const allUnits = await query(`
       query {

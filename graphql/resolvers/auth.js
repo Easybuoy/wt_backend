@@ -4,7 +4,7 @@ const {
 } = require('../../middleware/passport');
 
 const User = require('../../models/user');
-const UnitDataLoader = require('../dataloaders/unit');
+const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
