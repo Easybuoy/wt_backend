@@ -1,5 +1,5 @@
 const { initTest, createUser } = require('../tests');
-const { removeAllCollections, dropAllCollections } = require('../helpers');
+const { removeAllCollections } = require('../helpers');
 const User = require('../../models/user');
 
 initTest();
@@ -10,16 +10,6 @@ describe('Clear data from database', () => {
     let allUsers = await User.find();
     expect(allUsers.length).toBe(1);
     await removeAllCollections();
-    allUsers = await User.find();
-    expect(allUsers.length).toBe(0);
-    done();
-  });
-  it('Remove all collections from database', async (done) => {
-    await createUser();
-    let allUsers = await User.find();
-    expect(allUsers.length).toBe(1);
-    await removeAllCollections();
-    await dropAllCollections();
     allUsers = await User.find();
     expect(allUsers.length).toBe(0);
     done();

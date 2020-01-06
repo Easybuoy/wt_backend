@@ -6,6 +6,7 @@ const server = require('../api/server');
 const connect = require('../api/database');
 const { removeAllCollections } = require('./helpers');
 
+const testPlatformToken = 'true';
 const testUser = {
   firstname: 'Melquisedeque',
   lastname: 'Pereira',
@@ -13,9 +14,10 @@ const testUser = {
   password: 'tester12T$'
 };
 
-passport.authenticate = jest.fn((authType, options, callback) => () => {
-  callback(null, {
-    accessToken: true,
+passport.authenticate = jest.fn((authType, options, callback) => (req) => {
+  const errorToken = req.body.access_token !== testPlatformToken;
+  callback(errorToken ? true : null, {
+    accessToken: testPlatformToken,
     profile: {
       id: 12345,
       displayName: testUser.firstname,
@@ -35,6 +37,7 @@ module.exports = {
       await connect;
       done();
     });
+    // clear all collections' data
     beforeEach(async (done) => {
       await removeAllCollections();
       done();

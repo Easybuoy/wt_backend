@@ -20,7 +20,7 @@ describe('User model', () => {
     const addGoogleUser = await query(`
       mutation {
         authGoogle(input: {
-          accessToken: ""
+          accessToken: "true"
         }) {
           id
           token
@@ -38,7 +38,7 @@ describe('User model', () => {
     const addFacebookUser = await query(`
       mutation {
         authFacebook(input: {
-          accessToken: ""
+          accessToken: "true"
         }) {
           id
           token
@@ -50,6 +50,38 @@ describe('User model', () => {
     expect(user.id).toBeDefined();
     expect(user.facebook.id).toBeDefined();
     expect(user.facebook.token).toBeDefined();
+    done();
+  });
+  it('Should NOT save google user with invalid token', async (done) => {
+    const addGoogleUser = await query(`
+      mutation {
+        authGoogle(input: {
+          accessToken: "false"
+        }) {
+          id
+          token
+        }
+      }
+    `);
+    const { data } = JSON.parse(addGoogleUser.res.text);
+    expect(data.authGoogle.id).toBeNull();
+    expect(data.authGoogle.token).toBeNull();
+    done();
+  });
+  it('Should NOT save facebook user with invalid token', async (done) => {
+    const addFacebookUser = await query(`
+      mutation {
+        authFacebook(input: {
+          accessToken: "false"
+        }) {
+          id
+          token
+        }
+      }
+    `);
+    const { data } = JSON.parse(addFacebookUser.res.text);
+    expect(data.authFacebook.id).toBeNull();
+    expect(data.authFacebook.token).toBeNull();
     done();
   });
 });
