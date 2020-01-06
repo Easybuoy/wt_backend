@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const { initTest, createUser } = require('../tests');
 const { removeAllCollections, dropAllCollections } = require('../helpers');
 const User = require('../../models/user');
