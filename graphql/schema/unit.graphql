@@ -1,0 +1,16 @@
+const unitSchema = `
+  extend type Query {
+    "Get a specific Unit's data"
+    unitById(id: String!): Unit!
+    "Get an array of Unit objects"
+    units: [Unit!]!
+  }
+  
+  "Application measurement units"
+  type Unit {
+    id: ID!
+    name: String!
+    type: String!
+  }
+`;
+module.exports = unitSchema;

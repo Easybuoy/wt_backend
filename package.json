@@ -1,0 +1,72 @@
+{
+  "name": "wt_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js",
+    "start": "node index.js",
+    "test": "cross-env NODE_ENV=testing jest --maxWorkers=1 --detectOpenHandles",
+    "coverage": "cross-env NODE_ENV=testing jest --coverage --maxWorkers=1 && cat ./coverage/lcov.info | coveralls",
+    "lint:fix": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix",
+    "docs": "graphql-markdown --update-file \"README.md\" --title \"API\" \"http://localhost:4000/api\"",
+    "seed": "node -e \"require('./helpers/seed.js')(() => process.exit());\"",
+    "seed:test": "cross-env NODE_ENV=testing npm run seed",
+    "seed:production": "cross-env NODE_ENV=production npm run seed"
+  },
+  "jest": {
+    "setupFiles": [
+      "./helpers/tests.js"
+    ],
+    "testEnvironment": "node"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:fix"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LABS-EU3/wt_backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LABS-EU3/wt_backend/issues"
+  },
+  "homepage": "https://github.com/LABS-EU3/wt_backend#readme",
+  "dependencies": {
+    "apollo-server-express": "^2.9.14",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dataloader": "^2.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^14.5.8",
+    "graphql-middleware": "^4.0.2",
+    "graphql-shield": "^7.0.5",
+    "helmet": "^3.21.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.8.1",
+    "passport": "^0.4.1",
+    "passport-facebook-token": "^3.3.0",
+    "passport-google-token": "^0.1.2",
+    "password-validator": "^5.0.3",
+    "validator": "^12.1.0"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.9",
+    "cross-env": "^6.0.3",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^23.1.1",
+    "graphql-markdown": "^5.2.0",
+    "husky": "^3.1.0",
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
+  }
+}

@@ -1,0 +1,96 @@
+const authSchema = `
+  extend type Query {
+    "Login - Authenticates a user with a json web token"
+    authForm(input: UserFormLoginInput!): UserAuthResponse!
+  }
+
+  extend type Mutation {
+    "Sign up - Creates a new user"
+    addUser(input: UserSignupInput!): UserAuthResponse!
+    "Update user data by id"
+    updateUser(input: UserUpdateInput!): User!
+    "Login with Facebook account - Authenticates a user with a json web token"
+    authFacebook(input: UserPlatformAuthInput!): UserAuthResponse!
+    "Login with Google account - Authenticates a user with a json web token"
+    authGoogle(input: UserPlatformAuthInput!): UserAuthResponse!
+  }
+
+  "Application user"
+  type User {
+    id: String!
+    firstname: String
+    lastname: String
+    email: String!
+    password: String
+    height: Float
+    heightUnit: Unit
+    weight: Float
+    weightUnit: Unit
+    goal: String
+    equipment: Boolean
+    experience: String
+    google: UserPlatform
+    facebook: UserPlatform
+    photo: String
+  }
+
+  "Object parameter for updating user"
+  input UserUpdateInput {
+    id: String!
+    firstname: String
+    lastname: String
+    password: String
+    height: Float
+    heightUnit: String
+    weight: Float
+    weightUnit: String
+    goal: String
+    equipment: Boolean
+    experience: String
+    google: UserPlatformInput
+    facebook: UserPlatformInput
+    photo: String
+  }
+
+  "Application user login platform"
+  type UserPlatform {
+    id: String
+    token: String
+  }
+  input UserPlatformInput {
+    id: String
+    token: String
+  }
+
+  "Object parameter for creating user"
+  input UserSignupInput {
+    firstname: String!
+    lastname: String!
+    email: String!
+    password: String!
+    rePassword: String!
+  }
+
+  "Object response for authentication requests"
+  type UserAuthResponse {
+    id: String
+    firstname: String
+    lastname: String
+    token: String
+    "A boolean value that determines if a new user was created"
+    isNewUser: Boolean
+  }
+
+  "Object parameter for user login"
+  input UserFormLoginInput {
+    email: String
+    password: String
+    remember: Boolean
+  }
+
+  "Object parameter for user platform authentication"
+  input UserPlatformAuthInput {
+    accessToken: String!
+  }
+`;
+module.exports = authSchema;
