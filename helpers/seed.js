@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const { dropAllCollections } = require('./helpers');
 const connect = require('../api/database');
+const { isProduction } = require('../config');
 const User = require('../models/user');
 const Unit = require('../models/unit');
 
@@ -8,7 +9,7 @@ module.exports = async (onEnd = false) => {
   console.log('Connecting to database...');
   await connect;
   console.log('Dropping all collections...');
-  await dropAllCollections();
+  await dropAllCollections((isProduction ? ['users'] : []));
 
   const users = [
     {
@@ -38,8 +39,10 @@ module.exports = async (onEnd = false) => {
     { name: 'centimetres', type: 'height' },
   ];
 
-  console.log('Seeding users collection...');
-  await User.create(users);
+  if (!isProduction) {
+    console.log('Seeding users collection...');
+    await User.create(users);
+  }
   console.log('Seeding units collection...');
   await Unit.create(units);
 

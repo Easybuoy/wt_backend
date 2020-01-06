@@ -1,27 +1,24 @@
 const request = require('supertest');
+const { initTest } = require('../../helpers/tests');
 const { env } = require('../../config');
 const server = require('../server');
 
+initTest();
+
 describe('server', () => {
-  describe('[GET] / endpoint', () => {
-    it('the db env is using testing', () => {
-      expect(env).toBe('testing');
-    });
-    it('should return 200 OK', async () => {
-      const response = await request(server).get('/');
-      expect(response.status).toBe(200);
-    });
-    it('returns the right response body', async () => {
-      const response = await request(server).get('/');
-      expect(response.body).toEqual({ up: 'workout or stay-out!!!' });
-    });
+  it('the db env is using testing', () => {
+    expect(env).toBe('testing');
   });
-  it('should return 200 OK', async () => {
-    const response = await request(server).get('/');
-    expect(response.status).toBe(200);
+  it('should return 200 OK', (done) => {
+    request(server)
+      .get('/')
+      .expect(200)
+      .end(done);
   });
-  it('returns the right response body', async () => {
-    const response = await request(server).get('/');
-    expect(response.body).toEqual({ up: 'workout or stay-out!!!' });
+  it('returns the right response body', (done) => {
+    request(server)
+      .get('/')
+      .expect({ up: 'workout or stay-out!!!' })
+      .end(done);
   });
 });

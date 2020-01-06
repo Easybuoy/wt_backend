@@ -4,7 +4,7 @@ const {
 } = require('../../middleware/passport');
 
 const User = require('../../models/user');
-const UnitDataLoader = require('../dataloaders/unit');
+const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -21,7 +21,8 @@ module.exports = {
       if (!user) {
         throw new Error('User does not exist!');
       }
-      if (!user.validPassword(password)) {
+      const isValidPassword = await user.validPassword(password);
+      if (!isValidPassword) {
         throw new Error('Password is incorrect!');
       }
       return genAuthResponse(user, remember);
