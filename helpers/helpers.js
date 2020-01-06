@@ -4,20 +4,17 @@ const { isProduction } = require('../config');
 module.exports = {
   removeAllCollections: async (excludeCollections = []) => {
     const collections = Object.keys(mongoose.connection.collections);
-    await collections
+    await Promise.all(collections
       .map((colname) => {
         if (isProduction && excludeCollections.includes(colname)) {
           return false;
         }
-        return mongoose.connection.collections[colname];
-      })
-      .forEach(async (col) => {
-        await col.deleteMany();
-      });
+        return mongoose.connection.collections[colname].deleteMany();
+      }));
   },
   dropAllCollections: async (excludeCollections = []) => {
     const collections = Object.keys(mongoose.connection.collections);
-    await collections.map((colname) => {
+    await Promise.all(collections.map((colname) => {
       if (isProduction && excludeCollections.includes(colname)) {
         return false;
       }
@@ -32,6 +29,6 @@ module.exports = {
         if (error.message.includes('a background operation is currently running')) return false;
         throw new Error(error.message);
       }
-    });
+    }));
   }
 };

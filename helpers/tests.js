@@ -31,17 +31,14 @@ module.exports = {
   initTest: () => {
     // wait for the DB to connect
     beforeAll(async (done) => {
+      jest.setTimeout(10000);
       await connect;
+      done();
+    });
+    beforeEach(async (done) => {
       await removeAllCollections();
       done();
     });
-
-    // clear all collection rows
-    afterEach(async (done) => {
-      await removeAllCollections();
-      done();
-    });
-
     // Disconnect Mongoose
     afterAll(async (done) => {
       await removeAllCollections();
