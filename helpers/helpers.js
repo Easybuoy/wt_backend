@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 module.exports = {
   removeAllCollections: async () => {
     const collections = Object.keys(mongoose.connection.collections);
-    await collections.map((colname) => mongoose.connection.collections[colname])
-      .forEach((col) => col.deleteMany());
+    await collections
+      .map((colname) => mongoose.connection.collections[colname])
+      .forEach(async (col) => {
+        await col.deleteMany();
+      });
   },
   dropAllCollections: async () => {
     const collections = Object.keys(mongoose.connection.collections);
