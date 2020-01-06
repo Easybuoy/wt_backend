@@ -21,7 +21,8 @@ module.exports = {
       if (!user) {
         throw new Error('User does not exist!');
       }
-      if (!user.validPassword(password)) {
+      const isValidPassword = await user.validPassword(password);
+      if (!isValidPassword) {
         throw new Error('Password is incorrect!');
       }
       return genAuthResponse(user, remember);
