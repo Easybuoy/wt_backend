@@ -1,17 +1,26 @@
 const mongoose = require('mongoose');
+const { isProduction } = require('../config');
 
 module.exports = {
-  removeAllCollections: async () => {
+  removeAllCollections: async (excludeCollections = []) => {
     const collections = Object.keys(mongoose.connection.collections);
     await collections
-      .map((colname) => mongoose.connection.collections[colname])
+      .map((colname) => {
+        if (isProduction && excludeCollections.includes(colname)) {
+          return false;
+        }
+        return mongoose.connection.collections[colname];
+      })
       .forEach(async (col) => {
         await col.deleteMany();
       });
   },
-  dropAllCollections: async () => {
+  dropAllCollections: async (excludeCollections = []) => {
     const collections = Object.keys(mongoose.connection.collections);
     await collections.map((colname) => {
+      if (isProduction && excludeCollections.includes(colname)) {
+        return false;
+      }
       const collection = mongoose.connection.collections[colname];
       try {
         return collection.drop();

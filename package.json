@@ -11,7 +11,8 @@
     "lint:fix": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix",
     "docs": "graphql-markdown --update-file \"README.md\" --title \"API\" \"http://localhost:4000/api\"",
     "seed": "node -e \"require('./helpers/seed.js')(() => process.exit());\"",
-    "seed:test": "cross-env NODE_ENV=testing npm run seed"
+    "seed:test": "cross-env NODE_ENV=testing npm run seed",
+    "seed:production": "cross-env NODE_ENV=production npm run seed"
   },
   "jest": {
     "setupFiles": [
