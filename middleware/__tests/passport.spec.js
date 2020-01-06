@@ -1,4 +1,4 @@
-const { initTest, query } = require('../../helpers/tests');
+const { initTest } = require('../../helpers/tests');
 
 initTest();
 
