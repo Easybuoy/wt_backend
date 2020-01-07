@@ -1,0 +1,22 @@
+const exerciseSchema = `
+  extend type Query {
+    "Get a list of exercises"
+    exercises: [Exercise]
+  }
+
+  
+  "Object parameter for fetching exercises"
+  type Exercise {
+    id: ID!
+    video: String
+    difficulty: String
+    picture_one: String
+    picture_two: String
+    exercise_ratings: String
+    equipment: String
+    type: String
+    muscle: String
+    exercise_name: String
+  }
+`;
+module.exports = exerciseSchema;
