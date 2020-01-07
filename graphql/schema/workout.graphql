@@ -1,0 +1,19 @@
+const workoutSchema = `
+  extend type Query {
+      workouts(input: Filter!): [Workout!]!
+  }
+
+  input Filter {
+      search: String
+  }
+
+  type Workout {
+    id: ID!
+    userId: String
+    name: String
+    description: String
+    intensity: String
+    type: String
+  }
+`;
+module.exports = workoutSchema;
