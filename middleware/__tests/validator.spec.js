@@ -31,4 +31,17 @@ describe('Validator  middleware', () => {
     }).toThrow(UserInputError);
     done();
   });
+  it('Password should be at least 8 characters', async (done) => {
+    const arg = {
+      input: {
+        email: 'email@gmail.com',
+        password: 'Scret=1',
+        rePassword: 'Scret=1'
+      }
+    };
+    expect(() => {
+      Validator.Mutation.addUser(() => true, null, arg, null);
+    }).toThrow(UserInputError);
+    done();
+  });
 });
