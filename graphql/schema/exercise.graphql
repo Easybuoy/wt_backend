@@ -10,13 +10,13 @@ const exerciseSchema = `
     id: ID!
     video: String
     difficulty: String
-    picture_one: String
-    picture_two: String
-    exercise_ratings: String
+    pictureOne: String
+    pictureTwo: String
+    exerciseRatings: String
     equipment: String
     type: String
     muscle: String
-    exercise_name: String
+    exerciseName: String
   }
 `;
 module.exports = exerciseSchema;

@@ -11,13 +11,13 @@ const ExerciseSchema = new Schema({
   difficulty: {
     type: String
   },
-  picture_one: {
+  pictureOne: {
     type: String
   },
-  picture_two: {
+  pictureTwo: {
     type: String
   },
-  exercise_ratings: {
+  exerciseRatings: {
     type: String
   },
   equipment: {
@@ -29,7 +29,7 @@ const ExerciseSchema = new Schema({
   muscle: {
     type: String
   },
-  exercise_name: {
+  exerciseName: {
     type: String
   }
 });
