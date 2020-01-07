@@ -51,7 +51,21 @@ module.exports = async (onEnd = false) => {
   await Unit.create(units);
 
   console.log('Seeding exercises collection...');
-  await Exercise.create(exercises);
+  await Exercise.create(
+    exercises.map((exercise) => {
+      const exerciseCopy = { ...exercise };
+      [
+        ['picture_one', 'pictureOne'],
+        ['picture_two', 'pictureTwo'],
+        ['exercise_ratings', 'rating'],
+        ['exercise_name', 'name'],
+      ].forEach(([oldField, newField]) => {
+        delete exerciseCopy[oldField];
+        exerciseCopy[newField] = exercise[oldField];
+      });
+      return exerciseCopy;
+    })
+  );
 
   console.log('Successfully seeded the database!');
   return onEnd ? onEnd() : true;

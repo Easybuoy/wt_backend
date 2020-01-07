@@ -6,7 +6,8 @@ const { Schema } = mongoose;
 
 const ExerciseSchema = new Schema({
   video: {
-    type: String
+    type: String,
+    unique: true
   },
   difficulty: {
     type: String
@@ -17,7 +18,7 @@ const ExerciseSchema = new Schema({
   pictureTwo: {
     type: String
   },
-  exerciseRatings: {
+  rating: {
     type: String
   },
   equipment: {
@@ -29,8 +30,9 @@ const ExerciseSchema = new Schema({
   muscle: {
     type: String
   },
-  exerciseName: {
-    type: String
+  name: {
+    type: String,
+    unique: true
   }
 });
 

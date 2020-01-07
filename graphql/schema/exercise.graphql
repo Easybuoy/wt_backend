@@ -1,7 +1,10 @@
 const exerciseSchema = `
   extend type Query {
     "Get a list of exercises"
-    exercises: [Exercise]
+    exercises: [Exercise!]!
+
+    "Get a specific of exercise"
+    exercise(id: String!): Exercise!
   }
 
   
@@ -12,11 +15,11 @@ const exerciseSchema = `
     difficulty: String
     pictureOne: String
     pictureTwo: String
-    exerciseRatings: String
+    rating: String
     equipment: String
     type: String
     muscle: String
-    exerciseName: String
+    name: String
   }
 `;
 module.exports = exerciseSchema;
