@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const { dropAllCollections } = require('./helpers');
+const { removeAllCollections } = require('./helpers');
 const connect = require('../api/database');
 const { isProduction } = require('../config');
 const User = require('../models/user');
@@ -9,8 +9,8 @@ const Exercise = require('../models/exercise');
 module.exports = async (onEnd = false) => {
   console.log('Connecting to database...');
   await connect;
-  console.log('Dropping all collections...');
-  await dropAllCollections(isProduction ? ['users'] : []);
+  console.log('Clearing data from all collections...');
+  await removeAllCollections(isProduction ? ['users'] : []);
 
   const users = [
     {
