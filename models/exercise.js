@@ -18,7 +18,7 @@ const ExerciseSchema = new Schema({
     type: String
   },
   exercise_ratings: {
-    type: Number
+    type: String
   },
   equipment: {
     type: String
