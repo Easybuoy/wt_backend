@@ -4,12 +4,13 @@ const connect = require('../api/database');
 const { isProduction } = require('../config');
 const User = require('../models/user');
 const Unit = require('../models/unit');
+const Exercise = require('../models/exercise');
 
 module.exports = async (onEnd = false) => {
   console.log('Connecting to database...');
   await connect;
   console.log('Dropping all collections...');
-  await dropAllCollections((isProduction ? ['users'] : []));
+  await dropAllCollections(isProduction ? ['users'] : []);
 
   const users = [
     {
@@ -29,15 +30,18 @@ module.exports = async (onEnd = false) => {
       lastname: 'User 3',
       email: 'test@user3.com',
       password: 'testUser3!'
-    },
+    }
   ];
 
   const units = [
     { name: 'kg', type: 'weight' },
     { name: 'pounds', type: 'weight' },
     { name: 'inches', type: 'height' },
-    { name: 'centimetres', type: 'height' },
+    { name: 'centimetres', type: 'height' }
   ];
+
+  // eslint-disable-next-line global-require
+  const exercises = require('./exercise');
 
   if (!isProduction) {
     console.log('Seeding users collection...');
@@ -45,6 +49,9 @@ module.exports = async (onEnd = false) => {
   }
   console.log('Seeding units collection...');
   await Unit.create(units);
+
+  console.log('Seeding exercises collection...');
+  await Exercise.create(exercises);
 
   console.log('Successfully seeded the database!');
   return onEnd ? onEnd() : true;
