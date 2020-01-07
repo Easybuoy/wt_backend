@@ -9,13 +9,13 @@ const getExercise = async (row) => {
 
 async function exerciseDataLoader(workoutIds) {
   const workoutsExercises = await WorkoutExercise.find({ workoutId: { $in: workoutIds } });
-  const exercises = workoutsExercises.reduce((response, row) => {
+  return workoutsExercises.reduce(async (response, row) => {
+    const res = await response;
     const workoutIndex = workoutIds.indexOf(row.workoutId.toString());
-    if (typeof response[workoutIndex] === 'undefined') response.push([]);
-    response[workoutIndex].push(getExercise(row));
-    return response;
-  }, []);
-  return Promise.all(exercises);
+    if (typeof res[workoutIndex] === 'undefined') res.push([]);
+    res[workoutIndex].push(await getExercise(row));
+    return res;
+  }, Promise.resolve([]));
 }
 
 function createExerciseDL(context) {
