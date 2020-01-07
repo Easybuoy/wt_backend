@@ -18,4 +18,17 @@ describe('Validator  middleware', () => {
     }).toThrow(UserInputError);
     done();
   });
+  it('Should detect password does not match', async (done) => {
+    const arg = {
+      input: {
+        email: 'email@gmail.com',
+        password: 'Secret=123',
+        rePassword: 'Scret=123'
+      }
+    };
+    expect(() => {
+      Validator.Mutation.addUser(() => true, null, arg, null);
+    }).toThrow(UserInputError);
+    done();
+  });
 });
