@@ -20,6 +20,7 @@ const exerciseSchema = `
     type: String
     muscle: String
     name: String
+    time: Float
   }
 `;
 module.exports = exerciseSchema;

@@ -16,6 +16,9 @@ const WorkoutSchema = new Schema({
   description: {
     type: String,
   },
+  picture: {
+    type: String
+  },
   intensity: {
     type: String,
   },
