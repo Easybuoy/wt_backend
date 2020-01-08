@@ -1,10 +1,11 @@
 const Workout = require('../../models/workout');
+const { searchBy } = require('../../helpers/helpers');
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 
 module.exports = {
   Query: {
-    workouts: async () => {
-      const workouts = await Workout.find();
+    workouts: async (_, { input }) => {
+      const workouts = await Workout.find(searchBy(input));
       return workouts;
     },
     workout: async (_, { id }) => {

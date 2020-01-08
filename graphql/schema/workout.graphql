@@ -4,10 +4,6 @@ const workoutSchema = `
     workout(id: String!): Workout!
   }
 
-  input Filter {
-    search: String
-  }
-
   type Workout {
     id: ID!
     userId: String
