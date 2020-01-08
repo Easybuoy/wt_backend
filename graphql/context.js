@@ -14,7 +14,7 @@ module.exports = async (args) => {
       if (decodedToken && decodedToken.id) {
         user = await User.findById(decodedToken.id);
         if (user && user.id) {
-          user = { ...user._doc, _id: user.id };
+          user = { ...user._doc, id: user.id };
         } else throw new Error('User does not exist!');
       } else throw new Error('Invalid token!');
     } catch (err) {
