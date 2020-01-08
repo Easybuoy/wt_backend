@@ -2,20 +2,26 @@ const DataLoader = require('dataloader');
 const Exercise = require('../../models/exercise');
 const WorkoutExercise = require('../../models/workoutExercise');
 
-const getExercise = async (row) => {
-  const exercise = await Exercise.findById(row.exerciseId.toString());
-  return { ...exercise._doc, id: exercise.id, time: row.time };
+const getExercises = async (exerciseIds) => {
+  const exercises = await Exercise.find({ _id: { $in: exerciseIds } });
+  return exercises.reduce((list, exercise) => {
+    const exercisesList = list;
+    exercisesList[exercise.id.toString()] = { ...exercise._doc, id: exercise.id };
+    return exercisesList;
+  }, {});
 };
 
 async function exerciseDataLoader(workoutIds) {
   const workoutsExercises = await WorkoutExercise.find({ workoutId: { $in: workoutIds } });
-  return workoutsExercises.reduce(async (response, row) => {
-    const res = await response;
-    const workoutIndex = workoutIds.indexOf(row.workoutId.toString());
-    if (typeof res[workoutIndex] === 'undefined') res.push([]);
-    res[workoutIndex].push(await getExercise(row));
-    return res;
-  }, Promise.resolve([]));
+  const exerciseIds = workoutsExercises.map((workoutEx) => workoutEx.exerciseId.toString());
+  const exercises = await getExercises(exerciseIds);
+  return workoutsExercises.reduce((response, workoutEx) => {
+    const workoutIndex = workoutIds.indexOf(workoutEx.workoutId.toString());
+    if (typeof response[workoutIndex] === 'undefined') response.push([]);
+    const exercise = exercises[workoutEx.exerciseId.toString()];
+    response[workoutIndex].push({ ...exercise, time: workoutEx.time });
+    return response;
+  }, []);
 }
 
 function createExerciseDL(context) {
