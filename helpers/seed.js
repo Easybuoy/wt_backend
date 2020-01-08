@@ -53,6 +53,14 @@ module.exports = async (onEnd = false) => {
       picture: 'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-4-700xh.jpg',
       intensity: '',
       type: '',
+    },
+    {
+      userId: null,
+      name: 'Full-Body Circuit',
+      description: 'This workout will get you moving in multiple directions. It\'s not about focusing on one body part, it\'s about getting everything moving and working together to burn calories while building up strength endurance.',
+      picture: 'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-2-700xh.jpg',
+      intensity: '',
+      type: '',
     }
   ];
 
