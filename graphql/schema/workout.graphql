@@ -1,10 +1,11 @@
 const workoutSchema = `
   extend type Query {
-      workouts(input: Filter!): [Workout!]!
+    workouts(input: Filter!): [Workout!]!
+    workout(id: String!): Workout!
   }
 
   input Filter {
-      search: String
+    search: String
   }
 
   type Workout {
@@ -14,6 +15,20 @@ const workoutSchema = `
     description: String
     intensity: String
     type: String
+    exercises: [Exercise!]!
+    avgTime: String
+    equipment: String
+    muscles: String
+    session: WorkoutSession!
   }
+
+  type WorkoutSession {
+    userId: String!
+    workoutId: String!
+    startDate: String
+    endDate: String
+    pause: Boolean
+  }
+
 `;
 module.exports = workoutSchema;

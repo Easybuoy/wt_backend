@@ -1,5 +1,5 @@
 const { UserInputError } = require('apollo-server-express');
-const { initTest, query } = require('../../helpers/tests');
+const { initTest } = require('../../helpers/tests');
 const Validator = require('../validator');
 
 initTest();
