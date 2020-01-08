@@ -7,7 +7,6 @@ const { Schema } = mongoose;
 const ExerciseSchema = new Schema({
   video: {
     type: String,
-    unique: true
   },
   difficulty: {
     type: String
