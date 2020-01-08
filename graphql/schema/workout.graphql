@@ -1,7 +1,11 @@
 const workoutSchema = `
   extend type Query {
-    workouts(input: Filter!): [Workout!]!
-    workout(id: String!): Workout!
+    workouts(input: Filter): [Workout!]!
+    workout(id: String!): Workout! 
+  }
+  
+  extend type Mutation {
+    workoutSession(input: WorkoutSessionInput!): WorkoutSession!
   }
 
   type Workout {
@@ -15,15 +19,22 @@ const workoutSchema = `
     avgTime: String
     equipment: String
     muscles: String
-    session: WorkoutSession!
+    session: WorkoutSession
   }
 
   type WorkoutSession {
+    userId: String
+    workoutId: String
+    startDate: Float
+    endDate: Float
+    pause: Boolean
+  }
+
+  input WorkoutSessionInput {
     userId: String!
     workoutId: String!
-    startDate: String
-    endDate: String
     pause: Boolean
+    end: Boolean
   }
 
 `;

@@ -1,4 +1,5 @@
 const Workout = require('../../models/workout');
+const WorkoutSession = require('../../models/workoutSession');
 const { searchBy } = require('../../helpers/helpers');
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 
@@ -11,10 +12,45 @@ module.exports = {
     workout: async (_, { id }) => {
       const workout = await Workout.findById(id);
       return { ...workout._doc, id: workout.id };
-    }
+    },
   },
   Mutation: {
-
+    workoutSession: async (_, { input }) => {
+      const {
+        userId, workoutId, pause, end
+      } = input;
+      let workoutSession = await WorkoutSession.findOne({ userId, workoutId });
+      if (typeof pause === 'undefined' && typeof end === 'undefined') {
+        // start session
+        if (workoutSession === null) {
+          workoutSession = new WorkoutSession({
+            userId,
+            workoutId,
+            startDate: Date.now(),
+            pause: false,
+            endDate: null,
+          });
+          workoutSession = await workoutSession.save();
+        }
+      } else if (typeof end === 'undefined') {
+        // pause session
+        if (workoutSession._doc.pause !== pause) {
+          workoutSession = await WorkoutSession.findOneAndUpdate(
+            { userId, workoutId },
+            { pause },
+            { new: true }
+          );
+        }
+      } else if (workoutSession._doc.endDate === null) {
+        // end session
+        workoutSession = await WorkoutSession.findOneAndUpdate(
+          { userId, workoutId },
+          { pause: true, endDate: Date.now() },
+          { new: true }
+        );
+      }
+      return { ...workoutSession._doc, id: workoutSession.id };
+    }
   },
   Workout: {
     exercises: (workout, args, context) => ExerciseDataLoader(context).load(workout.id),
@@ -46,5 +82,14 @@ module.exports = {
         });
       return muscles.join(', ');
     },
+    session: async (workout, args, context) => {
+      const userId = context.user.id;
+      const workoutId = workout.id;
+      const workoutSession = await WorkoutSession.findOne({ userId, workoutId });
+      if (workoutSession !== null) {
+        return { ...workoutSession._doc, id: workoutSession.id };
+      }
+      return null;
+    }
   }
 };
