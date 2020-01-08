@@ -15,13 +15,13 @@ async function exerciseDataLoader(workoutIds) {
   const workoutsExercises = await WorkoutExercise.find({ workoutId: { $in: workoutIds } });
   const exerciseIds = workoutsExercises.map((workoutEx) => workoutEx.exerciseId.toString());
   const exercises = await getExercises(exerciseIds);
-  return workoutsExercises.reduce((response, workoutEx) => {
-    const workoutIndex = workoutIds.indexOf(workoutEx.workoutId.toString());
-    if (typeof response[workoutIndex] === 'undefined') response.push([]);
-    const exercise = exercises[workoutEx.exerciseId.toString()];
-    response[workoutIndex].push({ ...exercise, time: workoutEx.time });
-    return response;
-  }, []);
+  return workoutIds.map((workoutId) => workoutsExercises.map((workoutEx) => {
+    if (workoutEx.workoutId.toString() === workoutId) {
+      const exercise = exercises[workoutEx.exerciseId.toString()];
+      return { ...exercise, time: workoutEx.time };
+    }
+    return false;
+  }).filter((exercise) => exercise !== false));
 }
 
 function createExerciseDL(context) {

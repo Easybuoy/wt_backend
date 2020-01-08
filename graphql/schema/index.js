@@ -11,6 +11,12 @@ const rootSchema = gql`
   type Mutation {
     _: Boolean
   }
+
+  input Filter {
+    search: String!
+    field: [String!]!
+  }
+
   ${authSchema}
   ${unitSchema}
   ${exerciseSchema}
