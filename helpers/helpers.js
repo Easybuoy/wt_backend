@@ -9,5 +9,20 @@ module.exports = {
         if (isProduction && excludeCollections.includes(colname)) return false;
         return mongoose.connection.collections[colname].deleteMany();
       }));
+  },
+  searchBy: (input) => {
+    let filter = null;
+    if (input && input.search && input.field.length) {
+      filter = { $or: [] };
+      input.field.forEach((field) => {
+        filter.$or.push({
+          [field]: {
+            $regex: input.search,
+            $options: 'gi'
+          }
+        });
+      });
+    }
+    return filter;
   }
 };
