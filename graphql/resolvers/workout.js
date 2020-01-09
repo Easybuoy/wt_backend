@@ -1,5 +1,7 @@
+const fs = require('fs');
 const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
+const cloudinary = require('../../helpers/cloudinary');
 const { searchBy } = require('../../helpers/helpers');
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 
@@ -51,6 +53,21 @@ module.exports = {
         );
       }
       return workoutSession ? { ...workoutSession._doc, id: workoutSession.id } : null;
+    },
+    updateCompletedWorkout: async (_, { input }, context) => {
+      const { files } = context.req;
+      const { sessionId } = input;
+      const imageUrls = files.map(async ({ path }) => {
+        const newPath = await cloudinary(path);
+        fs.unlinkSync(path);
+        return newPath;
+      });
+      const completedWorkoutSession = await WorkoutSession.findOneAndUpdate(
+        { _id: sessionId },
+        { picture: imageUrls.pop() },
+        { new: true }
+      );
+      return completedWorkoutSession;
     }
   },
   Workout: {
@@ -97,7 +114,7 @@ module.exports = {
       const types = [];
       workoutExercises
         .forEach((exercise) => {
-          if (exercise.type && !types.includes(exercise.muscle)) {
+          if (exercise.type && !types.includes(exercise.type)) {
             types.push(exercise.type);
           }
         });
