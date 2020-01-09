@@ -8,7 +8,6 @@ const resolvers = require('../graphql/resolvers');
 const context = require('../graphql/context');
 const validators = require('../middleware/validator');
 const permissions = require('../middleware/shield');
-const multer = require('../middleware/multer');
 const { graphiql } = require('../config');
 
 const app = express();
@@ -22,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
-const schemaWithMiddleware = applyMiddleware(schema, validators, permissions, multer.array('image'));
+const schemaWithMiddleware = applyMiddleware(schema, validators, permissions);
 const apolloServer = new ApolloServer({
   schema: schemaWithMiddleware,
   context,

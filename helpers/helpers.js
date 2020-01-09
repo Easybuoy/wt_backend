@@ -7,7 +7,13 @@ module.exports = {
     await Promise.all(collections
       .map((colname) => {
         if (isProduction && excludeCollections.includes(colname)) return false;
-        return mongoose.connection.collections[colname].drop();
+        try {
+          mongoose.connection.collections[colname].drop();
+          return true;
+        } catch (err) {
+          if (err.message.includes('ns not found')) return false;
+          throw new Error(err.message);
+        }
       }));
   },
   searchBy: (input) => {

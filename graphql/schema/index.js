@@ -7,6 +7,12 @@ const workoutSchema = require('./workout.graphql');
 const rootSchema = gql`
   scalar Upload
   
+  type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+  }
+
   type Query {
     _: Boolean
   }

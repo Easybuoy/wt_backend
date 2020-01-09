@@ -1,8 +1,8 @@
-const fs = require('fs');
+const { GraphQLUpload } = require('graphql-upload');
 const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
-const cloudinary = require('../../helpers/cloudinary');
 const { searchBy } = require('../../helpers/helpers');
+
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 
 module.exports = {
@@ -54,20 +54,13 @@ module.exports = {
       }
       return workoutSession ? { ...workoutSession._doc, id: workoutSession.id } : null;
     },
-    updateCompletedWorkout: async (_, { input }, context) => {
-      const { files } = context.req;
-      const { sessionId } = input;
-      const imageUrls = files.map(async ({ path }) => {
-        const newPath = await cloudinary(path);
-        fs.unlinkSync(path);
-        return newPath;
-      });
-      const completedWorkoutSession = await WorkoutSession.findOneAndUpdate(
-        { _id: sessionId },
-        { picture: imageUrls.pop() },
-        { new: true }
-      );
-      return completedWorkoutSession;
+    updateCompletedWorkout: async (_, { file }) => {
+      console.log('updateCompletedWorkout:', file);
+      return {
+        filename: file.filename,
+        mimetype: file.mimetype,
+        encoding: file.encoding,
+      };
     }
   },
   Workout: {
@@ -120,5 +113,6 @@ module.exports = {
         });
       return types.join(', ');
     },
-  }
+  },
+  Upload: GraphQLUpload,
 };
