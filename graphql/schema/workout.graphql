@@ -15,11 +15,11 @@ const workoutSchema = `
     name: String
     description: String
     intensity: String
-    type: String
     exercises: [Exercise!]!
     avgTime: String
     equipment: String
     muscles: String
+    types: String
     session: WorkoutSession
   }
 

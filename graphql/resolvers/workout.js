@@ -91,6 +91,17 @@ module.exports = {
         return { ...workoutSession._doc, id: workoutSession.id };
       }
       return null;
-    }
+    },
+    types: async (workout, args, context) => {
+      const workoutExercises = await ExerciseDataLoader(context).load(workout.id);
+      const types = [];
+      workoutExercises
+        .forEach((exercise) => {
+          if (exercise.type && !types.includes(exercise.muscle)) {
+            types.push(exercise.type);
+          }
+        });
+      return types.join(', ');
+    },
   }
 };
