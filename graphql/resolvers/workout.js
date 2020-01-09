@@ -5,17 +5,15 @@ const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercis
 
 module.exports = {
   Query: {
-    workouts: async (_, { input }, context) => {
-      let workouts = await Workout.find(searchBy(input));
+    workouts: async (_, { input }) => {
+      const workouts = await Workout.find(searchBy(input));
       return workouts;
     },
     workout: async (_, { id }) => {
       const workout = await Workout.findById(id);
       return { ...workout._doc, id: workout.id };
     },
-    completedWorkouts: async (_, args, context) => {
-      return WorkoutSession.find({ userId: context.user.id, endDate: {$ne: null} }).sort({ endDate: -1 }).populate('workoutId')
-    },
+    completedWorkouts: async (_, args, context) => WorkoutSession.find({ userId: context.user.id, endDate: { $ne: null } }).sort({ endDate: -1 }).populate('workoutId'),
   },
   Mutation: {
     workoutSession: async (_, { input }) => {
