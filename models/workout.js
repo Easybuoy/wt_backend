@@ -21,9 +21,6 @@ const WorkoutSchema = new Schema({
   },
   intensity: {
     type: String,
-  },
-  type: {
-    type: String,
   }
 });
 
