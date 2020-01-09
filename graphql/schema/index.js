@@ -5,6 +5,8 @@ const exerciseSchema = require('./exercise.graphql');
 const workoutSchema = require('./workout.graphql');
 
 const rootSchema = gql`
+  scalar Upload
+  
   type Query {
     _: Boolean
   }
