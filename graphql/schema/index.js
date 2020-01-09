@@ -14,7 +14,7 @@ const rootSchema = gql`
 
   input Filter {
     search: String!
-    field: [String!]!
+    fields: [String!]!
   }
 
   ${authSchema}
