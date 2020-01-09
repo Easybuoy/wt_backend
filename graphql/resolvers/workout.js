@@ -4,6 +4,7 @@ const WorkoutSession = require('../../models/workoutSession');
 const { searchBy } = require('../../helpers/helpers');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
+const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
 
 module.exports = {
   Query: {
