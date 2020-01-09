@@ -12,9 +12,9 @@ module.exports = {
   },
   searchBy: (input) => {
     let filter = null;
-    if (input && input.search && input.field.length) {
+    if (input && input.search && input.fields.length) {
       filter = { $or: [] };
-      input.field.forEach((field) => {
+      input.fields.forEach((field) => {
         filter.$or.push({
           [field]: {
             $regex: input.search,
