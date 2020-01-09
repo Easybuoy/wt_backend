@@ -7,7 +7,7 @@ module.exports = {
     await Promise.all(collections
       .map((colname) => {
         if (isProduction && excludeCollections.includes(colname)) return false;
-        return mongoose.connection.collections[colname].deleteMany();
+        return mongoose.connection.collections[colname].drop();
       }));
   },
   searchBy: (input) => {

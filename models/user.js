@@ -67,7 +67,7 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.methods.generateJWT = function (remember = false) {
-  return jwt.sign({ id: this._id }, jwtSecret, (!remember ? { expiresIn: '1h' } : null));
+  return jwt.sign({ id: this._id, firstname: this.firstname }, jwtSecret, (!remember ? { expiresIn: '1h' } : null));
 };
 
 UserSchema.methods.validPassword = async function (password) {

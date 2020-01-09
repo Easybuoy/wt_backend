@@ -5,6 +5,13 @@ mongoose.promise = global.Promise;
 const { Schema } = mongoose;
 
 const ExerciseSchema = new Schema({
+  name: {
+    type: String,
+    unique: true
+  },
+  description: {
+    type: String,
+  },
   video: {
     type: String,
   },
@@ -28,10 +35,6 @@ const ExerciseSchema = new Schema({
   },
   muscle: {
     type: String
-  },
-  name: {
-    type: String,
-    unique: true
   }
 });
 
