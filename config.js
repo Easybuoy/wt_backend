@@ -11,6 +11,9 @@ const {
   GOOGLE_APP_ID,
   GOOGLE_APP_SECRET,
   GRAPHIQL_PLAYGROUND,
+  CLOUD_NAME,
+  CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET
 } = process.env;
 
 module.exports = {
@@ -26,4 +29,7 @@ module.exports = {
   googleAppId: GOOGLE_APP_ID,
   googleAppSecret: GOOGLE_APP_SECRET,
   graphiql: GRAPHIQL_PLAYGROUND,
+  cloudName: CLOUD_NAME,
+  cloudinaryApiKey: CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: CLOUDINARY_API_SECRET,
 };
