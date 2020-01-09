@@ -11,16 +11,14 @@ async function workoutSessionDataLoader(workoutSessionIds) {
     workoutId: { $in: workoutIds },
     endDate: null
   });
-  return workoutSessionIds.map((workoutSession) => {
-    return possibleSessions.find((session) => {
-      if (session.userId.toString() === workoutSession.userId) {
-        if (session.workoutId.toString() === workoutSession.workoutId) {
-          return true
-        }
+  return workoutSessionIds.map((workoutSession) => possibleSessions.find((session) => {
+    if (session.userId.toString() === workoutSession.userId) {
+      if (session.workoutId.toString() === workoutSession.workoutId) {
+        return true;
       }
-      return false
-    })
-  });
+    }
+    return false;
+  }));
 }
 
 function createWorkoutSessionDL(context) {
