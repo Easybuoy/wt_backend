@@ -7,19 +7,18 @@ const Unit = require('../models/unit');
 const Exercise = require('../models/exercise');
 const Workout = require('../models/workout');
 const WorkoutExercise = require('../models/workoutExercise');
+const WorkoutSessions = require('../models/workoutSession');
 
 const exerciseTimeByWorkoutIntensity = (intensity) => {
   if (intensity === 'Low') return 20;
   if (intensity === 'Moderate') return 30;
   return 40; // high
 };
-
 module.exports = async (onEnd = false) => {
   console.log('Connecting to database...');
   await connect;
   console.log('Clearing data from all collections...');
   await removeAllCollections(isProduction ? ['users'] : []);
-
   const usersData = [
     {
       firstname: 'Test',
@@ -40,17 +39,14 @@ module.exports = async (onEnd = false) => {
       password: 'testUser3!'
     }
   ];
-
   const unitsData = [
     { name: 'kg', type: 'weight' },
     { name: 'pounds', type: 'weight' },
     { name: 'inches', type: 'height' },
     { name: 'centimetres', type: 'height' }
   ];
-
   // eslint-disable-next-line global-require
   const exercisesData = require('./exercise');
-
   const workoutsData = [
     {
       userId: null,
@@ -88,7 +84,6 @@ module.exports = async (onEnd = false) => {
       intensity: 'Moderate',
     }
   ];
-
   try {
     if (!isProduction) {
       console.log('Seeding users collection...');
@@ -96,7 +91,6 @@ module.exports = async (onEnd = false) => {
     }
     console.log('Seeding units collection...');
     await Unit.create(unitsData);
-
     console.log('Seeding exercises collection...');
     const exercises = await Exercise.insertMany(
       exercisesData.map((exercise) => {
@@ -119,10 +113,8 @@ module.exports = async (onEnd = false) => {
         return exerciseCopy;
       })
     );
-
     console.log('Seeding workouts collection...');
     const workouts = await Workout.create(workoutsData);
-
     console.log('Seeding workout_exercises collection...');
     const workoutExercisesData = [
       {
@@ -202,6 +194,72 @@ module.exports = async (onEnd = false) => {
       }
     ];
     await WorkoutExercise.insertMany(workoutExercisesData);
+    const workoutSessionsData = [
+      {
+        userId: User[0].id,
+        workoutId: workouts[0].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[0].id,
+        workoutId: workouts[1].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[0].id,
+        workoutId: workouts[2].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[0].id,
+        workoutId: workouts[3].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[1].id,
+        workoutId: workouts[0].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[1].id,
+        workoutId: workouts[1].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[1].id,
+        workoutId: workouts[2].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[2].id,
+        workoutId: workouts[0].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: User[2].id,
+        workoutId: workouts[1].id,
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      }
+    ];
+    await WorkoutSessions.insertMany(workoutSessionsData);
   } catch (error) {
     throw new Error(error.message);
   }
