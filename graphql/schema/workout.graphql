@@ -28,6 +28,8 @@ const workoutSchema = `
   type WorkoutSession {
     userId: String
     workoutId: Workout
+    exerciseId: String
+    exerciseTimer: Float
     startDate: Float
     endDate: Float
     pause: Boolean
@@ -37,6 +39,8 @@ const workoutSchema = `
   input WorkoutSessionInput {
     userId: String!
     workoutId: String!
+    exerciseId: String!
+    exerciseTimer: Float!
     pause: Boolean
     end: Boolean
   }

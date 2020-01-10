@@ -22,7 +22,7 @@ module.exports = {
   Mutation: {
     workoutSession: async (_, { input }) => {
       const {
-        userId, workoutId, pause, end
+        userId, workoutId, exerciseId, exerciseTimer, pause, end
       } = input;
       let workoutSession = await WorkoutSession.findOne({ userId, workoutId, endDate: null });
       if (typeof pause === 'undefined' && typeof end === 'undefined') {
@@ -31,6 +31,8 @@ module.exports = {
           workoutSession = new WorkoutSession({
             userId,
             workoutId,
+            exerciseId,
+            exerciseTimer,
             startDate: Date.now(),
             pause: false,
             endDate: null,
@@ -42,7 +44,11 @@ module.exports = {
         if (workoutSession && workoutSession._doc.pause !== pause) {
           workoutSession = await WorkoutSession.findOneAndUpdate(
             { userId, workoutId, endDate: null },
-            { pause },
+            {
+              exerciseId,
+              exerciseTimer,
+              pause: true
+            },
             { new: true }
           );
         }
@@ -50,7 +56,12 @@ module.exports = {
         // end session
         workoutSession = await WorkoutSession.findOneAndUpdate(
           { userId, workoutId, endDate: null },
-          { pause: true, endDate: Date.now() },
+          {
+            exerciseId,
+            exerciseTimer,
+            pause: true,
+            endDate: Date.now()
+          },
           { new: true }
         );
       }
