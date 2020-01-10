@@ -210,7 +210,7 @@ module.exports = async (onEnd = false) => {
       {
         userId: users[0].id,
         workoutId: workouts[1].id,
-        exerciseId: exercises[0].id,
+        exerciseId: exercises[3].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
         startDate: Date.now(),
         endDate: Date.now() + 1,
@@ -219,7 +219,7 @@ module.exports = async (onEnd = false) => {
       {
         userId: users[0].id,
         workoutId: workouts[2].id,
-        exerciseId: exercises[0].id,
+        exerciseId: exercises[6].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[2].intensity),
         startDate: Date.now(),
         endDate: null,
@@ -228,7 +228,7 @@ module.exports = async (onEnd = false) => {
       {
         userId: users[0].id,
         workoutId: workouts[3].id,
-        exerciseId: exercises[0].id,
+        exerciseId: exercises[1].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[3].intensity),
         startDate: Date.now(),
         endDate: null,
@@ -246,7 +246,7 @@ module.exports = async (onEnd = false) => {
       {
         userId: users[1].id,
         workoutId: workouts[1].id,
-        exerciseId: exercises[0].id,
+        exerciseId: exercises[3].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
         startDate: Date.now(),
         endDate: null,
@@ -255,7 +255,7 @@ module.exports = async (onEnd = false) => {
       {
         userId: users[1].id,
         workoutId: workouts[2].id,
-        exerciseId: exercises[0].id,
+        exerciseId: exercises[6].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[2].intensity),
         startDate: Date.now(),
         endDate: null,
@@ -273,7 +273,7 @@ module.exports = async (onEnd = false) => {
       {
         userId: users[2].id,
         workoutId: workouts[1].id,
-        exerciseId: exercises[0].id,
+        exerciseId: exercises[3].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
         startDate: Date.now(),
         endDate: null,
