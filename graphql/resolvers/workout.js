@@ -57,7 +57,9 @@ module.exports = {
       return workoutSession ? { ...workoutSession._doc, id: workoutSession.id } : null;
     },
     updateCompletedWorkout: async (_, { input: { sessionId, file } }) => {
+      console.log('received:', sessionId, file);
       let image = await file;
+      console.log('await file before upload', image);
       const upload = new Promise((resolves, rejects) => {
         const { filename, mimetype, createReadStream } = image;
         let filesize = 0;
@@ -69,10 +71,12 @@ module.exports = {
         stream.on('error', rejects);
       });
       image = await upload;
+      console.log('await upload', image);
       const allowedFileTypes = ['image/jpeg', 'image/png'];
       if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
       if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
       image = await cloudinary(image);
+      console.log('await cloudinary', image);
       return WorkoutSession.findOneAndUpdate(
         { _id: sessionId },
         { picture: image.data.url },
