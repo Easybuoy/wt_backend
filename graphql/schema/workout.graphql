@@ -7,7 +7,7 @@ const workoutSchema = `
   
   extend type Mutation {
     workoutSession(input: WorkoutSessionInput!): WorkoutSession
-    updateCompletedWorkout(file: Upload): File
+    updateCompletedWorkout(input: UpdateCompletedWorkoutInput): File
   }
 
   type Workout {
@@ -16,6 +16,7 @@ const workoutSchema = `
     name: String
     description: String
     intensity: String
+    picture: String
     exercises: [Exercise!]!
     avgTime: String
     equipment: String
@@ -42,7 +43,7 @@ const workoutSchema = `
 
   input UpdateCompletedWorkoutInput {
     sessionId: String!
-    imageUrl: Upload
+    file: Upload
   }
 
 `;
