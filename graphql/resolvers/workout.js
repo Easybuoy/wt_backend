@@ -2,6 +2,7 @@ const { GraphQLUpload } = require('graphql-upload');
 const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
 const { searchBy } = require('../../helpers/helpers');
+const cloudinary = require('../../helpers/cloudinary');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
@@ -55,14 +56,29 @@ module.exports = {
       }
       return workoutSession ? { ...workoutSession._doc, id: workoutSession.id } : null;
     },
-    updateCompletedWorkout: async (_, { file }) => {
-      console.log('updateCompletedWorkout:', file);
-      return {
-        filename: file.filename,
-        mimetype: file.mimetype,
-        encoding: file.encoding,
-      };
-    }
+    updateCompletedWorkout: async (_, { input: { sessionId, file } }) => {
+      let image = await file;
+      const upload = new Promise((resolves, rejects) => {
+        const { filename, mimetype, createReadStream } = image;
+        let filesize = 0;
+        const stream = createReadStream();
+        stream.on('data', (chunk) => {
+          filesize += chunk.length;
+        });
+        stream.once('end', () => resolves({ filename, mimetype, filesize }));
+        stream.on('error', rejects);
+      });
+      image = await upload;
+      const allowedFileTypes = ['image/jpeg', 'image/png'];
+      if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
+      if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
+      image = await cloudinary(image);
+      return WorkoutSession.findOneAndUpdate(
+        { _id: sessionId },
+        { picture: image.data.url },
+        { new: true }
+      );
+    },
   },
   Workout: {
     exercises: (workout, args, context) => ExerciseDataLoader(context).load(workout.id),
@@ -116,4 +132,10 @@ module.exports = {
     },
   },
   Upload: GraphQLUpload,
+  WorkoutSession: {
+    workoutId: async (session) => {
+      const workout = await Workout.findById(session.workoutId);
+      return { ...workout._doc, id: workout.id };
+    }
+  }
 };
