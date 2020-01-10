@@ -85,9 +85,12 @@ module.exports = async (onEnd = false) => {
     }
   ];
   try {
+    let users;
     if (!isProduction) {
       console.log('Seeding users collection...');
-      await User.create(usersData);
+      users = await User.create(usersData);
+    } else {
+      users = await User.find();
     }
     console.log('Seeding units collection...');
     await Unit.create(unitsData);
@@ -196,63 +199,63 @@ module.exports = async (onEnd = false) => {
     await WorkoutExercise.insertMany(workoutExercisesData);
     const workoutSessionsData = [
       {
-        userId: User[0].id,
+        userId: users[0].id,
         workoutId: workouts[0].id,
         startDate: Date.now(),
-        endDate: null,
+        endDate: Date.now() + 1,
         pause: false
       },
       {
-        userId: User[0].id,
+        userId: users[0].id,
         workoutId: workouts[1].id,
         startDate: Date.now(),
-        endDate: null,
+        endDate: Date.now() + 1,
         pause: false
       },
       {
-        userId: User[0].id,
+        userId: users[0].id,
         workoutId: workouts[2].id,
         startDate: Date.now(),
         endDate: null,
         pause: false
       },
       {
-        userId: User[0].id,
+        userId: users[0].id,
         workoutId: workouts[3].id,
         startDate: Date.now(),
         endDate: null,
         pause: false
       },
       {
-        userId: User[1].id,
+        userId: users[1].id,
         workoutId: workouts[0].id,
         startDate: Date.now(),
         endDate: null,
         pause: false
       },
       {
-        userId: User[1].id,
+        userId: users[1].id,
         workoutId: workouts[1].id,
         startDate: Date.now(),
         endDate: null,
         pause: false
       },
       {
-        userId: User[1].id,
+        userId: users[1].id,
         workoutId: workouts[2].id,
         startDate: Date.now(),
         endDate: null,
         pause: false
       },
       {
-        userId: User[2].id,
+        userId: users[2].id,
         workoutId: workouts[0].id,
         startDate: Date.now(),
         endDate: null,
         pause: false
       },
       {
-        userId: User[2].id,
+        userId: users[2].id,
         workoutId: workouts[1].id,
         startDate: Date.now(),
         endDate: null,
@@ -260,8 +263,9 @@ module.exports = async (onEnd = false) => {
       }
     ];
     await WorkoutSessions.insertMany(workoutSessionsData);
-  } catch (error) {
-    throw new Error(error.message);
+  } catch (err) {
+    if (err.message.includes('ns not found')) return false;
+    throw new Error(err.message);
   }
   console.log('Successfully seeded the database!');
   return onEnd ? onEnd() : true;
