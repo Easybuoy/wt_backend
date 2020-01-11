@@ -15,10 +15,6 @@ const exerciseTimeByWorkoutIntensity = (intensity) => {
   return 40; // high
 };
 module.exports = async (onEnd = false) => {
-  console.log('Connecting to database...');
-  await connect;
-  console.log('Clearing data from all collections...');
-  await removeAllCollections(isProduction ? ['users'] : []);
   const usersData = [
     {
       firstname: 'Test',
@@ -85,6 +81,10 @@ module.exports = async (onEnd = false) => {
     }
   ];
   try {
+    console.log('Connecting to database...');
+    await connect;
+    console.log('Clearing data from all collections...');
+    await removeAllCollections(isProduction ? ['users'] : []);
     let users;
     if (!isProduction) {
       console.log('Seeding users collection...');
@@ -282,7 +282,9 @@ module.exports = async (onEnd = false) => {
     ];
     await WorkoutSessions.insertMany(workoutSessionsData);
   } catch (err) {
+    console.error(`SEEDERROR: ${err.message}`);
     if (err.message.includes('ns not found')) return false;
+    if (err.message.includes('a background operation is currently running')) return false;
     throw new Error(err.message);
   }
   console.log('Successfully seeded the database!');
