@@ -20,11 +20,11 @@ module.exports = {
     completedWorkouts: async (_, args, context) => WorkoutSession.find({ userId: context.user.id, endDate: { $ne: null } }).sort({ endDate: -1 }).populate('workoutId'),
   },
   Mutation: {
-    workoutSession: async (_, { input }) => {
+    workoutSession: async (_, { input }, context) => {
       const {
         userId, workoutId, exerciseId, exerciseTimer, pause, end
       } = input;
-      let workoutSession = await WorkoutSession.findOne({ userId, workoutId, endDate: null });
+      let workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
       if (typeof pause === 'undefined' && typeof end === 'undefined') {
         // start session
         if (workoutSession === null) {
@@ -36,14 +36,16 @@ module.exports = {
             startDate: Date.now(),
             pause: false,
             endDate: null,
+            picture: null
           });
           workoutSession = await workoutSession.save();
         }
       } else if (typeof end === 'undefined') {
         // pause session
         if (workoutSession && workoutSession._doc.pause !== pause) {
-          workoutSession = await WorkoutSession.findOneAndUpdate(
-            { userId, workoutId, endDate: null },
+          workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
+          workoutSession = await WorkoutSession.updateOne(
+            { _id: workoutSession.id },
             {
               exerciseId,
               exerciseTimer,
@@ -54,8 +56,9 @@ module.exports = {
         }
       } else if (workoutSession && workoutSession._doc.endDate === null) {
         // end session
-        workoutSession = await WorkoutSession.findOneAndUpdate(
-          { userId, workoutId, endDate: null },
+        workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
+        workoutSession = await WorkoutSession.updateOne(
+          { _id: workoutSession.id },
           {
             exerciseId,
             exerciseTimer,
@@ -137,10 +140,8 @@ module.exports = {
     session: async (workout, args, context) => {
       const userId = context.user.id;
       const workoutId = workout.id;
-      const workoutSession = await WorkoutSession.findOne({ userId, workoutId, endDate: null });
-      if (workoutSession !== null) {
-        return { ...workoutSession._doc, id: workoutSession.id };
-      }
+      const workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
+      if (workoutSession !== null) return { ...workoutSession._doc, id: workoutSession.id };
       return null;
     },
     types: async (workout, args, context) => {
