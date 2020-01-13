@@ -1,0 +1,15 @@
+const scheduleSchema = `
+  extend type Query {
+    userSchedule: [[Schedule!]!]!
+    
+  }
+  
+  type Schedule {
+    id: String
+    userId: String
+    workoutId: String
+    startDate: Float
+    routine: Boolean
+  }
+`;
+module.exports = scheduleSchema;
