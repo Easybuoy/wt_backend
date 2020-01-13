@@ -10,9 +10,12 @@ async function workoutSessionDataLoader(workoutSessionIds) {
     workoutId: { $in: workoutIds },
     endDate: null // very important filter
   });
-  return workoutSessionIds.map((ws) => allSessions.find(
-    (s) => s.userId.toString() === ws.userId && s.workoutId.toString() === ws.workoutId
-  ));
+  return workoutSessionIds.map((ws) => {
+    const session = allSessions.find(
+      (s) => s.userId.toString() === ws.userId && s.workoutId.toString() === ws.workoutId
+    );
+    return typeof session === 'undefined' ? null : session;
+  });
 }
 
 function createWorkoutSessionDL(context) {
