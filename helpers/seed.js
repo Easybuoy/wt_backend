@@ -7,19 +7,14 @@ const Unit = require('../models/unit');
 const Exercise = require('../models/exercise');
 const Workout = require('../models/workout');
 const WorkoutExercise = require('../models/workoutExercise');
+const WorkoutSessions = require('../models/workoutSession');
 
 const exerciseTimeByWorkoutIntensity = (intensity) => {
   if (intensity === 'Low') return 20;
   if (intensity === 'Moderate') return 30;
   return 40; // high
 };
-
 module.exports = async (onEnd = false) => {
-  console.log('Connecting to database...');
-  await connect;
-  console.log('Clearing data from all collections...');
-  await removeAllCollections(isProduction ? ['users'] : []);
-
   const usersData = [
     {
       firstname: 'Test',
@@ -40,17 +35,14 @@ module.exports = async (onEnd = false) => {
       password: 'testUser3!'
     }
   ];
-
   const unitsData = [
     { name: 'kg', type: 'weight' },
     { name: 'pounds', type: 'weight' },
     { name: 'inches', type: 'height' },
     { name: 'centimetres', type: 'height' }
   ];
-
   // eslint-disable-next-line global-require
   const exercisesData = require('./exercise');
-
   const workoutsData = [
     {
       userId: null,
@@ -88,15 +80,20 @@ module.exports = async (onEnd = false) => {
       intensity: 'Moderate',
     }
   ];
-
   try {
+    console.log('Connecting to database...');
+    await connect;
+    console.log('Clearing data from all collections...');
+    await removeAllCollections(isProduction ? ['users'] : []);
+    let users;
     if (!isProduction) {
       console.log('Seeding users collection...');
-      await User.create(usersData);
+      users = await User.create(usersData);
+    } else {
+      users = await User.find();
     }
     console.log('Seeding units collection...');
     await Unit.create(unitsData);
-
     console.log('Seeding exercises collection...');
     const exercises = await Exercise.insertMany(
       exercisesData.map((exercise) => {
@@ -119,10 +116,8 @@ module.exports = async (onEnd = false) => {
         return exerciseCopy;
       })
     );
-
     console.log('Seeding workouts collection...');
     const workouts = await Workout.create(workoutsData);
-
     console.log('Seeding workout_exercises collection...');
     const workoutExercisesData = [
       {
@@ -202,8 +197,95 @@ module.exports = async (onEnd = false) => {
       }
     ];
     await WorkoutExercise.insertMany(workoutExercisesData);
-  } catch (error) {
-    throw new Error(error.message);
+    const workoutSessionsData = [
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: Date.now(),
+        endDate: Date.now() + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[1].id,
+        exerciseId: exercises[3].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
+        startDate: Date.now(),
+        endDate: Date.now() + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[2].id,
+        exerciseId: exercises[6].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[2].intensity),
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[3].id,
+        exerciseId: exercises[1].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[3].intensity),
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: users[1].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: users[1].id,
+        workoutId: workouts[1].id,
+        exerciseId: exercises[3].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: users[1].id,
+        workoutId: workouts[2].id,
+        exerciseId: exercises[6].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[2].intensity),
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: users[2].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      },
+      {
+        userId: users[2].id,
+        workoutId: workouts[1].id,
+        exerciseId: exercises[3].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
+        startDate: Date.now(),
+        endDate: null,
+        pause: false
+      }
+    ];
+    await WorkoutSessions.insertMany(workoutSessionsData);
+  } catch (err) {
+    console.error(`SEEDERROR: ${err.message}`);
+    if (err.message.includes('ns not found')) return false;
+    if (err.message.includes('a background operation is currently running')) return false;
+    throw new Error(err.message);
   }
   console.log('Successfully seeded the database!');
   return onEnd ? onEnd() : true;

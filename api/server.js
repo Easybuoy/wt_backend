@@ -23,6 +23,9 @@ app.get('/', (req, res) => {
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const schemaWithMiddleware = applyMiddleware(schema, validators, permissions);
 const apolloServer = new ApolloServer({
+  cors: {
+    origin: '*',
+  },
   schema: schemaWithMiddleware,
   context,
   introspection: graphiql,

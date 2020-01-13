@@ -1,7 +1,11 @@
+const { GraphQLUpload } = require('graphql-upload');
 const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
 const { searchBy } = require('../../helpers/helpers');
+const cloudinary = require('../../helpers/cloudinary');
+
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
+const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
 
 module.exports = {
   Query: {
@@ -16,42 +20,92 @@ module.exports = {
     completedWorkouts: async (_, args, context) => WorkoutSession.find({ userId: context.user.id, endDate: { $ne: null } }).sort({ endDate: -1 }).populate('workoutId'),
   },
   Mutation: {
-    workoutSession: async (_, { input }) => {
+    workoutSession: async (_, { input }, context) => {
       const {
-        userId, workoutId, pause, end
+        userId, workoutId, exerciseId, exerciseTimer, pause, end
       } = input;
-      let workoutSession = await WorkoutSession.findOne({ userId, workoutId, endDate: null });
+      let workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
       if (typeof pause === 'undefined' && typeof end === 'undefined') {
         // start session
         if (workoutSession === null) {
           workoutSession = new WorkoutSession({
             userId,
             workoutId,
+            exerciseId,
+            exerciseTimer,
             startDate: Date.now(),
             pause: false,
             endDate: null,
+            picture: null
           });
           workoutSession = await workoutSession.save();
         }
       } else if (typeof end === 'undefined') {
         // pause session
         if (workoutSession && workoutSession._doc.pause !== pause) {
-          workoutSession = await WorkoutSession.findOneAndUpdate(
-            { userId, workoutId, endDate: null },
-            { pause },
+          workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
+          workoutSession = await WorkoutSession.updateOne(
+            { _id: workoutSession.id },
+            {
+              exerciseId,
+              exerciseTimer,
+              pause: true
+            },
             { new: true }
           );
         }
       } else if (workoutSession && workoutSession._doc.endDate === null) {
         // end session
-        workoutSession = await WorkoutSession.findOneAndUpdate(
-          { userId, workoutId, endDate: null },
-          { pause: true, endDate: Date.now() },
+        workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
+        workoutSession = await WorkoutSession.updateOne(
+          { _id: workoutSession.id },
+          {
+            exerciseId,
+            exerciseTimer,
+            pause: true,
+            endDate: Date.now()
+          },
           { new: true }
         );
       }
       return workoutSession ? { ...workoutSession._doc, id: workoutSession.id } : null;
-    }
+    },
+    updateCompletedWorkout: async (_, { input: { sessionId, file } }) => {
+      try {
+        console.log('received:', sessionId, file);
+        let image = await file;
+        console.log('await file before upload', image);
+        const upload = new Promise((resolves, rejects) => {
+          const { filename, mimetype, createReadStream } = image;
+          let filesize = 0;
+          const stream = createReadStream();
+          stream.on('data', (chunk) => {
+            filesize += chunk.length;
+          });
+          stream.once('end', () => resolves({
+            filename,
+            mimetype,
+            filesize,
+            path: stream.path
+          }));
+          stream.on('error', rejects);
+        });
+        image = await upload;
+        console.log('await upload', image);
+        const allowedFileTypes = ['image/jpeg', 'image/png'];
+        if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
+        if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
+        image = await cloudinary(image.path);
+        console.log('await cloudinary', image);
+        return WorkoutSession.findOneAndUpdate(
+          { _id: sessionId },
+          { picture: image.url },
+          { new: true }
+        );
+      } catch (err) {
+        throw new Error(err.message);
+      }
+    },
   },
   Workout: {
     exercises: (workout, args, context) => ExerciseDataLoader(context).load(workout.id),
@@ -86,10 +140,8 @@ module.exports = {
     session: async (workout, args, context) => {
       const userId = context.user.id;
       const workoutId = workout.id;
-      const workoutSession = await WorkoutSession.findOne({ userId, workoutId, endDate: null });
-      if (workoutSession !== null) {
-        return { ...workoutSession._doc, id: workoutSession.id };
-      }
+      const workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
+      if (workoutSession !== null) return { ...workoutSession._doc, id: workoutSession.id };
       return null;
     },
     types: async (workout, args, context) => {
@@ -97,11 +149,18 @@ module.exports = {
       const types = [];
       workoutExercises
         .forEach((exercise) => {
-          if (exercise.type && !types.includes(exercise.muscle)) {
+          if (exercise.type && !types.includes(exercise.type)) {
             types.push(exercise.type);
           }
         });
       return types.join(', ');
     },
+  },
+  Upload: GraphQLUpload,
+  WorkoutSession: {
+    workoutId: async (session) => {
+      const workout = await Workout.findById(session.workoutId);
+      return { ...workout._doc, id: workout.id };
+    }
   }
 };

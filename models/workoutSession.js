@@ -15,6 +15,15 @@ const WorkoutSessionSchema = new Schema({
     ref: 'Workout',
     required: true,
   },
+  exerciseId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Exercise',
+    default: null,
+  },
+  exerciseTimer: {
+    type: Number,
+    default: 0
+  },
   startDate: {
     type: Number,
   },
@@ -23,6 +32,9 @@ const WorkoutSessionSchema = new Schema({
   },
   pause: {
     type: Boolean,
+  },
+  picture: {
+    type: String
   }
 });
 

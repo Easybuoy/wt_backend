@@ -13,21 +13,29 @@
   * [Query](#query)
   * [Mutation](#mutation)
   * [Objects](#objects)
+    * [Exercise](#exercise)
+    * [File](#file)
     * [Unit](#unit)
     * [User](#user)
     * [UserAuthResponse](#userauthresponse)
     * [UserPlatform](#userplatform)
+    * [Workout](#workout)
+    * [WorkoutSession](#workoutsession)
   * [Inputs](#inputs)
+    * [Filter](#filter)
+    * [UpdateCompletedWorkoutInput](#updatecompletedworkoutinput)
     * [UserFormLoginInput](#userformlogininput)
     * [UserPlatformAuthInput](#userplatformauthinput)
     * [UserPlatformInput](#userplatforminput)
     * [UserSignupInput](#usersignupinput)
     * [UserUpdateInput](#userupdateinput)
+    * [WorkoutSessionInput](#workoutsessioninput)
   * [Scalars](#scalars)
     * [Boolean](#boolean)
     * [Float](#float)
     * [ID](#id)
     * [String](#string)
+    * [Upload](#upload)
 
 </details>
 
@@ -83,6 +91,59 @@ Get a specific Unit's data
 Get an array of Unit objects
 
 </td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exercises</strong></td>
+<td valign="top">[<a href="#exercise">Exercise</a>!]!</td>
+<td>
+
+Get a list of exercises
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#filter">Filter</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exercise</strong></td>
+<td valign="top"><a href="#exercise">Exercise</a>!</td>
+<td>
+
+Get a specific of exercise
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">id</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>workouts</strong></td>
+<td valign="top">[<a href="#workout">Workout</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#filter">Filter</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>workout</strong></td>
+<td valign="top"><a href="#workout">Workout</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">id</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>completedWorkouts</strong></td>
+<td valign="top">[<a href="#workoutsession">WorkoutSession</a>!]!</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -159,10 +220,132 @@ Login with Google account - Authenticates a user with a json web token
 <td valign="top"><a href="#userplatformauthinput">UserPlatformAuthInput</a>!</td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>workoutSession</strong></td>
+<td valign="top"><a href="#workoutsession">WorkoutSession</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#workoutsessioninput">WorkoutSessionInput</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateCompletedWorkout</strong></td>
+<td valign="top"><a href="#file">File</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">file</td>
+<td valign="top"><a href="#upload">Upload</a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
 ## Objects
+
+### Exercise
+
+Object parameter for fetching exercises
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>video</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>difficulty</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>pictureOne</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>pictureTwo</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>rating</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>equipment</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>type</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>muscle</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>name</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>time</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### File
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>filename</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>mimetype</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>encoding</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 ### Unit
 
@@ -361,7 +544,170 @@ Application user login platform
 </tbody>
 </table>
 
+### Workout
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>userId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>name</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>description</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>intensity</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exercises</strong></td>
+<td valign="top">[<a href="#exercise">Exercise</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>avgTime</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>equipment</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>muscles</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>types</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>session</strong></td>
+<td valign="top"><a href="#workoutsession">WorkoutSession</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### WorkoutSession
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>userId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>workoutId</strong></td>
+<td valign="top"><a href="#workout">Workout</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>startDate</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>endDate</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>pause</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>picture</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ## Inputs
+
+### Filter
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>search</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>fields</strong></td>
+<td valign="top">[<a href="#string">String</a>!]!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### UpdateCompletedWorkoutInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>sessionId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>imageUrl</strong></td>
+<td valign="top"><a href="#upload">Upload</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 ### UserFormLoginInput
 
@@ -566,6 +912,40 @@ Object parameter for updating user
 </tbody>
 </table>
 
+### WorkoutSessionInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>userId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>workoutId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>pause</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>end</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ## Scalars
 
 ### Boolean
@@ -583,6 +963,10 @@ The `ID` scalar type represents a unique identifier, often used to refetch an ob
 ### String
 
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+
+### Upload
+
+The `Upload` scalar type represents a file upload.
 
 
 <!-- END graphql-markdown -->
