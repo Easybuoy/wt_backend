@@ -55,6 +55,10 @@ const UserSchema = new Schema({
   },
   photo: {
     type: String
+  },
+  reminderType: {
+    type: String,
+    default: 'notification'
   }
 });
 
