@@ -4,7 +4,10 @@ const { isProduction } = require('../config');
 module.exports = {
   removeAllCollections: async (excludeCollections = []) => {
     let collections = await mongoose.connection.db.listCollections().toArray();
-    collections = collections.map((collection) => collection.name);
+    collections = collections.map((collection) => {
+      if (collection.name.includes('indexes')) return false;
+      return collections.name;
+    }).filter((name) => name !== false);
     await Promise.all(collections
       .map((colname) => {
         if (isProduction && excludeCollections.includes(colname)) return Promise.resolve();
