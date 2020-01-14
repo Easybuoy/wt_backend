@@ -1,7 +1,16 @@
 const scheduleSchema = `
   extend type Query {
     userSchedule: [[Schedule!]!]!
-    
+    suggestionsByExperience: [Workout!]!
+    notifications: [Notification!]!
+  }
+
+  extend type Mutation {
+    pushNotification(input: NotificationInput!): Notification!
+  }
+
+  extend type Subscription {
+    scheduledWorkoutAlert: Notification
   }
   
   type Schedule {
@@ -11,5 +20,6 @@ const scheduleSchema = `
     startDate: Float
     routine: Boolean
   }
+
 `;
 module.exports = scheduleSchema;

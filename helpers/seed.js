@@ -21,19 +21,22 @@ module.exports = async (onEnd = false) => {
       firstname: 'Test',
       lastname: 'User 1',
       email: 'test@user1.com',
-      password: 'testUser1!'
+      password: 'testUser1!',
+      experience: 'Beginner'
     },
     {
       firstname: 'Test',
       lastname: 'User 2',
       email: 'test@user2.com',
-      password: 'testUser2!'
+      password: 'testUser2!',
+      experience: 'Intermediate'
     },
     {
       firstname: 'Test',
       lastname: 'User 3',
       email: 'test@user3.com',
-      password: 'testUser3!'
+      password: 'testUser3!',
+      experience: 'Expert'
     }
   ];
   const unitsData = [
@@ -148,17 +151,17 @@ module.exports = async (onEnd = false) => {
       },
       {
         workoutId: workouts[1].id,
-        exerciseId: exercises[3].id,
+        exerciseId: exercises[6].id,
         time: exerciseTimeByWorkoutIntensity(workouts[1].intensity)
       },
       {
         workoutId: workouts[1].id,
-        exerciseId: exercises[4].id,
+        exerciseId: exercises[8].id,
         time: exerciseTimeByWorkoutIntensity(workouts[1].intensity)
       },
       {
         workoutId: workouts[1].id,
-        exerciseId: exercises[5].id,
+        exerciseId: exercises[9].id,
         time: exerciseTimeByWorkoutIntensity(workouts[1].intensity)
       },
       {
