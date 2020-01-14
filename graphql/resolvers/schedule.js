@@ -1,4 +1,12 @@
 const { PubSub } = require('apollo-server-express');
+const sendmail = require('sendmail')({
+  logger: {
+    debug: console.log,
+    info: console.info,
+    warn: console.warn,
+    error: console.error
+  },
+});
 const Schedule = require('../../models/schedule');
 const User = require('../../models/user');
 const Workout = require('../../models/workout');
@@ -12,6 +20,26 @@ const startOfWeek = () => {
   const today = new Date();
   const difference = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
   return new Date(today.setDate(difference)).getTime();
+};
+
+const sendNotification = (notification) => {
+  if (notification.topic.includes('Workout')) {
+    pubsub.publish(SCHEDULED_WORKOUTS, {
+      scheduledWorkoutAlert: { ...notification._doc, id: notification.id }
+    });
+  }
+};
+
+const sendEmail = (notification) => {
+  sendmail({
+    from: 'melquip7@gmail.com',
+    to: 'melquip7@gmail.com',
+    subject: notification.topic,
+    html: notification.message,
+  }, (err, reply) => {
+    console.log(err && err.stack);
+    console.dir(reply);
+  });
 };
 
 module.exports = {
@@ -52,13 +80,13 @@ module.exports = {
   },
   Mutation: {
     pushNotification: async (_, { input: { userId, message, topic } }) => {
+      const user = await User.findById(userId);
       let newNotification = new Notification({ userId, message, topic });
       newNotification = await newNotification.save();
-      if (topic.includes('Workout')) {
-        console.log(SCHEDULED_WORKOUTS);
-        pubsub.publish(SCHEDULED_WORKOUTS, {
-          scheduledWorkoutAlert: { ...newNotification._doc, id: newNotification.id }
-        });
+      if (user.reminderType === 'notification') {
+        sendNotification(newNotification);
+      } else {
+        sendEmail(newNotification);
       }
       return newNotification;
     }

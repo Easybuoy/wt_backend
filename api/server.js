@@ -28,7 +28,7 @@ const apolloServer = new ApolloServer({
   schema: schemaWithMiddleware,
   context,
   subscriptions: {
-    path: '/api',
+    path: '/api/subscriptions',
     onConnect: (connectionParams, webSocket) => {
       console.log('SUBS');
     }
@@ -38,13 +38,12 @@ const apolloServer = new ApolloServer({
 });
 
 apolloServer.applyMiddleware({ app, path: '/api' });
-apolloServer.installSubscriptionHandlers(app);
 
 connect.then(() => {
-  console.log('Successfully connected to the database!');
+  console.log('Database successfully connected!');
   app.listen(port, () => {
-    console.log(`ApolloServer connected to http://localhost:${port}${apolloServer.graphqlPath}`);
-    console.log(`Subscriptions connected to http://localhost:${port}${apolloServer.subscriptionsPath}`);
+    console.log(`ApolloServer successfully connected to http://localhost:${port}${apolloServer.graphqlPath}`);
+    console.log(`Subscriptions successfully connected to http://localhost:${port}${apolloServer.subscriptionsPath}`);
   });
 }).catch((err) => { throw err; });
 

@@ -32,6 +32,7 @@ const authSchema = `
     google: UserPlatform
     facebook: UserPlatform
     photo: String
+    reminderType: String
   }
 
   "Object parameter for updating user"
@@ -50,6 +51,7 @@ const authSchema = `
     google: UserPlatformInput
     facebook: UserPlatformInput
     photo: String
+    reminderType: String
   }
 
   "Application user login platform"
