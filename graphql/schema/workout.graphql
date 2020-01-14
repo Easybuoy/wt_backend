@@ -1,0 +1,55 @@
+const workoutSchema = `
+  extend type Query {
+    workouts(input: Filter): [Workout!]!
+    workout(id: String!): Workout!
+    completedWorkouts: [WorkoutSession!]!
+  }
+  
+  extend type Mutation {
+    workoutSession(input: WorkoutSessionInput!): WorkoutSession
+    updateCompletedWorkout(input: UpdateCompletedWorkoutInput!): WorkoutSession!
+  }
+
+  type Workout {
+    id: ID!
+    userId: String
+    name: String
+    description: String
+    intensity: String
+    picture: String
+    exercises: [Exercise!]!
+    avgTime: String
+    equipment: String
+    muscles: String
+    types: String
+    session: WorkoutSession
+  }
+
+  type WorkoutSession {
+    id: String
+    userId: String
+    workoutId: Workout
+    exerciseId: String
+    exerciseTimer: Float
+    startDate: Float
+    endDate: Float
+    pause: Boolean
+    picture: String
+  }
+
+  input WorkoutSessionInput {
+    userId: String!
+    workoutId: String!
+    exerciseId: String!
+    exerciseTimer: Float!
+    pause: Boolean
+    end: Boolean
+  }
+
+  input UpdateCompletedWorkoutInput {
+    sessionId: String!
+    file: Upload
+  }
+
+`;
+module.exports = workoutSchema;

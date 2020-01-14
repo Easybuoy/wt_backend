@@ -1,9 +1,13 @@
 const authResolver = require('./auth');
 const unitResolver = require('./unit');
+const workoutResolver = require('./workout');
+const exerciseResolver = require('./exercise');
 
 const rootResolver = [
   authResolver,
-  unitResolver
+  unitResolver,
+  workoutResolver,
+  exerciseResolver
 ].reduce((rootR, resolver) => {
   const finalResolver = rootR;
   Object.keys(resolver).forEach((key) => {

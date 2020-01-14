@@ -3,7 +3,7 @@ const Unit = require('../../models/unit');
 
 function unitDataLoader(unitIds) {
   return Unit.find({ _id: { $in: unitIds } }).then((units) => unitIds.map(
-    (unitId) => units.filter((unit) => unit.id === unitId.toString())[0]
+    (unitId) => units.find((unit) => unit.id === unitId.toString())
   ));
 }
 
