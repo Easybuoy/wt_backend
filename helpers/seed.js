@@ -29,7 +29,8 @@ module.exports = async (onEnd = false) => {
       lastname: 'User 2',
       email: 'test@user2.com',
       password: 'testUser2!',
-      experience: 'Intermediate'
+      experience: 'Intermediate',
+      reminderType: 'email'
     },
     {
       firstname: 'Test',
