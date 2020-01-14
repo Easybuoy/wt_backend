@@ -23,6 +23,7 @@ const workoutSchema = `
     muscles: String
     types: String
     session: WorkoutSession
+    experience: String
   }
 
   type WorkoutSession {
