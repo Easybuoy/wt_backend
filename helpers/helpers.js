@@ -6,7 +6,7 @@ module.exports = {
     let collections = await mongoose.connection.db.listCollections().toArray();
     collections = collections.map((collection) => {
       if (collection.name.includes('indexes')) return false;
-      return collections.name;
+      return collection.name;
     }).filter((name) => name !== false);
     await Promise.all(collections
       .map((colname) => {
