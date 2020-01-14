@@ -9,7 +9,7 @@ module.exports = {
       .map((colname) => {
         if (isProduction && excludeCollections.includes(colname)) return Promise.resolve();
         try {
-          return mongoose.connection.collections[colname].drop();
+          return mongoose.connection.db.dropCollection(colname);
         } catch (err) {
           if (err.message.includes('ns not found')) return Promise.resolve();
           if (err.message.includes('a background operation is currently running')) Promise.resolve();
