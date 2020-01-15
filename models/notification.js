@@ -16,6 +16,11 @@ const NotificationSchema = new Schema({
   topic: {
     type: String,
     require: true,
+  },
+  type: {
+    type: String,
+    require: true,
+    default: 'notification'
   }
 });
 
