@@ -81,8 +81,8 @@ module.exports = {
               };
             }
           }
-          return (schedule.startDate >= currentDay && schedule.startDate < nextDay ? schedule :
-          false);
+          return (schedule.startDate >= currentDay && schedule.startDate < nextDay ? schedule
+            : false);
         }).filter((schedule) => schedule !== false);
       });
       return res;
