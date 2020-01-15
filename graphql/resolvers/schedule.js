@@ -16,8 +16,8 @@ const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
 const pubsub = new PubSub();
 const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
 
-const startOfWeek = () => {
-  const today = new Date(new Date().setHours(0, 0, 0, 0));
+const startOfWeek = (startDate) => {
+  const today = new Date(new Date(startDate).setHours(0, 0, 0, 0));
   const difference = today.getDate() - today.getDay() + (today.getDay() === 0 ? -7 : 0);
   return today.setDate(difference);
 };
@@ -46,46 +46,51 @@ module.exports = {
   Query: {
     userSchedule: async (_, args, context) => {
       const userId = context.user.id;
+      let calendarStart = new Date().setHours(0, 0, 0, 0);
+      calendarStart = new Date(calendarStart).setMonth(new Date(calendarStart).getMonth() -3);
+      let calendarEnd = new Date().setHours(0, 0, 0, 0);
+      calendarEnd = new Date(calendarEnd).setMonth(new Date(calendarEnd).getMonth() +3)
       const weekStart = startOfWeek();
       const userSchedule = await Schedule.find({
         userId,
         $or: [
-          { startDate: { $gt: weekStart } },
+          { startDate: { $gt: calendarStart, $lt: calendarEnd } },
           { routine: 'daily' },
           { routine: 'weekly' }
         ]
-      });
-      const week = [0, 1, 2, 3, 4, 5, 6];
-      const res = week.map((day, index) => {
-        let currentDay = new Date().setHours(0, 0, 0, 0);
-        currentDay = new Date(currentDay).setDate(new Date(weekStart).getDate() + day);
-        let nextDay = currentDay;
-        nextDay = new Date(nextDay).setDate(new Date(currentDay).getDate() + 1);
-        return userSchedule.map((schedule) => {
+      }).sort({ startDate: 'asc' });
+      const response = []
+      for (let day = calendarStart; day < calendarEnd; day += (1000*60*60*24)) {
+        console.log(day);
+        const dayOfWeek = new Date(day).getDay()
+        const nextDay = day + (1000*60*60*24);
+        userSchedule.forEach((schedule) => {
           if (
-            schedule.routine === 'daily'
-            || (schedule.routine === 'weekly' && new Date(schedule.startDate).getDay() === day)
+            (schedule.routine === 'daily'
+            || (schedule.routine === 'weekly' && new Date(schedule.startDate).getDay() === dayOfWeek)) &&
+            schedule.startDate >= day
           ) {
-            return {
+            response.push( {
               ...schedule._doc,
               id: schedule.id,
-              startDate: new Date(schedule.startDate).setDate(new Date(currentDay).getDate())
-            };
+              startDate: new Date(schedule.startDate).setDate(new Date(day).getDate())
+            } );
           }
           if (schedule.routine === 'monthly') {
-            if (new Date(schedule.startDate).getDate() === new Date(currentDay).getDate()) {
-              return {
+            if (new Date(schedule.startDate).getDate() === new Date(day).getDate()) {
+              response.push( {
                 ...schedule._doc,
                 id: schedule.id,
-                startDate: new Date(schedule.startDate).setMonth(new Date(currentDay).getMonth())
-              };
+                startDate: new Date(schedule.startDate).setMonth(new Date(day).getMonth())
+              } );
             }
           }
-          return (schedule.startDate >= currentDay && schedule.startDate < nextDay ? schedule
-            : false);
-        }).filter((schedule) => schedule !== false);
-      });
-      return res;
+          if (schedule.startDate >= day && schedule.startDate < nextDay) {
+            response.push(schedule)
+          }
+        });
+      }
+     return response
     },
     suggestionsByExperience: async (_, args, context) => {
       const userId = context.user.id;

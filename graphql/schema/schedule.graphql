@@ -1,6 +1,6 @@
 const scheduleSchema = `
   extend type Query {
-    userSchedule: [[Schedule!]!]!
+    userSchedule: [Schedule!]!
     suggestionsByExperience: [Workout!]!
     notifications: [Notification!]!
   }
