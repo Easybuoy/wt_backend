@@ -309,25 +309,25 @@ module.exports = async (onEnd = false) => {
         userId: users[0].id,
         workoutId: workouts[0].id,
         startDate: newDate(-6),
-        routine: false
+        routine: 'daily'
       },
       {
         userId: users[0].id,
         workoutId: workouts[1].id,
         startDate: newDate(-3),
-        routine: false
+        routine: 'weekly'
       },
       {
         userId: users[0].id,
         workoutId: workouts[2].id,
         startDate: newDate(1),
-        routine: false
+        routine: 'no'
       },
       {
         userId: users[0].id,
         workoutId: workouts[3].id,
         startDate: newDate(4),
-        routine: false
+        routine: 'no'
       },
     ];
     await Schedule.create(schedule);

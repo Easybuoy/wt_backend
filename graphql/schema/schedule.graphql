@@ -19,14 +19,14 @@ const scheduleSchema = `
     userId: String
     workoutId: String
     startDate: Float
-    routine: Boolean
+    routine: String
   }
 
   input ScheduleInput {
     workoutId: String
     startDate: Float
     reminderTime: Float
-    routine: Boolean
+    routine: String
   }
 
 `;

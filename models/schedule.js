@@ -26,9 +26,9 @@ const ScheduleSchema = new Schema({
     default: 30
   },
   routine: {
-    type: Boolean,
+    type: String,
     required: true,
-    default: false
+    default: 'no'
   }
 });
 

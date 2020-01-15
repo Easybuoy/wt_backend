@@ -49,7 +49,11 @@ module.exports = {
       const weekStart = startOfWeek();
       const userSchedule = await Schedule.find({
         userId,
-        startDate: { $gt: weekStart }
+        $or: [
+          { startDate: { $gt: weekStart } },
+          { routine: 'daily' },
+          { routine: 'weekly' }
+        ]
       });
       const week = [0, 1, 2, 3, 4, 5, 6];
       const res = week.map((day, index) => {
@@ -57,11 +61,29 @@ module.exports = {
         currentDay = new Date(currentDay).setDate(new Date(weekStart).getDate() + day);
         let nextDay = currentDay;
         nextDay = new Date(nextDay).setDate(new Date(currentDay).getDate() + 1);
-        console.log('currentDay', new Date(currentDay));
-        console.log('nextDay', new Date(nextDay));
-        return userSchedule.filter((schedule) => (
-          schedule.startDate >= currentDay && schedule.startDate < nextDay
-        ));
+        return userSchedule.map((schedule) => {
+          if (
+            schedule.routine === 'daily'
+            || (schedule.routine === 'weekly' && new Date(schedule.startDate).getDay() === day)
+          ) {
+            return {
+              ...schedule._doc,
+              id: schedule.id,
+              startDate: new Date(schedule.startDate).setDate(new Date(currentDay).getDate())
+            };
+          }
+          if (schedule.routine === 'monthly') {
+            if (new Date(schedule.startDate).getDate() === new Date(currentDay).getDate()) {
+              return {
+                ...schedule._doc,
+                id: schedule.id,
+                startDate: new Date(schedule.startDate).setMonth(new Date(currentDay).getMonth())
+              };
+            }
+          }
+          return (schedule.startDate >= currentDay && schedule.startDate < nextDay ? schedule :
+          false);
+        }).filter((schedule) => schedule !== false);
       });
       return res;
     },
@@ -106,6 +128,10 @@ module.exports = {
         workoutId, startDate, reminderTime, routine, userId
       });
       schedule = await schedule.save();
+      if (routine === 'daily') {
+        // start on startDate and repeats every 24 hours
+        // stops
+      }
       return schedule;
     }
   },
