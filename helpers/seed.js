@@ -8,6 +8,7 @@ const Exercise = require('../models/exercise');
 const Workout = require('../models/workout');
 const WorkoutExercise = require('../models/workoutExercise');
 const WorkoutSessions = require('../models/workoutSession');
+const Schedule = require('../models/schedule');
 
 const exerciseTimeByWorkoutIntensity = (intensity) => {
   if (intensity === 'Low') return 20;
@@ -20,19 +21,23 @@ module.exports = async (onEnd = false) => {
       firstname: 'Test',
       lastname: 'User 1',
       email: 'test@user1.com',
-      password: 'testUser1!'
+      password: 'testUser1!',
+      experience: 'Beginner'
     },
     {
       firstname: 'Test',
       lastname: 'User 2',
       email: 'test@user2.com',
-      password: 'testUser2!'
+      password: 'testUser2!',
+      experience: 'Intermediate',
+      reminderType: 'email'
     },
     {
       firstname: 'Test',
       lastname: 'User 3',
       email: 'test@user3.com',
-      password: 'testUser3!'
+      password: 'testUser3!',
+      experience: 'Expert'
     }
   ];
   const unitsData = [
@@ -47,37 +52,47 @@ module.exports = async (onEnd = false) => {
     {
       userId: null,
       name: 'Chest and Shoulder Smackdown',
-      description: 'Use this in place of your regular chest-and-delt workout if you\'re in lean-out mode. While it\'s more like a standard muscle-building training routine, you\'ll rev up the fat-burn a bit when you keep your rest periods under 30 seconds.',
-      picture: 'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-4-700xh.jpg',
-      intensity: 'Low',
+      description:
+        "Use this in place of your regular chest-and-delt workout if you're in lean-out mode. While it's more like a standard muscle-building training routine, you'll rev up the fat-burn a bit when you keep your rest periods under 30 seconds.",
+      picture:
+        'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-4-700xh.jpg',
+      intensity: 'Low'
     },
     {
       userId: null,
       name: 'Full-Body Circuit',
-      description: 'This workout will get you moving in multiple directions. It\'s not about focusing on one body part, it\'s about getting everything moving and working together to burn calories while building up strength endurance.',
-      picture: 'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-2-700xh.jpg',
-      intensity: 'Moderate',
+      description:
+        "This workout will get you moving in multiple directions. It's not about focusing on one body part, it's about getting everything moving and working together to burn calories while building up strength endurance.",
+      picture:
+        'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-2-700xh.jpg',
+      intensity: 'Moderate'
     },
     {
       userId: null,
       name: 'Arm-Blast',
-      description: 'Biceps, triceps, and forearms are smaller body parts, but you can still bump up your metabolism if you\'re lifting hard and pushing on your rest periods. Keep your rest to 30-60 seconds between sets.',
-      picture: 'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-3-700xh.jpg',
-      intensity: 'High',
+      description:
+        "Biceps, triceps, and forearms are smaller body parts, but you can still bump up your metabolism if you're lifting hard and pushing on your rest periods. Keep your rest to 30-60 seconds between sets.",
+      picture:
+        'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-3-700xh.jpg',
+      intensity: 'High'
     },
     {
       userId: null,
       name: 'Back, Traps, And Core Routine',
-      description: 'The back and core work synergistically, making them a good, dynamic muscle pairing for a high-energy-burn weight-training session. This workout is front-loaded with four back-focused supersets. Then, you\'ll switch and do traps and abs in a superset to wrap it up.',
-      picture: 'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-1-700xh.jpg',
-      intensity: 'Low',
+      description:
+        "The back and core work synergistically, making them a good, dynamic muscle pairing for a high-energy-burn weight-training session. This workout is front-loaded with four back-focused supersets. Then, you'll switch and do traps and abs in a superset to wrap it up.",
+      picture:
+        'https://www.bodybuilding.com/images/2018/april/5-workous-that-are-insanely-efficient-at-torching-fat-signature-1-700xh.jpg',
+      intensity: 'Low'
     },
     {
       userId: null,
       name: 'Lower-Body Blast',
-      description: 'The glutes and hamstrings are often a trouble spot for women, but guys can benefit from this workout, too.',
-      picture: 'https://www.bodybuilding.com/exercises/exerciseImages/sequences/4361/Female/l/4361_2.jpg',
-      intensity: 'Moderate',
+      description:
+        'The glutes and hamstrings are often a trouble spot for women, but guys can benefit from this workout, too.',
+      picture:
+        'https://www.bodybuilding.com/exercises/exerciseImages/sequences/4361/Female/l/4361_2.jpg',
+      intensity: 'Moderate'
     }
   ];
   try {
@@ -102,7 +117,7 @@ module.exports = async (onEnd = false) => {
           ['picture_one', 'pictureOne'],
           ['picture_two', 'pictureTwo'],
           ['exercise_ratings', 'rating'],
-          ['exercise_name', 'name'],
+          ['exercise_name', 'name']
         ].forEach(([oldField, newField]) => {
           delete exerciseCopy[oldField];
           exerciseCopy[newField] = exercise[oldField];
@@ -137,17 +152,17 @@ module.exports = async (onEnd = false) => {
       },
       {
         workoutId: workouts[1].id,
-        exerciseId: exercises[3].id,
+        exerciseId: exercises[6].id,
         time: exerciseTimeByWorkoutIntensity(workouts[1].intensity)
       },
       {
         workoutId: workouts[1].id,
-        exerciseId: exercises[4].id,
+        exerciseId: exercises[8].id,
         time: exerciseTimeByWorkoutIntensity(workouts[1].intensity)
       },
       {
         workoutId: workouts[1].id,
-        exerciseId: exercises[5].id,
+        exerciseId: exercises[9].id,
         time: exerciseTimeByWorkoutIntensity(workouts[1].intensity)
       },
       {
@@ -281,6 +296,41 @@ module.exports = async (onEnd = false) => {
       }
     ];
     await WorkoutSessions.insertMany(workoutSessionsData);
+
+    console.log('Seeding user schedule...');
+    const newDate = (days) => {
+      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() + days);
+      return date.getTime();
+    };
+    const schedule = [
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        startDate: newDate(-6),
+        routine: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[1].id,
+        startDate: newDate(-3),
+        routine: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[2].id,
+        startDate: newDate(1),
+        routine: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[3].id,
+        startDate: newDate(4),
+        routine: false
+      },
+    ];
+    await Schedule.create(schedule);
   } catch (err) {
     console.error(`SEEDERROR: ${err.message}`);
     if (err.message.includes('ns not found')) return false;

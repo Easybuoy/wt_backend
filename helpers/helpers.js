@@ -4,12 +4,15 @@ const { isProduction } = require('../config');
 module.exports = {
   removeAllCollections: async (excludeCollections = []) => {
     let collections = await mongoose.connection.db.listCollections().toArray();
-    collections = collections.map((collection) => collection.name);
+    collections = collections.map((collection) => {
+      if (collection.name.includes('indexes')) return false;
+      return collection.name;
+    }).filter((name) => name !== false);
     await Promise.all(collections
       .map((colname) => {
         if (isProduction && excludeCollections.includes(colname)) return Promise.resolve();
         try {
-          return mongoose.connection.collections[colname].drop();
+          return mongoose.connection.db.dropCollection(colname);
         } catch (err) {
           if (err.message.includes('ns not found')) return Promise.resolve();
           if (err.message.includes('a background operation is currently running')) Promise.resolve();

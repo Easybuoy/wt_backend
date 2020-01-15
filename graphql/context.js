@@ -3,7 +3,8 @@ const { jwtSecret } = require('../config');
 const User = require('../models/user');
 
 module.exports = async (args) => {
-  const { req, res } = args;
+  const { req, res, connection } = args;
+  if (connection) return connection.context;
   // if an authorization token is sent
   // authentication token will be validated
   const token = req.headers.authorization;

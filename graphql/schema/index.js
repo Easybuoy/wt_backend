@@ -3,20 +3,20 @@ const authSchema = require('./auth.graphql');
 const unitSchema = require('./unit.graphql');
 const exerciseSchema = require('./exercise.graphql');
 const workoutSchema = require('./workout.graphql');
+const scheduleSchema = require('./schedule.graphql');
 
 const rootSchema = gql`
   scalar Upload
-  
-  type File {
-    filename: String!
-    mimetype: String!
-    encoding: String!
-  }
 
   type Query {
     _: Boolean
   }
+
   type Mutation {
+    _: Boolean
+  }
+
+  type Subscription {
     _: Boolean
   }
 
@@ -25,10 +25,25 @@ const rootSchema = gql`
     fields: [String!]!
   }
 
+  type Notification {
+    userId: String
+    message: String
+    "A informative field describing relevant content and its ID"
+    topic: String
+  }
+
+  input NotificationInput {
+    userId: String
+    message: String
+    topic: String
+  }
+
   ${authSchema}
   ${unitSchema}
   ${exerciseSchema}
   ${workoutSchema}
+  ${scheduleSchema}
+
 `;
 
 module.exports = rootSchema;

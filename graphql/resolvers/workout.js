@@ -7,6 +7,16 @@ const cloudinary = require('../../helpers/cloudinary');
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
 
+const exerciseDifficultyToInt = (difficulty) => {
+  if (difficulty === 'Beginner') {
+    return 1;
+  }
+  if (difficulty === 'Intermediate') {
+    return 2;
+  }
+  return 3;
+};
+
 module.exports = {
   Query: {
     workouts: async (_, { input }) => {
@@ -155,6 +165,15 @@ module.exports = {
         });
       return types.join(', ');
     },
+    experience: async (workout, args, context) => {
+      const workoutExercises = await ExerciseDataLoader(context).load(workout.id);
+      const experience = workoutExercises.reduce(
+        (total, exercise) => total + exerciseDifficultyToInt(exercise.difficulty), 0
+      ) / workoutExercises.length;
+      if (experience < 1.5) return 'Beginner';
+      if (experience < 2.15) return 'Intermediate';
+      return 'Expert';
+    }
   },
   Upload: GraphQLUpload,
   WorkoutSession: {
