@@ -17,9 +17,9 @@ const pubsub = new PubSub();
 const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
 
 const startOfWeek = () => {
-  const today = new Date();
-  const difference = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
-  return new Date(today.setDate(difference)).getTime();
+  const today = new Date(new Date().setHours(0, 0, 0, 0));
+  const difference = today.getDate() - today.getDay() + (today.getDay() === 0 ? -7 : 0);
+  return today.setDate(difference);
 };
 
 const sendNotification = (notification) => {
@@ -46,23 +46,24 @@ module.exports = {
   Query: {
     userSchedule: async (_, args, context) => {
       const userId = context.user.id;
-      const today = new Date();
       const weekStart = startOfWeek();
-      const userSchedule = Schedule.find({
+      const userSchedule = await Schedule.find({
         userId,
         startDate: { $gt: weekStart }
       });
-      return new Array(7).map((day, index) => {
-        const currentDay = new Date(
-          today.setDate(weekStart.getDate() + index)
-        ).getTime();
-        const nextDay = new Date(
-          today.setDate(weekStart.getDate() + index + 1)
-        ).getTime();
+      const week = [0, 1, 2, 3, 4, 5, 6];
+      const res = week.map((day, index) => {
+        let currentDay = new Date().setHours(0, 0, 0, 0);
+        currentDay = new Date(currentDay).setDate(new Date(weekStart).getDate() + day);
+        let nextDay = currentDay;
+        nextDay = new Date(nextDay).setDate(new Date(currentDay).getDate() + 1);
+        console.log('currentDay', new Date(currentDay));
+        console.log('nextDay', new Date(nextDay));
         return userSchedule.filter((schedule) => (
           schedule.startDate >= currentDay && schedule.startDate < nextDay
         ));
       });
+      return res;
     },
     suggestionsByExperience: async (_, args, context) => {
       const userId = context.user.id;
@@ -81,7 +82,12 @@ module.exports = {
   Mutation: {
     pushNotification: async (_, { input: { userId, message, topic } }) => {
       const user = await User.findById(userId);
-      let newNotification = new Notification({ userId, message, topic });
+      let newNotification = new Notification({
+        userId,
+        message,
+        topic,
+        type: user.reminderType
+      });
       newNotification = await newNotification.save();
       if (user.reminderType === 'notification') {
         sendNotification(newNotification);

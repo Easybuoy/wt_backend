@@ -298,30 +298,35 @@ module.exports = async (onEnd = false) => {
     await WorkoutSessions.insertMany(workoutSessionsData);
 
     console.log('Seeding user schedule...');
-    const today = new Date();
+    const newDate = (days) => {
+      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() + days);
+      return date.getTime();
+    };
     const schedule = [
       {
         userId: users[0].id,
         workoutId: workouts[0].id,
-        startDate: new Date(today.setDate(today.getDate() - 6)).getTime(),
+        startDate: newDate(-6),
         routine: false
       },
       {
         userId: users[0].id,
         workoutId: workouts[1].id,
-        startDate: new Date(today.setDate(today.getDate() - 3)).getTime(),
+        startDate: newDate(-3),
         routine: false
       },
       {
         userId: users[0].id,
         workoutId: workouts[2].id,
-        startDate: new Date(today.setDate(today.getDate() + 1)).getTime(),
+        startDate: newDate(1),
         routine: false
       },
       {
         userId: users[0].id,
         workoutId: workouts[3].id,
-        startDate: new Date(today.setDate(today.getDate() + 4)).getTime(),
+        startDate: newDate(4),
         routine: false
       },
     ];
