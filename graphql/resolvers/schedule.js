@@ -95,6 +95,18 @@ module.exports = {
         sendEmail(newNotification);
       }
       return newNotification;
+    },
+    scheduleWorkout: async (_, {
+      input: {
+        workoutId, startDate, reminderTime, routine
+      }
+    }, context) => {
+      const userId = context.user.id;
+      let schedule = new Schedule({
+        workoutId, startDate, reminderTime, routine, userId
+      });
+      schedule = await schedule.save();
+      return schedule;
     }
   },
   Subscription: {
