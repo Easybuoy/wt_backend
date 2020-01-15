@@ -20,6 +20,11 @@ const ScheduleSchema = new Schema({
     required: true,
     default: Date.now()
   },
+  reminderTime: {
+    type: Number,
+    required: true,
+    default: 30
+  },
   routine: {
     type: Boolean,
     required: true,
