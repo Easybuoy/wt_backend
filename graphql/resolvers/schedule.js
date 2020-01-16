@@ -104,27 +104,22 @@ module.exports = {
             response.push({
               ...schedule._doc,
               id: schedule.id,
-              startDate: (new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)).toString()
+              startDate: new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)
             });
           } else if (schedule.routine === 'monthly') {
             if (new Date(schedule.startDate).getDate() === new Date(dayTime).getDate()) {
               response.push({
                 ...schedule._doc,
                 id: schedule.id,
-                startDate: (new Date(schedule.startDate)
-                  .setMonth(new Date(dayTime).getMonth())).toString()
+                startDate: new Date(schedule.startDate)
+                  .setMonth(new Date(dayTime).getMonth())
               });
             }
           } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
-            response.push({
-              ...schedule._doc,
-              id: schedule.id,
-              startDate: (schedule.startDate).toString()
-            });
+            response.push(schedule);
           }
         });
       }
-      console.log(response);
       return response;
     },
     suggestionsByExperience: async (_, args, context) => {
@@ -168,10 +163,6 @@ module.exports = {
         workoutId, startDate, reminderTime, routine, userId
       });
       schedule = await schedule.save();
-      if (routine === 'daily') {
-        // start on startDate and repeats every 24 hours
-        // stops
-      }
       return schedule;
     }
   },

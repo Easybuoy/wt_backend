@@ -18,7 +18,7 @@ module.exports = {
       );
       const graphs = ['Weight', 'BMI'].map((graph) => {
         switch (graph) {
-          case 'weight':
+          case 'Weight':
             return {
               name: graph,
               data: completedWorkoutSessionsWithWeight.map((session) => ({
@@ -26,7 +26,7 @@ module.exports = {
                 value: session.weight,
               }))
             };
-          case 'bmi':
+          case 'BMI':
             return {
               name: graph,
               data: completedWorkoutSessionsWithWeight.map((session) => {
@@ -89,7 +89,6 @@ module.exports = {
           }
         }
       });
-
       return {
         graphs,
         stats,
