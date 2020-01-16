@@ -33,6 +33,9 @@ const WorkoutSessionSchema = new Schema({
   pause: {
     type: Boolean,
   },
+  weight: {
+    type: Number
+  },
   picture: {
     type: String
   }

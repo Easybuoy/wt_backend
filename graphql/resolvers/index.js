@@ -3,13 +3,15 @@ const unitResolver = require('./unit');
 const workoutResolver = require('./workout');
 const exerciseResolver = require('./exercise');
 const scheduleResolver = require('./schedule');
+const dashboardResolver = require('./dashboard');
 
 const rootResolver = [
   authResolver,
   unitResolver,
   workoutResolver,
   exerciseResolver,
-  scheduleResolver
+  scheduleResolver,
+  dashboardResolver
 ].reduce((rootR, resolver) => {
   const finalResolver = rootR;
   Object.keys(resolver).forEach((key) => {

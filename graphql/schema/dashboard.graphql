@@ -1,0 +1,30 @@
+const dashboardSchema = `
+  extend type Query {
+    dashboard: Dashboard
+  }
+
+  type Dashboard {
+    graphs: [Graph!]!
+    stats: Stats!
+    streak: Float
+    user: User
+  }
+
+  type Graph {
+    name: String
+    data: [GraphData!]!
+  }
+  
+  type GraphData {
+    date: Float
+    value: Float
+  }
+
+  type Stats {
+    reps: Float
+    sets: Float
+    amountLifted: Float
+  }
+  
+`;
+module.exports = dashboardSchema;
