@@ -10,6 +10,11 @@ const dashboardSchema = `
   }
 
   type Graph {
+    name: String
+    data: [GraphData!]!
+  }
+  
+  type GraphData {
     date: Float
     value: Float
   }

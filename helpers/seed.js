@@ -24,35 +24,11 @@ const newDate = (days = 0) => {
 };
 
 module.exports = async (onEnd = false) => {
-  const usersData = [
-    {
-      firstname: 'Test',
-      lastname: 'User 1',
-      email: 'test@user1.com',
-      password: 'testUser1!',
-      experience: 'Beginner'
-    },
-    {
-      firstname: 'Test',
-      lastname: 'User 2',
-      email: 'test@user2.com',
-      password: 'testUser2!',
-      experience: 'Intermediate',
-      reminderType: 'email'
-    },
-    {
-      firstname: 'Test',
-      lastname: 'User 3',
-      email: 'test@user3.com',
-      password: 'testUser3!',
-      experience: 'Expert'
-    }
-  ];
   const unitsData = [
     { name: 'kg', type: 'weight' },
     { name: 'pounds', type: 'weight' },
     { name: 'inches', type: 'height' },
-    { name: 'centimetres', type: 'height' }
+    { name: 'metres', type: 'height' }
   ];
   // eslint-disable-next-line global-require
   const exercisesData = require('./exercise');
@@ -108,15 +84,51 @@ module.exports = async (onEnd = false) => {
     await connect;
     console.log('Clearing data from all collections...');
     await removeAllCollections(isProduction ? ['users'] : []);
+    console.log('Seeding units collection...');
+    const units = await Unit.create(unitsData);
     let users;
+    const usersData = [
+      {
+        firstname: 'Test',
+        lastname: 'User 1',
+        email: 'test@user1.com',
+        password: 'testUser1!',
+        experience: 'Beginner',
+        height: 1.69,
+        weight: 80,
+        weightUnit: units[0].id,
+        heightUnit: units[3].id,
+      },
+      {
+        firstname: 'Test',
+        lastname: 'User 2',
+        email: 'test@user2.com',
+        password: 'testUser2!',
+        experience: 'Intermediate',
+        reminderType: 'email',
+        height: 66.535433071,
+        weight: 176.368,
+        weightUnit: units[1].id,
+        heightUnit: units[2].id,
+      },
+      {
+        firstname: 'Test',
+        lastname: 'User 3',
+        email: 'test@user3.com',
+        password: 'testUser3!',
+        experience: 'Expert',
+        height: 1.69,
+        weight: 80,
+        weightUnit: units[0].id,
+        heightUnit: units[3].id,
+      }
+    ];
     if (!isProduction) {
       console.log('Seeding users collection...');
       users = await User.create(usersData);
     } else {
       users = await User.find();
     }
-    console.log('Seeding units collection...');
-    await Unit.create(unitsData);
     console.log('Seeding exercises collection...');
     const exercises = await Exercise.insertMany(
       exercisesData.map((exercise) => {
@@ -228,7 +240,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
         startDate: newDate(-6),
         endDate: newDate(-6) + 1,
-        pause: false
+        pause: false,
+        weight: 80
       },
       {
         userId: users[0].id,
@@ -237,7 +250,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
         startDate: newDate(-5),
         endDate: newDate(-5) + 1,
-        pause: false
+        pause: false,
+        weight: 79.5
       },
       {
         userId: users[0].id,
@@ -246,7 +260,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
         startDate: newDate(-4),
         endDate: newDate(-4) + 1,
-        pause: false
+        pause: false,
+        weight: 79
       },
       {
         userId: users[0].id,
@@ -255,7 +270,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
         startDate: newDate(-3),
         endDate: newDate(-3) + 1,
-        pause: false
+        pause: false,
+        weight: 78.5
       },
       {
         userId: users[0].id,
@@ -264,7 +280,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
         startDate: newDate(-2),
         endDate: newDate(-2) + 1,
-        pause: false
+        pause: false,
+        weight: 78
       },
       {
         userId: users[0].id,
@@ -273,7 +290,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
         startDate: newDate(-1),
         endDate: newDate(-1) + 1,
-        pause: false
+        pause: false,
+        weight: 77.5
       },
       {
         userId: users[0].id,
@@ -282,7 +300,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
         startDate: newDate(),
         endDate: newDate() + 1,
-        pause: false
+        pause: false,
+        weight: 77
       },
       {
         userId: users[0].id,
@@ -291,7 +310,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
         startDate: newDate(),
         endDate: newDate() + 1,
-        pause: false
+        pause: false,
+        weight: 76.5
       },
       {
         userId: users[0].id,
@@ -300,7 +320,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[2].intensity),
         startDate: Date.now(),
         endDate: null,
-        pause: false
+        pause: false,
+        weight: 76
       },
       {
         userId: users[0].id,
