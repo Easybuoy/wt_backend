@@ -4,6 +4,7 @@ const unitSchema = require('./unit.graphql');
 const exerciseSchema = require('./exercise.graphql');
 const workoutSchema = require('./workout.graphql');
 const scheduleSchema = require('./schedule.graphql');
+const dashboardSchema = require('./dashboard.graphql');
 
 const rootSchema = gql`
   scalar Upload
@@ -43,7 +44,7 @@ const rootSchema = gql`
   ${exerciseSchema}
   ${workoutSchema}
   ${scheduleSchema}
-
+  ${dashboardSchema}
 `;
 
 module.exports = rootSchema;
