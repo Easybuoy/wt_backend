@@ -68,7 +68,6 @@ module.exports = {
       ) {
         const dayTime = day.getTime();
         const dayOfWeek = new Date(dayTime).getDay();
-        console.log(day, dayTime, dayOfWeek);
         const nextDay = new Date(dayTime).setDate(new Date(dayTime).getDate() + 1);
         userSchedule.forEach((schedule) => {
           const scheduleDate = new Date(schedule.startDate);

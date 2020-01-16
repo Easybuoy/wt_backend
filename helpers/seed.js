@@ -15,6 +15,14 @@ const exerciseTimeByWorkoutIntensity = (intensity) => {
   if (intensity === 'Moderate') return 30;
   return 40; // high
 };
+
+const newDate = (days = 0) => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + days);
+  return date.getTime();
+};
+
 module.exports = async (onEnd = false) => {
   const usersData = [
     {
@@ -218,8 +226,62 @@ module.exports = async (onEnd = false) => {
         workoutId: workouts[0].id,
         exerciseId: exercises[0].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
-        startDate: Date.now(),
-        endDate: Date.now() + 1,
+        startDate: newDate(-6),
+        endDate: newDate(-6) + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-5),
+        endDate: newDate(-5) + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-4),
+        endDate: newDate(-4) + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-3),
+        endDate: newDate(-3) + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-2),
+        endDate: newDate(-2) + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-1),
+        endDate: newDate(-1) + 1,
+        pause: false
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(),
+        endDate: newDate() + 1,
         pause: false
       },
       {
@@ -227,8 +289,8 @@ module.exports = async (onEnd = false) => {
         workoutId: workouts[1].id,
         exerciseId: exercises[3].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
-        startDate: Date.now(),
-        endDate: Date.now() + 1,
+        startDate: newDate(),
+        endDate: newDate() + 1,
         pause: false
       },
       {
@@ -298,12 +360,6 @@ module.exports = async (onEnd = false) => {
     await WorkoutSessions.insertMany(workoutSessionsData);
 
     console.log('Seeding user schedule...');
-    const newDate = (days) => {
-      const date = new Date();
-      date.setHours(0, 0, 0, 0);
-      date.setDate(date.getDate() + days);
-      return date.getTime();
-    };
     const schedule = [
       {
         userId: users[0].id,
@@ -314,7 +370,7 @@ module.exports = async (onEnd = false) => {
       {
         userId: users[0].id,
         workoutId: workouts[1].id,
-        startDate: newDate(-3),
+        startDate: newDate(),
         routine: 'weekly'
       },
       {
