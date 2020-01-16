@@ -13,11 +13,13 @@ const Workout = require('../../models/workout');
 const Notification = require('../../models/notification');
 const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
 
+const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
+
 const pubsub = new PubSub();
 const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
 
-const startOfWeek = () => {
-  const today = new Date(new Date().setHours(0, 0, 0, 0));
+const startOfWeek = (startDate) => {
+  const today = new Date(new Date(startDate).setHours(0, 0, 0, 0));
   const difference = today.getDate() - today.getDay() + (today.getDay() === 0 ? -7 : 0);
   return today.setDate(difference);
 };
@@ -46,24 +48,59 @@ module.exports = {
   Query: {
     userSchedule: async (_, args, context) => {
       const userId = context.user.id;
-      const weekStart = startOfWeek();
+      let calendarStart = new Date().setHours(0, 0, 0, 0);
+      calendarStart = new Date(calendarStart).setMonth(new Date(calendarStart).getMonth() - 3);
+      let calendarEnd = new Date().setHours(0, 0, 0, 0);
+      calendarEnd = new Date(calendarEnd).setMonth(new Date(calendarEnd).getMonth() + 3);
       const userSchedule = await Schedule.find({
         userId,
-        startDate: { $gt: weekStart }
-      });
-      const week = [0, 1, 2, 3, 4, 5, 6];
-      const res = week.map((day, index) => {
-        let currentDay = new Date().setHours(0, 0, 0, 0);
-        currentDay = new Date(currentDay).setDate(new Date(weekStart).getDate() + day);
-        let nextDay = currentDay;
-        nextDay = new Date(nextDay).setDate(new Date(currentDay).getDate() + 1);
-        console.log('currentDay', new Date(currentDay));
-        console.log('nextDay', new Date(nextDay));
-        return userSchedule.filter((schedule) => (
-          schedule.startDate >= currentDay && schedule.startDate < nextDay
-        ));
-      });
-      return res;
+        $or: [
+          { startDate: { $gt: calendarStart, $lt: calendarEnd } },
+          { routine: 'daily' },
+          { routine: 'weekly' }
+        ]
+      }).sort({ startDate: 'asc' });
+      const response = [];
+      for (
+        let day = new Date(calendarStart);
+        day < new Date(calendarEnd);
+        day.setDate(new Date(day).getDate() + 1)
+      ) {
+        const dayTime = day.getTime();
+        const dayOfWeek = new Date(dayTime).getDay();
+        const nextDay = new Date(dayTime).setDate(new Date(dayTime).getDate() + 1);
+        userSchedule.forEach((schedule) => {
+          const scheduleDate = new Date(schedule.startDate);
+          const sDate = {
+            h: scheduleDate.getHours(),
+            m: scheduleDate.getMinutes(),
+            s: scheduleDate.getSeconds(),
+            ms: scheduleDate.getMilliseconds(),
+          };
+          if ((
+            schedule.routine === 'daily'
+            || (schedule.routine === 'weekly' && scheduleDate.getDay() === dayOfWeek))
+            && schedule.startDate < dayTime
+          ) {
+            response.push({
+              ...schedule._doc,
+              id: schedule.id,
+              startDate: new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)
+            });
+          } else if (schedule.routine === 'monthly') {
+            if (new Date(schedule.startDate).getDate() === new Date(dayTime).getDate()) {
+              response.push({
+                ...schedule._doc,
+                id: schedule.id,
+                startDate: new Date(schedule.startDate).setMonth(new Date(dayTime).getMonth())
+              });
+            }
+          } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
+            response.push(schedule);
+          }
+        });
+      }
+      return response;
     },
     suggestionsByExperience: async (_, args, context) => {
       const userId = context.user.id;
@@ -95,6 +132,22 @@ module.exports = {
         sendEmail(newNotification);
       }
       return newNotification;
+    },
+    scheduleWorkout: async (_, {
+      input: {
+        workoutId, startDate, reminderTime, routine
+      }
+    }, context) => {
+      const userId = context.user.id;
+      let schedule = new Schedule({
+        workoutId, startDate, reminderTime, routine, userId
+      });
+      schedule = await schedule.save();
+      if (routine === 'daily') {
+        // start on startDate and repeats every 24 hours
+        // stops
+      }
+      return schedule;
     }
   },
   Subscription: {
@@ -104,5 +157,8 @@ module.exports = {
         return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
       }
     }
+  },
+  Schedule: {
+    workoutId: (schedule, args, context) => WorkoutDataLoader(context).load(schedule.workoutId)
   }
 };

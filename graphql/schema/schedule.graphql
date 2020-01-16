@@ -1,12 +1,13 @@
 const scheduleSchema = `
   extend type Query {
-    userSchedule: [[Schedule!]!]!
+    userSchedule: [Schedule!]!
     suggestionsByExperience: [Workout!]!
     notifications: [Notification!]!
   }
-
+  
   extend type Mutation {
     pushNotification(input: NotificationInput!): Notification!
+    scheduleWorkout(input: ScheduleInput!): Schedule!
   }
 
   extend type Subscription {
@@ -16,9 +17,16 @@ const scheduleSchema = `
   type Schedule {
     id: String
     userId: String
+    workoutId: Workout
+    startDate: Float
+    routine: String
+  }
+
+  input ScheduleInput {
     workoutId: String
     startDate: Float
-    routine: Boolean
+    reminderTime: Float
+    routine: String
   }
 
 `;

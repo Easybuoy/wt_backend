@@ -7,44 +7,29 @@ const Unit = require('../models/unit');
 const Exercise = require('../models/exercise');
 const Workout = require('../models/workout');
 const WorkoutExercise = require('../models/workoutExercise');
-const WorkoutSessions = require('../models/workoutSession');
+const WorkoutSession = require('../models/workoutSession');
 const Schedule = require('../models/schedule');
+const WorkoutSessionExercise = require('../models/workoutSessionExercise');
 
 const exerciseTimeByWorkoutIntensity = (intensity) => {
   if (intensity === 'Low') return 20;
   if (intensity === 'Moderate') return 30;
   return 40; // high
 };
+
+const newDate = (days = 0) => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + days);
+  return date.getTime();
+};
+
 module.exports = async (onEnd = false) => {
-  const usersData = [
-    {
-      firstname: 'Test',
-      lastname: 'User 1',
-      email: 'test@user1.com',
-      password: 'testUser1!',
-      experience: 'Beginner'
-    },
-    {
-      firstname: 'Test',
-      lastname: 'User 2',
-      email: 'test@user2.com',
-      password: 'testUser2!',
-      experience: 'Intermediate',
-      reminderType: 'email'
-    },
-    {
-      firstname: 'Test',
-      lastname: 'User 3',
-      email: 'test@user3.com',
-      password: 'testUser3!',
-      experience: 'Expert'
-    }
-  ];
   const unitsData = [
     { name: 'kg', type: 'weight' },
     { name: 'pounds', type: 'weight' },
     { name: 'inches', type: 'height' },
-    { name: 'centimetres', type: 'height' }
+    { name: 'metres', type: 'height' }
   ];
   // eslint-disable-next-line global-require
   const exercisesData = require('./exercise');
@@ -100,15 +85,51 @@ module.exports = async (onEnd = false) => {
     await connect;
     console.log('Clearing data from all collections...');
     await removeAllCollections(isProduction ? ['users'] : []);
+    console.log('Seeding units collection...');
+    const units = await Unit.create(unitsData);
     let users;
+    const usersData = [
+      {
+        firstname: 'Test',
+        lastname: 'User 1',
+        email: 'test@user1.com',
+        password: 'testUser1!',
+        experience: 'Beginner',
+        height: 1.69,
+        weight: 80,
+        weightUnit: units[0].id,
+        heightUnit: units[3].id,
+      },
+      {
+        firstname: 'Test',
+        lastname: 'User 2',
+        email: 'test@user2.com',
+        password: 'testUser2!',
+        experience: 'Intermediate',
+        reminderType: 'email',
+        height: 66.535433071,
+        weight: 176.368,
+        weightUnit: units[1].id,
+        heightUnit: units[2].id,
+      },
+      {
+        firstname: 'Test',
+        lastname: 'User 3',
+        email: 'test@user3.com',
+        password: 'testUser3!',
+        experience: 'Expert',
+        height: 1.69,
+        weight: 80,
+        weightUnit: units[0].id,
+        heightUnit: units[3].id,
+      }
+    ];
     if (!isProduction) {
       console.log('Seeding users collection...');
       users = await User.create(usersData);
     } else {
       users = await User.find();
     }
-    console.log('Seeding units collection...');
-    await Unit.create(unitsData);
     console.log('Seeding exercises collection...');
     const exercises = await Exercise.insertMany(
       exercisesData.map((exercise) => {
@@ -133,7 +154,7 @@ module.exports = async (onEnd = false) => {
     );
     console.log('Seeding workouts collection...');
     const workouts = await Workout.create(workoutsData);
-    console.log('Seeding workout_exercises collection...');
+    console.log('Seeding workoutexercises collection...');
     const workoutExercisesData = [
       {
         workoutId: workouts[0].id,
@@ -218,18 +239,80 @@ module.exports = async (onEnd = false) => {
         workoutId: workouts[0].id,
         exerciseId: exercises[0].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
-        startDate: Date.now(),
-        endDate: Date.now() + 1,
-        pause: false
+        startDate: newDate(-6),
+        endDate: newDate(-6) + 1,
+        pause: false,
+        weight: 80
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-5),
+        endDate: newDate(-5) + 1,
+        pause: false,
+        weight: 79.5
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-4),
+        endDate: newDate(-4) + 1,
+        pause: false,
+        weight: 79
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-3),
+        endDate: newDate(-3) + 1,
+        pause: false,
+        weight: 78.5
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-2),
+        endDate: newDate(-2) + 1,
+        pause: false,
+        weight: 78
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(-1),
+        endDate: newDate(-1) + 1,
+        pause: false,
+        weight: 77.5
+      },
+      {
+        userId: users[0].id,
+        workoutId: workouts[0].id,
+        exerciseId: exercises[0].id,
+        exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[0].intensity),
+        startDate: newDate(),
+        endDate: newDate() + 1,
+        pause: false,
+        weight: 77
       },
       {
         userId: users[0].id,
         workoutId: workouts[1].id,
         exerciseId: exercises[3].id,
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[1].intensity),
-        startDate: Date.now(),
-        endDate: Date.now() + 1,
-        pause: false
+        startDate: newDate(),
+        endDate: newDate() + 1,
+        pause: false,
+        weight: 76.5
       },
       {
         userId: users[0].id,
@@ -238,7 +321,8 @@ module.exports = async (onEnd = false) => {
         exerciseTimer: exerciseTimeByWorkoutIntensity(workouts[2].intensity),
         startDate: Date.now(),
         endDate: null,
-        pause: false
+        pause: false,
+        weight: 76
       },
       {
         userId: users[0].id,
@@ -295,42 +379,61 @@ module.exports = async (onEnd = false) => {
         pause: false
       }
     ];
-    await WorkoutSessions.insertMany(workoutSessionsData);
+    const sessions = await WorkoutSession.insertMany(workoutSessionsData);
 
-    console.log('Seeding user schedule...');
-    const newDate = (days) => {
-      const date = new Date();
-      date.setHours(0, 0, 0, 0);
-      date.setDate(date.getDate() + days);
-      return date.getTime();
-    };
+    console.log('Seeding schedules collection...');
     const schedule = [
       {
         userId: users[0].id,
         workoutId: workouts[0].id,
         startDate: newDate(-6),
-        routine: false
+        routine: 'daily'
       },
       {
         userId: users[0].id,
         workoutId: workouts[1].id,
-        startDate: newDate(-3),
-        routine: false
+        startDate: newDate(),
+        routine: 'weekly'
       },
       {
         userId: users[0].id,
         workoutId: workouts[2].id,
         startDate: newDate(1),
-        routine: false
+        routine: 'no'
       },
       {
         userId: users[0].id,
         workoutId: workouts[3].id,
         startDate: newDate(4),
-        routine: false
+        routine: 'no'
       },
     ];
     await Schedule.create(schedule);
+
+    console.log('Seeding workoutsessionexercises collection...');
+    await WorkoutSessionExercise.insertMany([
+      {
+        sessionId: sessions[0].id,
+        exerciseId: exercises[0].id,
+        reps: 5,
+        sets: 3,
+        amountLifted: 30
+      },
+      {
+        sessionId: sessions[0].id,
+        exerciseId: exercises[1].id,
+        reps: 2,
+        sets: 4,
+        amountLifted: 20
+      },
+      {
+        sessionId: sessions[0].id,
+        exerciseId: exercises[2].id,
+        reps: 1,
+        sets: 2,
+        amountLifted: 10
+      }
+    ]);
   } catch (err) {
     console.error(`SEEDERROR: ${err.message}`);
     if (err.message.includes('ns not found')) return false;
