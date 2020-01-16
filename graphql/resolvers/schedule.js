@@ -7,6 +7,7 @@ const sendmail = require('sendmail')({
     error: console.error
   },
 });
+const Mailgen = require('mailgen');
 const Schedule = require('../../models/schedule');
 const User = require('../../models/user');
 const Workout = require('../../models/workout');
@@ -30,12 +31,36 @@ const sendNotification = (notification) => {
   }
 };
 
-const sendEmail = (notification) => {
+const mailGenerator = new Mailgen({
+  theme: 'default',
+  product: {
+    // Appears in header & footer of e-mails
+    name: 'Trackdrills',
+    link: 'http://trackdrills.com/',
+    logo: 'http://trackdrills.com/assets/images/logo.png'
+  }
+});
+
+const sendEmail = (notification, user) => {
   sendmail({
     from: 'melquip7@gmail.com',
-    to: 'melquip7@gmail.com',
+    to: 'durolawk@gmail.com',
     subject: notification.topic,
-    html: notification.message,
+    html: mailGenerator.generate({
+      body: {
+        name: user.firstname,
+        intro: notification.topic,
+        action: {
+          instructions: notification.message,
+          button: {
+            color: '#22BC66',
+            text: 'Scheduled workouts',
+            link: `http://trackdrills.com/workout/${notification.topic.split('_')[1]}`
+          }
+        },
+        outro: 'Good luck!'
+      }
+    }),
   }, (err, reply) => {
     console.log(err && err.stack);
     console.dir(reply);
@@ -67,7 +92,7 @@ module.exports = {
         userSchedule.forEach((schedule) => {
           if (
             (schedule.routine === 'daily'
-            || (schedule.routine === 'weekly' && new Date(schedule.startDate).getDay() === dayOfWeek))
+              || (schedule.routine === 'weekly' && new Date(schedule.startDate).getDay() === dayOfWeek))
             && schedule.startDate >= day
           ) {
             response.push({
@@ -119,7 +144,7 @@ module.exports = {
       if (user.reminderType === 'notification') {
         sendNotification(newNotification);
       } else {
-        sendEmail(newNotification);
+        sendEmail(newNotification, user);
       }
       return newNotification;
     },
