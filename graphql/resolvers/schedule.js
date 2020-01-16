@@ -14,6 +14,8 @@ const Workout = require('../../models/workout');
 const Notification = require('../../models/notification');
 const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
 
+const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
+
 const pubsub = new PubSub();
 const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
 
@@ -75,7 +77,6 @@ module.exports = {
       calendarStart = new Date(calendarStart).setMonth(new Date(calendarStart).getMonth() - 3);
       let calendarEnd = new Date().setHours(0, 0, 0, 0);
       calendarEnd = new Date(calendarEnd).setMonth(new Date(calendarEnd).getMonth() + 3);
-      const weekStart = startOfWeek();
       const userSchedule = await Schedule.find({
         userId,
         $or: [
@@ -85,32 +86,42 @@ module.exports = {
         ]
       }).sort({ startDate: 'asc' });
       const response = [];
-      for (let day = calendarStart; day < calendarEnd; day += (1000 * 60 * 60 * 24)) {
-        console.log(day);
-        const dayOfWeek = new Date(day).getDay();
-        const nextDay = day + (1000 * 60 * 60 * 24);
+      for (
+        let day = new Date(calendarStart);
+        day < new Date(calendarEnd);
+        day.setDate(new Date(day).getDate() + 1)
+      ) {
+        const dayTime = day.getTime();
+        const dayOfWeek = new Date(dayTime).getDay();
+        console.log(day, dayTime, dayOfWeek);
+        const nextDay = new Date(dayTime).setDate(new Date(dayTime).getDate() + 1);
         userSchedule.forEach((schedule) => {
-          if (
-            (schedule.routine === 'daily'
-              || (schedule.routine === 'weekly' && new Date(schedule.startDate).getDay() === dayOfWeek))
-            && schedule.startDate >= day
+          const scheduleDate = new Date(schedule.startDate);
+          const sDate = {
+            h: scheduleDate.getHours(),
+            m: scheduleDate.getMinutes(),
+            s: scheduleDate.getSeconds(),
+            ms: scheduleDate.getMilliseconds(),
+          };
+          if ((
+            schedule.routine === 'daily'
+            || (schedule.routine === 'weekly' && scheduleDate.getDay() === dayOfWeek))
+            && schedule.startDate < dayTime
           ) {
             response.push({
               ...schedule._doc,
               id: schedule.id,
-              startDate: new Date(schedule.startDate).setDate(new Date(day).getDate())
+              startDate: new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)
             });
-          }
-          if (schedule.routine === 'monthly') {
-            if (new Date(schedule.startDate).getDate() === new Date(day).getDate()) {
+          } else if (schedule.routine === 'monthly') {
+            if (new Date(schedule.startDate).getDate() === new Date(dayTime).getDate()) {
               response.push({
                 ...schedule._doc,
                 id: schedule.id,
-                startDate: new Date(schedule.startDate).setMonth(new Date(day).getMonth())
+                startDate: new Date(schedule.startDate).setMonth(new Date(dayTime).getMonth())
               });
             }
-          }
-          if (schedule.startDate >= day && schedule.startDate < nextDay) {
+          } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
             response.push(schedule);
           }
         });
@@ -172,5 +183,8 @@ module.exports = {
         return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
       }
     }
+  },
+  Schedule: {
+    workoutId: (schedule, args, context) => WorkoutDataLoader(context).load(schedule.workoutId)
   }
 };

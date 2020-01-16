@@ -17,7 +17,7 @@ const scheduleSchema = `
   type Schedule {
     id: String
     userId: String
-    workoutId: String
+    workoutId: Workout
     startDate: Float
     routine: String
   }
