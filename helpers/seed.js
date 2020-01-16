@@ -84,10 +84,10 @@ module.exports = async (onEnd = false) => {
     console.log('Connecting to database...');
     await connect;
     console.log('Clearing data from all collections...');
-    await removeAllCollections(isProduction ? ['users'] : []);
+    await removeAllCollections(); // isProduction ? ['users'] : []
     console.log('Seeding units collection...');
     const units = await Unit.create(unitsData);
-    let users;
+    // let users;
     const usersData = [
       {
         firstname: 'Test',
@@ -124,12 +124,12 @@ module.exports = async (onEnd = false) => {
         heightUnit: units[3].id,
       }
     ];
-    if (!isProduction) {
-      console.log('Seeding users collection...');
-      users = await User.create(usersData);
-    } else {
-      users = await User.find();
-    }
+    // if (!isProduction) {
+    console.log('Seeding users collection...');
+    const users = await User.create(usersData);
+    // } else {
+    //   users = await User.find();
+    // }
     console.log('Seeding exercises collection...');
     const exercises = await Exercise.insertMany(
       exercisesData.map((exercise) => {

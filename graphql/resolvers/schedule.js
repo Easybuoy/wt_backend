@@ -18,12 +18,6 @@ const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout')
 const pubsub = new PubSub();
 const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
 
-const startOfWeek = (startDate) => {
-  const today = new Date(new Date(startDate).setHours(0, 0, 0, 0));
-  const difference = today.getDate() - today.getDay() + (today.getDay() === 0 ? -7 : 0);
-  return today.setDate(difference);
-};
-
 const sendNotification = (notification) => {
   if (notification.topic.includes('Workout')) {
     pubsub.publish(SCHEDULED_WORKOUTS, {
@@ -85,21 +79,27 @@ module.exports = {
             response.push({
               ...schedule._doc,
               id: schedule.id,
-              startDate: new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)
+              startDate: (new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)).toString()
             });
           } else if (schedule.routine === 'monthly') {
             if (new Date(schedule.startDate).getDate() === new Date(dayTime).getDate()) {
               response.push({
                 ...schedule._doc,
                 id: schedule.id,
-                startDate: new Date(schedule.startDate).setMonth(new Date(dayTime).getMonth())
+                startDate: (new Date(schedule.startDate)
+                  .setMonth(new Date(dayTime).getMonth())).toString()
               });
             }
           } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
-            response.push(schedule);
+            response.push({
+              ...schedule._doc,
+              id: schedule.id,
+              startDate: (schedule.startDate).toString()
+            });
           }
         });
       }
+      console.log(response);
       return response;
     },
     suggestionsByExperience: async (_, args, context) => {
