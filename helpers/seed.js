@@ -7,8 +7,9 @@ const Unit = require('../models/unit');
 const Exercise = require('../models/exercise');
 const Workout = require('../models/workout');
 const WorkoutExercise = require('../models/workoutExercise');
-const WorkoutSessions = require('../models/workoutSession');
+const WorkoutSession = require('../models/workoutSession');
 const Schedule = require('../models/schedule');
+const WorkoutSessionExercise = require('../models/workoutSessionExercise');
 
 const exerciseTimeByWorkoutIntensity = (intensity) => {
   if (intensity === 'Low') return 20;
@@ -153,7 +154,7 @@ module.exports = async (onEnd = false) => {
     );
     console.log('Seeding workouts collection...');
     const workouts = await Workout.create(workoutsData);
-    console.log('Seeding workout_exercises collection...');
+    console.log('Seeding workoutexercises collection...');
     const workoutExercisesData = [
       {
         workoutId: workouts[0].id,
@@ -378,9 +379,9 @@ module.exports = async (onEnd = false) => {
         pause: false
       }
     ];
-    await WorkoutSessions.insertMany(workoutSessionsData);
+    const sessions = await WorkoutSession.insertMany(workoutSessionsData);
 
-    console.log('Seeding user schedule...');
+    console.log('Seeding schedules collection...');
     const schedule = [
       {
         userId: users[0].id,
@@ -408,6 +409,31 @@ module.exports = async (onEnd = false) => {
       },
     ];
     await Schedule.create(schedule);
+
+    console.log('Seeding workoutsessionexercises collection...');
+    await WorkoutSessionExercise.insertMany([
+      {
+        sessionId: sessions[0].id,
+        exerciseId: exercises[0].id,
+        reps: 5,
+        sets: 3,
+        amountLifted: 30
+      },
+      {
+        sessionId: sessions[0].id,
+        exerciseId: exercises[1].id,
+        reps: 2,
+        sets: 4,
+        amountLifted: 20
+      },
+      {
+        sessionId: sessions[0].id,
+        exerciseId: exercises[2].id,
+        reps: 1,
+        sets: 2,
+        amountLifted: 10
+      }
+    ]);
   } catch (err) {
     console.error(`SEEDERROR: ${err.message}`);
     if (err.message.includes('ns not found')) return false;

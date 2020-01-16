@@ -5,7 +5,7 @@ const dashboardSchema = `
 
   type Dashboard {
     graphs: [Graph!]!
-    stats: [Stats!]!
+    stats: Stats!
     streak: Float
   }
 
@@ -20,8 +20,9 @@ const dashboardSchema = `
   }
 
   type Stats {
-    name: String
-    value: String
+    reps: Float
+    sets: Float
+    amountLifted: Float
   }
   
 `;

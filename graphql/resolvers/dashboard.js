@@ -1,5 +1,6 @@
 const ScheduleResolver = require('../../graphql/resolvers/schedule').Query;
 const WorkoutSession = require('../../models/workoutSession');
+const WorkoutSessionExercise = require('../../models/workoutSessionExercise');
 const User = require('../../models/user');
 
 const poundsToKg = (pounds) => pounds / 2.2046;
@@ -8,11 +9,10 @@ module.exports = {
   Query: {
     dashboard: async (_, args, context) => {
       const userId = context.user.id;
-      const stats = [];
       const userWorkoutSessions = await WorkoutSession.find({ userId }).sort({ startDate: 'asc' });
       const userSchedule = await ScheduleResolver.userSchedule(null, null, context);
       const [user] = await User.find({ _id: userId }).populate('weightUnit').populate('heightUnit');
-      const completedWorkoutSessions = userWorkoutSessions.filter(
+      const completedWorkoutSessionsWithWeight = userWorkoutSessions.filter(
         (session) => session.endDate !== null && session.weight !== null
       );
       const graphs = ['weight', 'bmi'].map((graph) => {
@@ -20,7 +20,7 @@ module.exports = {
           case 'weight':
             return {
               name: graph,
-              data: completedWorkoutSessions.map((session) => ({
+              data: completedWorkoutSessionsWithWeight.map((session) => ({
                 date: session.endDate,
                 value: session.weight,
               }))
@@ -28,7 +28,7 @@ module.exports = {
           case 'bmi':
             return {
               name: graph,
-              data: completedWorkoutSessions.map((session) => {
+              data: completedWorkoutSessionsWithWeight.map((session) => {
                 const weight = user.weightUnit.name === 'pounds' ? poundsToKg(session.weight) : session.weight;
                 const height = user.heightUnit.name === 'inches' ? user.height * 0.0254 : user.height;
                 return {
@@ -40,6 +40,17 @@ module.exports = {
           default: return false;
         }
       });
+      const completedWorkoutSessionsStats = userWorkoutSessions.filter(
+        (session) => session.endDate !== null
+      );
+      const userWorkoutSessionsExercises = await WorkoutSessionExercise.find({
+        sessionId: { $in: completedWorkoutSessionsStats.map((session) => session.id) }
+      });
+      const stats = userWorkoutSessionsExercises.reduce((total, exerciseSession) => ({
+        reps: total.reps + exerciseSession.reps,
+        sets: total.sets + exerciseSession.sets,
+        amountLifted: total.amountLifted + exerciseSession.amountLifted
+      }), { reps: 0, sets: 0, amountLifted: 0 });
 
 
       // go over all the scheduled workouts
