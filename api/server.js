@@ -33,6 +33,9 @@ const apolloServer = new ApolloServer({
       console.log('SUBS');
     }
   },
+  cacheControl: {
+    defaultMaxAge: 0,
+  },
   introspection: graphiql,
   playground: graphiql,
 });
