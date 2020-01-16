@@ -11,7 +11,8 @@ module.exports = {
       const userId = context.user.id;
       const userWorkoutSessions = await WorkoutSession.find({ userId }).sort({ startDate: 'asc' });
       const userSchedule = await ScheduleResolver.userSchedule(null, null, context);
-      const [user] = await User.find({ _id: userId }).populate('weightUnit').populate('heightUnit');
+      const [userRes] = await User.find({ _id: userId });
+      const user = userRes.populate('weightUnit').populate('heightUnit');
       const completedWorkoutSessionsWithWeight = userWorkoutSessions.filter(
         (session) => session.endDate !== null && session.weight !== null
       );
@@ -92,7 +93,8 @@ module.exports = {
       return {
         graphs,
         stats,
-        streak
+        streak,
+        user: userRes,
       };
     }
   }

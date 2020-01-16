@@ -7,6 +7,7 @@ const dashboardSchema = `
     graphs: [Graph!]!
     stats: Stats!
     streak: Float
+    user: User
   }
 
   type Graph {
