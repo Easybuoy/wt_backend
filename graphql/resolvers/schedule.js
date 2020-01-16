@@ -13,6 +13,8 @@ const Workout = require('../../models/workout');
 const Notification = require('../../models/notification');
 const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
 
+const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
+
 const pubsub = new PubSub();
 const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
 
@@ -156,5 +158,8 @@ module.exports = {
         return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
       }
     }
+  },
+  Schedule: {
+    workoutId: (schedule, args, context) => WorkoutDataLoader(context).load(schedule.workoutId)
   }
 };
