@@ -1,29 +1,15 @@
 const { PubSub } = require('apollo-server-express');
-const sendmail = require('sendmail')({
-  logger: {
-    debug: console.log,
-    info: console.info,
-    warn: console.warn,
-    error: console.error
-  },
-});
-const Mailgen = require('mailgen');
 const Schedule = require('../../models/schedule');
 const User = require('../../models/user');
 const Workout = require('../../models/workout');
 const Notification = require('../../models/notification');
 const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
+const { sendMail } = require('../../helpers/helpers');
 
 const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
 
 const pubsub = new PubSub();
 const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
-
-const startOfWeek = (startDate) => {
-  const today = new Date(new Date(startDate).setHours(0, 0, 0, 0));
-  const difference = today.getDate() - today.getDay() + (today.getDay() === 0 ? -7 : 0);
-  return today.setDate(difference);
-};
 
 const sendNotification = (notification) => {
   if (notification.topic.includes('Workout')) {
@@ -31,42 +17,6 @@ const sendNotification = (notification) => {
       scheduledWorkoutAlert: { ...notification._doc, id: notification.id }
     });
   }
-};
-
-const mailGenerator = new Mailgen({
-  theme: 'default',
-  product: {
-    // Appears in header & footer of e-mails
-    name: 'Trackdrills',
-    link: 'http://trackdrills.com/',
-    logo: 'http://trackdrills.com/assets/images/logo.png'
-  }
-});
-
-const sendEmail = (notification, user) => {
-  sendmail({
-    from: 'melquip7@gmail.com',
-    to: 'durolawk@gmail.com',
-    subject: notification.topic,
-    html: mailGenerator.generate({
-      body: {
-        name: user.firstname,
-        intro: notification.topic,
-        action: {
-          instructions: notification.message,
-          button: {
-            color: '#22BC66',
-            text: 'Scheduled workouts',
-            link: `http://trackdrills.com/workout/${notification.topic.split('_')[1]}`
-          }
-        },
-        outro: 'Good luck!'
-      }
-    }),
-  }, (err, reply) => {
-    console.log(err && err.stack);
-    console.dir(reply);
-  });
 };
 
 module.exports = {
@@ -154,7 +104,7 @@ module.exports = {
       if (user.reminderType === 'notification') {
         sendNotification(newNotification);
       } else {
-        sendEmail(newNotification, user);
+        sendMail(newNotification, user);
       }
       return newNotification;
     },
