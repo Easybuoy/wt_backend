@@ -16,9 +16,9 @@ module.exports = {
       const completedWorkoutSessionsWithWeight = userWorkoutSessions.filter(
         (session) => session.endDate !== null && session.weight !== null
       );
-      const graphs = ['weight', 'bmi'].map((graph) => {
+      const graphs = ['Weight', 'BMI'].map((graph) => {
         switch (graph) {
-          case 'weight':
+          case 'Weight':
             return {
               name: graph,
               data: completedWorkoutSessionsWithWeight.map((session) => ({
@@ -26,7 +26,7 @@ module.exports = {
                 value: session.weight,
               }))
             };
-          case 'bmi':
+          case 'BMI':
             return {
               name: graph,
               data: completedWorkoutSessionsWithWeight.map((session) => {
@@ -34,7 +34,7 @@ module.exports = {
                 const height = user.heightUnit.name === 'inches' ? user.height * 0.0254 : user.height;
                 return {
                   date: session.endDate,
-                  value: weight / height
+                  value: (weight / height).toFixed(2)
                 };
               })
             };
@@ -89,7 +89,6 @@ module.exports = {
           }
         }
       });
-
       return {
         graphs,
         stats,

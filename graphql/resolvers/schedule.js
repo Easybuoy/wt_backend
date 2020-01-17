@@ -67,7 +67,8 @@ module.exports = {
               response.push({
                 ...schedule._doc,
                 id: schedule.id,
-                startDate: new Date(schedule.startDate).setMonth(new Date(dayTime).getMonth())
+                startDate: new Date(schedule.startDate)
+                  .setMonth(new Date(dayTime).getMonth())
               });
             }
           } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
@@ -118,10 +119,6 @@ module.exports = {
         workoutId, startDate, reminderTime, routine, userId
       });
       schedule = await schedule.save();
-      if (routine === 'daily') {
-        // start on startDate and repeats every 24 hours
-        // stops
-      }
       return schedule;
     }
   },
