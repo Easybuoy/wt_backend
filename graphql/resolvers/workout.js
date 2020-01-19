@@ -46,7 +46,8 @@ module.exports = {
             startDate: Date.now(),
             pause: false,
             endDate: null,
-            picture: null
+            picture: null,
+            weight: null
           });
           workoutSession = await workoutSession.save();
         }
@@ -80,7 +81,7 @@ module.exports = {
       }
       return workoutSession ? { ...workoutSession._doc, id: workoutSession.id } : null;
     },
-    updateCompletedWorkout: async (_, { input: { sessionId, file } }) => {
+    updateCompletedWorkout: async (_, { input: { sessionId, file, weight } }) => {
       try {
         console.log('received:', sessionId, file);
         let image = await file;
@@ -109,7 +110,7 @@ module.exports = {
         console.log('await cloudinary', image);
         return WorkoutSession.findOneAndUpdate(
           { _id: sessionId },
-          { picture: image.url },
+          { picture: image.url, weight },
           { new: true }
         );
       } catch (err) {

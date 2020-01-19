@@ -13,8 +13,14 @@
   * [Query](#query)
   * [Mutation](#mutation)
   * [Objects](#objects)
+    * [Dashboard](#dashboard)
     * [Exercise](#exercise)
-    * [File](#file)
+    * [Graph](#graph)
+    * [GraphData](#graphdata)
+    * [Notification](#notification)
+    * [Schedule](#schedule)
+    * [Stats](#stats)
+    * [Subscription](#subscription)
     * [Unit](#unit)
     * [User](#user)
     * [UserAuthResponse](#userauthresponse)
@@ -23,6 +29,8 @@
     * [WorkoutSession](#workoutsession)
   * [Inputs](#inputs)
     * [Filter](#filter)
+    * [NotificationInput](#notificationinput)
+    * [ScheduleInput](#scheduleinput)
     * [UpdateCompletedWorkoutInput](#updatecompletedworkoutinput)
     * [UserFormLoginInput](#userformlogininput)
     * [UserPlatformAuthInput](#userplatformauthinput)
@@ -145,6 +153,26 @@ Get a specific of exercise
 <td valign="top">[<a href="#workoutsession">WorkoutSession</a>!]!</td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>userSchedule</strong></td>
+<td valign="top">[<a href="#schedule">Schedule</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>suggestionsByExperience</strong></td>
+<td valign="top">[<a href="#workout">Workout</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>notifications</strong></td>
+<td valign="top">[<a href="#notification">Notification</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>dashboard</strong></td>
+<td valign="top"><a href="#dashboard">Dashboard</a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -232,18 +260,73 @@ Login with Google account - Authenticates a user with a json web token
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>updateCompletedWorkout</strong></td>
-<td valign="top"><a href="#file">File</a></td>
+<td valign="top"><a href="#workoutsession">WorkoutSession</a>!</td>
 <td></td>
 </tr>
 <tr>
-<td colspan="2" align="right" valign="top">file</td>
-<td valign="top"><a href="#upload">Upload</a></td>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#updatecompletedworkoutinput">UpdateCompletedWorkoutInput</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>pushNotification</strong></td>
+<td valign="top"><a href="#notification">Notification</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#notificationinput">NotificationInput</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>scheduleWorkout</strong></td>
+<td valign="top"><a href="#schedule">Schedule</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#scheduleinput">ScheduleInput</a>!</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 
 ## Objects
+
+### Dashboard
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>graphs</strong></td>
+<td valign="top">[<a href="#graph">Graph</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>stats</strong></td>
+<td valign="top"><a href="#stats">Stats</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>streak</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>user</strong></td>
+<td valign="top"><a href="#user">User</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 ### Exercise
 
@@ -310,6 +393,11 @@ Object parameter for fetching exercises
 <td></td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>description</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>time</strong></td>
 <td valign="top"><a href="#float">Float</a></td>
 <td></td>
@@ -317,7 +405,7 @@ Object parameter for fetching exercises
 </tbody>
 </table>
 
-### File
+### Graph
 
 <table>
 <thead>
@@ -330,18 +418,167 @@ Object parameter for fetching exercises
 </thead>
 <tbody>
 <tr>
-<td colspan="2" valign="top"><strong>filename</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
+<td colspan="2" valign="top"><strong>name</strong></td>
+<td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>mimetype</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
+<td colspan="2" valign="top"><strong>data</strong></td>
+<td valign="top">[<a href="#graphdata">GraphData</a>!]!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### GraphData
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>encoding</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
+<td colspan="2" valign="top"><strong>value</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Notification
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>userId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>message</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>topic</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td>
+
+A informative field describing relevant content and its ID
+
+</td>
+</tr>
+</tbody>
+</table>
+
+### Schedule
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>userId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>workoutId</strong></td>
+<td valign="top"><a href="#workout">Workout</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>startDate</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>routine</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Stats
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>reps</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>sets</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>amountLifted</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Subscription
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>_</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>scheduledWorkoutAlert</strong></td>
+<td valign="top"><a href="#notification">Notification</a></td>
 <td></td>
 </tr>
 </tbody>
@@ -468,6 +705,11 @@ Application user
 <td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>reminderType</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -582,6 +824,11 @@ Application user login platform
 <td></td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>picture</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>exercises</strong></td>
 <td valign="top">[<a href="#exercise">Exercise</a>!]!</td>
 <td></td>
@@ -611,6 +858,11 @@ Application user login platform
 <td valign="top"><a href="#workoutsession">WorkoutSession</a></td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>experience</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -627,6 +879,11 @@ Application user login platform
 </thead>
 <tbody>
 <tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>userId</strong></td>
 <td valign="top"><a href="#string">String</a></td>
 <td></td>
@@ -634,6 +891,16 @@ Application user login platform
 <tr>
 <td colspan="2" valign="top"><strong>workoutId</strong></td>
 <td valign="top"><a href="#workout">Workout</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exerciseId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exerciseTimer</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
 <td></td>
 </tr>
 <tr>
@@ -654,6 +921,11 @@ Application user login platform
 <tr>
 <td colspan="2" valign="top"><strong>picture</strong></td>
 <td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>weight</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
 <td></td>
 </tr>
 </tbody>
@@ -685,6 +957,69 @@ Application user login platform
 </tbody>
 </table>
 
+### NotificationInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>userId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>message</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>topic</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### ScheduleInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>workoutId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>startDate</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>reminderTime</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>routine</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ### UpdateCompletedWorkoutInput
 
 <table>
@@ -702,8 +1037,13 @@ Application user login platform
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>imageUrl</strong></td>
+<td colspan="2" valign="top"><strong>file</strong></td>
 <td valign="top"><a href="#upload">Upload</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>weight</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
 <td></td>
 </tr>
 </tbody>
@@ -909,6 +1249,11 @@ Object parameter for updating user
 <td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>reminderType</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -931,6 +1276,16 @@ Object parameter for updating user
 <tr>
 <td colspan="2" valign="top"><strong>workoutId</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exerciseId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exerciseTimer</strong></td>
+<td valign="top"><a href="#float">Float</a>!</td>
 <td></td>
 </tr>
 <tr>
