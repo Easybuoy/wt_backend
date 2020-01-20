@@ -20,7 +20,7 @@ const createQuery = (schedule) => `mutation {
 cron.schedule('*/5 * * * * *', async () => {
   console.log('5 secs');
   fs.writeFileSync(`${__dirname}/logs.txt`, '5secs');
-  const schedules = await Schedule.find()
+  const schedules = await Schedule.find();
   schedules.forEach((schedule) => {
     const date = new Date(schedule.startDate);
     date.setMinutes(-schedule.reminderTime);
