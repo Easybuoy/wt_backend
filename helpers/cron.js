@@ -71,8 +71,7 @@ cron.schedule('*/5 * * * * *', async () => {
       month: date.getMonth() + 1,
     };
     // schedule reminders for this week
-    // `${date.sec} ${date.min} ${date.hour} ${date.day} ${date.month} *`
-    cron.schedule('0 19 18 20 1 *', async () => {
+    cron.schedule(`${date.sec} ${date.min} ${date.hour} ${date.day} ${date.month} *`, async () => {
       const scheduleStillExists = await Schedule.findById(schedule.id);
       if (scheduleStillExists) {
         await axios.post('http://localhost:4000/api', { query: createQuery(schedule) });
