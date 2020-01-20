@@ -63,15 +63,6 @@ module.exports = {
               id: schedule.id,
               startDate: new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)
             });
-          } else if (schedule.routine === 'monthly') {
-            if (new Date(schedule.startDate).getDate() === new Date(dayTime).getDate()) {
-              response.push({
-                ...schedule._doc,
-                id: schedule.id,
-                startDate: new Date(schedule.startDate)
-                  .setMonth(new Date(dayTime).getMonth())
-              });
-            }
           } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
             response.push(schedule);
           }
