@@ -4,6 +4,7 @@ const User = require('../../models/user');
 const Workout = require('../../models/workout');
 const Notification = require('../../models/notification');
 const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
+
 const { sendMail } = require('../../helpers/helpers');
 
 const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
@@ -95,6 +96,9 @@ module.exports = {
   Mutation: {
     pushNotification: async (_, { input: { userId, message, topic } }) => {
       const user = await User.findById(userId);
+      console.log(user);
+      const schedule = await Schedule.find({ userId });
+      console.log(schedule);
       let newNotification = new Notification({
         userId,
         message,
@@ -102,12 +106,16 @@ module.exports = {
         type: user.reminderType
       });
       newNotification = await newNotification.save();
+      // schedule.map(session => {
+      // if(session.startDate === newNotification.reminderTime + Date.parse(new Date())) {
       if (user.reminderType === 'notification') {
         sendNotification(newNotification);
       } else {
-        sendMail(newNotification, user);
+        await sendMail(newNotification, user);
       }
       return newNotification;
+      // }
+      // })
     },
     scheduleWorkout: async (_, {
       input: {

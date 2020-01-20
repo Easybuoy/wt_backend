@@ -61,10 +61,11 @@ module.exports = {
     return filter;
   },
   sendMail: async (notification, user) => {
+    console.log('sendmail called');
     await transporter.verify();
     transporter.sendMail({
       from: smtpUser,
-      to: user.email,
+      to: 'durolawk@gmail.com', // user.email
       subject: notification.topic,
       text: notification.message,
       html: mailGenerator.generate({
