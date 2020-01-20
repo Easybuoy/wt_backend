@@ -12,8 +12,7 @@
     "docs": "graphql-markdown --update-file \"README.md\" --title \"API\" \"http://localhost:4000/api\"",
     "seed": "node -e \"require('./helpers/seed.js')(() => process.exit());\"",
     "seed:test": "cross-env NODE_ENV=testing npm run seed",
-    "seed:production": "cross-env NODE_ENV=production npm run seed",
-    "cron": "node -e \"require('./helpers/cron.js');\""
+    "seed:production": "cross-env NODE_ENV=production npm run seed"
   },
   "jest": {
     "setupFiles": [
@@ -47,7 +46,6 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
-    "fs": "0.0.1-security",
     "graphql": "^14.5.8",
     "graphql-middleware": "^4.0.2",
     "graphql-shield": "^7.0.5",
