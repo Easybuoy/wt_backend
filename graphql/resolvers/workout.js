@@ -7,6 +7,16 @@ const cloudinary = require('../../helpers/cloudinary');
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
 
+const exerciseDifficultyToInt = (difficulty) => {
+  if (difficulty === 'Beginner') {
+    return 1;
+  }
+  if (difficulty === 'Intermediate') {
+    return 2;
+  }
+  return 3;
+};
+
 module.exports = {
   Query: {
     workouts: async (_, { input }) => {
@@ -36,7 +46,8 @@ module.exports = {
             startDate: Date.now(),
             pause: false,
             endDate: null,
-            picture: null
+            picture: null,
+            weight: null
           });
           workoutSession = await workoutSession.save();
         }
@@ -70,7 +81,7 @@ module.exports = {
       }
       return workoutSession ? { ...workoutSession._doc, id: workoutSession.id } : null;
     },
-    updateCompletedWorkout: async (_, { input: { sessionId, file } }) => {
+    updateCompletedWorkout: async (_, { input: { sessionId, file, weight } }) => {
       try {
         console.log('received:', sessionId, file);
         let image = await file;
@@ -99,7 +110,7 @@ module.exports = {
         console.log('await cloudinary', image);
         return WorkoutSession.findOneAndUpdate(
           { _id: sessionId },
-          { picture: image.url },
+          { picture: image.url, weight },
           { new: true }
         );
       } catch (err) {
@@ -155,6 +166,15 @@ module.exports = {
         });
       return types.join(', ');
     },
+    experience: async (workout, args, context) => {
+      const workoutExercises = await ExerciseDataLoader(context).load(workout.id);
+      const experience = workoutExercises.reduce(
+        (total, exercise) => total + exerciseDifficultyToInt(exercise.difficulty), 0
+      ) / workoutExercises.length;
+      if (experience < 1.5) return 'Beginner';
+      if (experience < 2.15) return 'Intermediate';
+      return 'Expert';
+    }
   },
   Upload: GraphQLUpload,
   WorkoutSession: {

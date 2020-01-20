@@ -1,0 +1,33 @@
+const scheduleSchema = `
+  extend type Query {
+    userSchedule: [Schedule!]!
+    suggestionsByExperience: [Workout!]!
+    notifications: [Notification!]!
+  }
+  
+  extend type Mutation {
+    pushNotification(input: NotificationInput!): Notification!
+    scheduleWorkout(input: ScheduleInput!): Schedule!
+  }
+
+  extend type Subscription {
+    scheduledWorkoutAlert: Notification
+  }
+  
+  type Schedule {
+    id: String
+    userId: String
+    workoutId: Workout
+    startDate: Float
+    routine: String
+  }
+
+  input ScheduleInput {
+    workoutId: String
+    startDate: Float
+    reminderTime: Float
+    routine: String
+  }
+
+`;
+module.exports = scheduleSchema;

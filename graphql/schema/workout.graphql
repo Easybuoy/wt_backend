@@ -23,6 +23,7 @@ const workoutSchema = `
     muscles: String
     types: String
     session: WorkoutSession
+    experience: String
   }
 
   type WorkoutSession {
@@ -35,6 +36,7 @@ const workoutSchema = `
     endDate: Float
     pause: Boolean
     picture: String
+    weight: Float
   }
 
   input WorkoutSessionInput {
@@ -49,6 +51,7 @@ const workoutSchema = `
   input UpdateCompletedWorkoutInput {
     sessionId: String!
     file: Upload
+    weight: Float
   }
 
 `;

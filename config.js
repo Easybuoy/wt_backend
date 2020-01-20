@@ -13,7 +13,9 @@ const {
   GRAPHIQL_PLAYGROUND,
   CLOUD_NAME,
   CLOUDINARY_API_KEY,
-  CLOUDINARY_API_SECRET
+  CLOUDINARY_API_SECRET,
+  SMTP_USERNAME,
+  SMTP_PASSWORD
 } = process.env;
 
 module.exports = {
@@ -32,4 +34,6 @@ module.exports = {
   cloudName: CLOUD_NAME,
   cloudinaryApiKey: CLOUDINARY_API_KEY,
   cloudinaryApiSecret: CLOUDINARY_API_SECRET,
+  smtpUser: SMTP_USERNAME,
+  smtpPass: SMTP_PASSWORD,
 };
