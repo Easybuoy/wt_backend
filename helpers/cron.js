@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const axios = require('axios');
+const { isProduction, port } = require('../config');
 const Schedule = require('../models/schedule');
 
 const createQuery = (schedule) => `mutation {
@@ -15,7 +16,7 @@ const createQuery = (schedule) => `mutation {
 }`;
 
 // Every monday, schedule reminders for all user workouts for the next week
-cron.schedule('*/5 * * * * *', async () => {
+cron.schedule('* * 0 * * Sunday', async () => {
   const futureWeek = new Date().setDate(new Date().getDate() + 7);
   // scheduled workouts, between now and a week in the future
   const scheduledWorkouts = await Schedule.find({
@@ -74,7 +75,14 @@ cron.schedule('*/5 * * * * *', async () => {
     cron.schedule(`${date.sec} ${date.min} ${date.hour} ${date.day} ${date.month} *`, async () => {
       const scheduleStillExists = await Schedule.findById(schedule.id);
       if (scheduleStillExists) {
-        await axios.post('http://localhost:4000/api', { query: createQuery(schedule) });
+        await axios.post(
+          (
+            isProduction
+              ? 'https://trackdrills-staging.herokuapp.com/api'
+              : `http://localhost:${port}/api`
+          ),
+          { query: createQuery(schedule) }
+        );
       }
     });
   });
