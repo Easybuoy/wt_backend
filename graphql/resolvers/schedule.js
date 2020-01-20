@@ -87,9 +87,6 @@ module.exports = {
   Mutation: {
     pushNotification: async (_, { input: { userId, message, topic } }) => {
       const user = await User.findById(userId);
-      console.log(user);
-      const schedule = await Schedule.find({ userId });
-      console.log(schedule);
       let newNotification = new Notification({
         userId,
         message,
@@ -97,16 +94,12 @@ module.exports = {
         type: user.reminderType
       });
       newNotification = await newNotification.save();
-      // schedule.map(session => {
-      // if(session.startDate === newNotification.reminderTime + Date.parse(new Date())) {
       if (user.reminderType === 'notification') {
         sendNotification(newNotification);
       } else {
         await sendMail(newNotification, user);
       }
       return newNotification;
-      // }
-      // })
     },
     scheduleWorkout: async (_, {
       input: {
