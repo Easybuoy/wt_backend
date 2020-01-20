@@ -1,41 +1,82 @@
 const cron = require('node-cron');
 const axios = require('axios');
-const fs = require('fs');
 const Schedule = require('../models/schedule');
-const User = require('../models/user');
 
 const createQuery = (schedule) => `mutation {
-    pushNotification (input: {
-      userId: "${schedule.userId}",
-      message: "You have a scheduled workout in ${schedule.reminderTime} minutes!",
-      topic: "Workout_${schedule.workoutId}"
-    }) {
-      userId
-      message
-      topic
-    }
-  }`;
+  pushNotification (input: {
+    userId: "${schedule.userId}",
+    message: "You have a scheduled workout in ${schedule.reminderTime} minutes!",
+    topic: "Workout_${schedule.workoutId}"
+  }) {
+    userId
+    message
+    topic
+  }
+}`;
 
-
+// Every monday, schedule reminders for all user workouts for the next week
 cron.schedule('*/5 * * * * *', async () => {
-  console.log('5 secs');
-  fs.writeFileSync(`${__dirname}/logs.txt`, '5secs');
-  const schedules = await Schedule.find();
-  schedules.forEach((schedule) => {
-    const date = new Date(schedule.startDate);
+  const futureWeek = new Date().setDate(new Date().getDate() + 7);
+  // scheduled workouts, between now and a week in the future
+  const scheduledWorkouts = await Schedule.find({
+    startDate: { $gt: Date.now(), $lt: futureWeek },
+    routine: 'no'
+  });
+  const scheduledRoutines = await Schedule.find({
+    routine: { $ne: 'no' },
+  });
+  const scheduled = [...scheduledWorkouts, ...scheduledRoutines];
+  const allScheduled = [];
+  // same logic than userSchedule resolver
+  for (let day = new Date(); day < new Date(futureWeek); day.setDate(new Date(day).getDate() + 1)) {
+    const dayTime = day.getTime();
+    const dayOfWeek = new Date(dayTime).getDay();
+    const nextDay = new Date(dayTime).setDate(new Date(dayTime).getDate() + 1);
+    scheduled.forEach((schedule) => {
+      const scheduleDate = new Date(schedule.startDate);
+      const sDate = {
+        h: scheduleDate.getHours(),
+        m: scheduleDate.getMinutes(),
+        s: scheduleDate.getSeconds(),
+        ms: scheduleDate.getMilliseconds(),
+      };
+      if ((
+        schedule.routine === 'daily'
+        || (schedule.routine === 'weekly' && scheduleDate.getDay() === dayOfWeek))
+        && schedule.startDate < dayTime
+      ) {
+        allScheduled.push({
+          ...schedule._doc,
+          id: schedule.id,
+          startDate: new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)
+        });
+      } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
+        allScheduled.push(schedule);
+      }
+    });
+  }
+  // sort all by date
+  allScheduled.sort((s1, s2) => {
+    if (s1.startDate > s2.startDate) return 1;
+    if (s1.startDate < s2.startDate) return -1;
+    return 0;
+  }).forEach((schedule) => {
+    let date = new Date(schedule.startDate);
     date.setMinutes(-schedule.reminderTime);
-    fs.writeFileSync('./logs.txt', `${date.getSeconds()}
-      ${date.getMinutes()}
-      ${date.getHours()}
-      ${date.getDate()}
-      ${date.getMonth()} *`);
-    cron.schedule(`${date.getSeconds()}
-    ${date.getMinutes()}
-    ${date.getHours()}
-    ${date.getDate()}
-    ${date.getMonth()} *`, () => {
-      console.log(schedule);
-      axios.post('http://localhost:4000/api', { query: createQuery(schedule) });
+    date = {
+      sec: date.getSeconds(),
+      min: date.getMinutes(),
+      hour: date.getHours(),
+      day: date.getDate(),
+      month: date.getMonth() + 1,
+    };
+    // schedule reminders for this week
+    // `${date.sec} ${date.min} ${date.hour} ${date.day} ${date.month} *`
+    cron.schedule('0 19 18 20 1 *', async () => {
+      const scheduleStillExists = await Schedule.findById(schedule.id);
+      if (scheduleStillExists) {
+        await axios.post('http://localhost:4000/api', { query: createQuery(schedule) });
+      }
     });
   });
 });

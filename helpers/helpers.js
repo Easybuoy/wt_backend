@@ -63,9 +63,9 @@ module.exports = {
   sendMail: async (notification, user) => {
     console.log('sendmail called');
     await transporter.verify();
-    transporter.sendMail({
+    await transporter.sendMail({
       from: smtpUser,
-      to: 'durolawk@gmail.com', // user.email
+      to: user.email,
       subject: notification.topic,
       text: notification.message,
       html: mailGenerator.generate({
@@ -83,6 +83,8 @@ module.exports = {
           outro: 'Good luck!'
         }
       }),
+    }, (err, info) => {
+      if (err) console.error(err.message);
     });
   }
 };
