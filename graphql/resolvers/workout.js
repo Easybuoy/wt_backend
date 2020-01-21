@@ -59,7 +59,7 @@ module.exports = {
               pause: false
             },
             { new: true }
-          )
+          );
         }
       } else if (typeof end === 'undefined') {
         // pause session
