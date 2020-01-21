@@ -40,4 +40,13 @@ describe('authentication', () => {
     expect(user).toBeDefined();
     done();
   });
+  it('it should update user', async (done) => {
+    const newUser = await createUser();
+    const user = await authResolver.Mutation.updateUser(
+      null,
+      { input: { id: newUser.id, firstname: 'Sandrava' } }
+    );
+    expect(user).toBeDefined();
+    done();
+  });
 });
