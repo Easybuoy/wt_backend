@@ -19,6 +19,7 @@ const permissions = shield(
       addUser: allow,
       authGoogle: allow,
       authFacebook: allow,
+      pushNotification: allow,
     },
   },
   {
