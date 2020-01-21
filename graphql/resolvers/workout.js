@@ -50,25 +50,33 @@ module.exports = {
             weight: null
           });
           workoutSession = await workoutSession.save();
-        }
-      } else if (typeof end === 'undefined') {
-        // pause session
-        if (workoutSession && workoutSession._doc.pause !== pause) {
-          workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
-          workoutSession = await WorkoutSession.updateOne(
+        } else {
+          workoutSession = await WorkoutSession.findOneAndUpdate(
             { _id: workoutSession.id },
             {
               exerciseId,
               exerciseTimer,
-              pause: true
+              pause: false
+            },
+            { new: true }
+          )
+        }
+      } else if (typeof end === 'undefined') {
+        // pause session
+        if (workoutSession && workoutSession._doc.pause !== pause) {
+          workoutSession = await WorkoutSession.findOneAndUpdate(
+            { _id: workoutSession.id },
+            {
+              exerciseId,
+              exerciseTimer,
+              pause
             },
             { new: true }
           );
         }
       } else if (workoutSession && workoutSession._doc.endDate === null) {
         // end session
-        workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
-        workoutSession = await WorkoutSession.updateOne(
+        workoutSession = await WorkoutSession.findOneAndUpdate(
           { _id: workoutSession.id },
           {
             exerciseId,

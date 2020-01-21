@@ -58,7 +58,7 @@ module.exports = {
         if (data) {
           const user = await User.asFacebookUser(data);
           if (user) {
-            return genAuthResponse(user);
+            return genAuthResponse(user, true);
           }
         }
         if (info) {
@@ -85,7 +85,7 @@ module.exports = {
         if (data) {
           const user = await User.asGoogleUser(data);
           if (user) {
-            return genAuthResponse(user);
+            return genAuthResponse(user, true);
           }
         }
         if (info) {
