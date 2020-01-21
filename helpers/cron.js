@@ -17,13 +17,23 @@ const pushNotificationQuery = (schedule) => `mutation {
   }
 }`;
 
-// Every monday, schedule reminders for all user workouts for the next week
+// TODO:
+// if server restarts/closes, crons will no longer be scheduled
+// because the crons collection will hold old records
+// and right now there's no way of rescheduling
+// either drop crons collection on server restart/close
+// change the way crons are saved in order to be able to
+// reschedule or cancel a notification
+
+// Every minute, schedule reminders
+// for all user scheduled workouts for the next week
+// but only if they (the cron jobs) haven't been scheduled yet
 cron.schedule('* * * * *', async () => {
   console.log('\n----------------1min----------------');
   console.log('---CRON-SCHEDULING-USER-REMINDERS---\n');
-  const todayMidnight = new Date().setHours(0, 0, 0, 0);
   const crons = await Cron.find();
   const futureWeek = new Date().setDate(new Date().getDate() + 7);
+  const todayMidnight = new Date().setHours(0, 0, 0, 0);
   // scheduled workouts, between now and a week in the future
   const scheduledWorkouts = await Schedule.find({
     startDate: { $gt: todayMidnight, $lt: futureWeek },
