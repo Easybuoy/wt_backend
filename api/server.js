@@ -13,6 +13,7 @@ const validators = require('../middleware/validator');
 const permissions = require('../middleware/shield');
 
 const app = express();
+require('../helpers/cron');
 
 app.use(helmet());
 app.use(cors());

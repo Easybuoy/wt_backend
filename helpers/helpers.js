@@ -61,8 +61,9 @@ module.exports = {
     return filter;
   },
   sendMail: async (notification, user) => {
+    console.log('sendmail called');
     await transporter.verify();
-    transporter.sendMail({
+    await transporter.sendMail({
       from: smtpUser,
       to: user.email,
       subject: notification.topic,
@@ -82,6 +83,8 @@ module.exports = {
           outro: 'Good luck!'
         }
       }),
+    }, (err, info) => {
+      if (err) console.error(err.message);
     });
   }
 };
