@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const cron = require('node-cron');
 const axios = require('axios');
-const { isProduction, port } = require('../config');
+const { isProduction, port, notificationsCronTimer } = require('../config');
 const Cron = require('../models/cron');
 const Schedule = require('../models/schedule');
 
@@ -28,7 +28,7 @@ const pushNotificationQuery = (schedule) => `mutation {
 // Every minute, schedule reminders
 // for all user scheduled workouts for the next week
 // but only if they (the cron jobs) haven't been scheduled yet
-cron.schedule('* * * * *', async () => {
+cron.schedule(notificationsCronTimer, async () => {
   console.log('\n----------------1min----------------');
   console.log('---CRON-SCHEDULING-USER-REMINDERS---\n');
   const crons = await Cron.find();
