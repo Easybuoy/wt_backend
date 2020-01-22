@@ -28,7 +28,7 @@ module.exports = {
       return genAuthResponse(user, remember);
     },
     user: async (_, { input }, context) => {
-      const userId = context.user.id
+      const userId = context.user.id;
       const user = await User.findById(userId);
       return user;
     }
