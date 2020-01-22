@@ -3,6 +3,7 @@ const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
 const { searchBy } = require('../../helpers/helpers');
 const cloudinary = require('../../helpers/cloudinary');
+const WorkoutExercises = require('../../models/workoutExercise');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
@@ -15,6 +16,12 @@ const exerciseDifficultyToInt = (difficulty) => {
     return 2;
   }
   return 3;
+};
+
+const exerciseTimeByWorkoutIntensity = (intensity) => {
+  if (intensity === 'Low') return 20;
+  if (intensity === 'Moderate') return 30;
+  return 40; // high
 };
 
 module.exports = {
@@ -125,6 +132,34 @@ module.exports = {
         throw new Error(err.message);
       }
     },
+    customWorkout: async (_, { input }, context) => {
+      const { userId, name, description, intensity, picture, exercises,
+        equipment, muscles, types, experience } = input;
+      let customWorkout = new Workout({
+        userId,
+        name,
+        description,
+        intensity,
+        picture,
+        exercises,
+        equipment,
+        muscles,
+        types,
+        experience
+      })
+      exercises.map(async (exerciseId) => {
+        let eachWorkoutExercise = new WorkoutExercises({
+          workoutId: customWorkout.id,
+          exerciseId: exerciseId,
+          time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+        })
+        eachWorkoutExercise = await eachWorkoutExercise.save();
+        return eachWorkoutExercise
+      })
+      customWorkout = await customWorkout.save();
+      ExerciseDataLoader(context).load(customWorkout.id);
+      return customWorkout
+    }
   },
   Workout: {
     exercises: (workout, args, context) => ExerciseDataLoader(context).load(workout.id),
