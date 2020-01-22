@@ -133,8 +133,10 @@ module.exports = {
       }
     },
     customWorkout: async (_, { input }, context) => {
-      const { userId, name, description, intensity, picture, exercises,
-        equipment, muscles, types, experience } = input;
+      const {
+        userId, name, description, intensity, picture, exercises,
+        equipment, muscles, types, experience
+      } = input;
       let customWorkout = new Workout({
         userId,
         name,
@@ -146,19 +148,19 @@ module.exports = {
         muscles,
         types,
         experience
-      })
+      });
       exercises.map(async (exerciseId) => {
         let eachWorkoutExercise = new WorkoutExercises({
           workoutId: customWorkout.id,
-          exerciseId: exerciseId,
+          exerciseId,
           time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
-        })
+        });
         eachWorkoutExercise = await eachWorkoutExercise.save();
-        return eachWorkoutExercise
-      })
+        return eachWorkoutExercise;
+      });
       customWorkout = await customWorkout.save();
       ExerciseDataLoader(context).load(customWorkout.id);
-      return customWorkout
+      return customWorkout;
     }
   },
   Workout: {
