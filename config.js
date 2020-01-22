@@ -15,7 +15,8 @@ const {
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
   SMTP_USERNAME,
-  SMTP_PASSWORD
+  SMTP_PASSWORD,
+  NOTIFICATIONS_CRON_TIMER
 } = process.env;
 
 module.exports = {
@@ -36,4 +37,5 @@ module.exports = {
   cloudinaryApiSecret: CLOUDINARY_API_SECRET,
   smtpUser: SMTP_USERNAME,
   smtpPass: SMTP_PASSWORD,
+  notificationsCronTimer: NOTIFICATIONS_CRON_TIMER
 };
