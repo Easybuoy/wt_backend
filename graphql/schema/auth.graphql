@@ -2,6 +2,7 @@ const authSchema = `
   extend type Query {
     "Login - Authenticates a user with a json web token"
     authForm(input: UserFormLoginInput!): UserAuthResponse!
+    user: User!
   }
 
   extend type Mutation {
@@ -37,7 +38,6 @@ const authSchema = `
 
   "Object parameter for updating user"
   input UserUpdateInput {
-    id: String!
     firstname: String
     lastname: String
     password: String
@@ -94,5 +94,6 @@ const authSchema = `
   input UserPlatformAuthInput {
     accessToken: String!
   }
+
 `;
 module.exports = authSchema;
