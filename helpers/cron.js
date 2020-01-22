@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 const cron = require('node-cron');
 const axios = require('axios');
 const { isProduction, port } = require('../config');

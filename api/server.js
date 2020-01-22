@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send({ up: 'workout or stay-out!!!' });
 });
 
@@ -30,6 +30,7 @@ const apolloServer = new ApolloServer({
   context,
   subscriptions: {
     path: '/api/subscriptions',
+    // eslint-disable-next-line no-unused-vars
     onConnect: (connectionParams, webSocket) => {
       console.log('SUBS');
     }

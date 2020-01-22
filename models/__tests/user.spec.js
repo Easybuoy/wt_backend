@@ -1,6 +1,7 @@
 const {
   initTest,
   query,
+  // eslint-disable-next-line no-unused-vars
   createUser,
   testUser
 } = require('../../helpers/tests');
