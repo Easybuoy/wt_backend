@@ -56,7 +56,6 @@ const workoutSchema = `
   }
 
   input WorkoutInput {
-    userId: String!
     name: String!
     description: String
     intensity: String

@@ -138,11 +138,11 @@ module.exports = {
     },
     customWorkout: async (_, { input }, context) => {
       const {
-        userId, name, description, intensity, picture, exercises,
+        name, description, intensity, picture, exercises,
         equipment, muscles, types, experience
       } = input;
       let customWorkout = new Workout({
-        userId,
+        userId: context.user.id,
         name,
         description,
         intensity,
