@@ -180,7 +180,7 @@ module.exports = {
           experience
         };
         exercises.map(async (exerciseId) => {
-          let excercise = WorkoutExercises.findById(exerciseId);
+          const excercise = WorkoutExercises.findById(exerciseId);
           if (!excercise) {
             let eachWorkoutExercise = new WorkoutExercises({
               workoutId,
@@ -194,7 +194,7 @@ module.exports = {
         customWorkout = Workout.findByIdAndUpdate({ _id: workoutId }, customWorkout, { new: true });
         ExerciseDataLoader(context).load(workoutId);
       }
-      return customWorkout
+      return customWorkout;
     }
   },
   Workout: {
