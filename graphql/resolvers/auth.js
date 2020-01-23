@@ -42,6 +42,27 @@ module.exports = {
       const userId = context.user.id;
       const user = await User.findById(userId);
       return user;
+    },
+    accountRecovery: async (_, { input }, context) => {
+      if (!input) {
+        throw new Error('Enter registered email to update password!');
+      } else {
+        const user = await User.findOne({ email: input });
+        if (user) {
+          const token = jwt.sign(
+            { id: user.id, firstname: user.firstname },
+            jwtSecret,
+            { expiresIn: '20m' }
+          );
+          const buttonAction = {
+            // link needs to be edited to redirect to password input page
+            link: `http://app.trackdrills.com/reset/${token}`,
+            text: 'Reset Password'
+          };
+          sendMail(accountRecoveryMessage, user, buttonAction);
+          return user;
+        } throw new Error('Email not found in database!');
+      }
     }
   },
   Mutation: {
@@ -128,27 +149,6 @@ module.exports = {
         throw new Error('Could not update user!');
       } catch (err) {
         throw err;
-      }
-    },
-    accountRecovery: async (_, { input }, context) => {
-      if (!input) {
-        throw new Error('Enter registered email to update password!');
-      } else {
-        const user = await User.findOne({ email: input });
-        if (user) {
-          const token = jwt.sign(
-            { id: user.id, firstname: user.firstname },
-            jwtSecret,
-            { expiresIn: '20m' }
-          );
-          const buttonAction = {
-            // link needs to be edited to redirect to password input page
-            link: `http://app.trackdrills.com/reset/${token}`,
-            text: 'Reset Password'
-          };
-          sendMail(accountRecoveryMessage, user, buttonAction);
-          return user;
-        } throw new Error('Email not found in database!');
       }
     },
     resetPassword: async (_, { input }, context) => {
