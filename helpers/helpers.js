@@ -61,7 +61,8 @@ module.exports = {
             [field]: {
               $regex: input.search,
               $options: 'gi'
-            }
+            },
+            userId: null
           });
         }
       });
