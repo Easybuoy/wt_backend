@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
 const mongoose = require('mongoose');
@@ -83,6 +84,7 @@ module.exports = {
           outro: 'Good luck!'
         }
       }),
+    // eslint-disable-next-line no-unused-vars
     }, (err, info) => {
       if (err) console.error(err.message);
     });

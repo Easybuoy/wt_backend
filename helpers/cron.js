@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const cron = require('node-cron');
 const axios = require('axios');
 const { isProduction, port, notificationsCronTimer } = require('../config');

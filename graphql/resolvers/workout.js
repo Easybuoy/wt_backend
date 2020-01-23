@@ -91,8 +91,10 @@ module.exports = {
     },
     updateCompletedWorkout: async (_, { input: { sessionId, file, weight } }) => {
       try {
+        // eslint-disable-next-line no-console
         console.log('received:', sessionId, file);
         let image = await file;
+        // eslint-disable-next-line no-console
         console.log('await file before upload', image);
         const upload = new Promise((resolves, rejects) => {
           const { filename, mimetype, createReadStream } = image;
@@ -110,11 +112,13 @@ module.exports = {
           stream.on('error', rejects);
         });
         image = await upload;
+        // eslint-disable-next-line no-console
         console.log('await upload', image);
         const allowedFileTypes = ['image/jpeg', 'image/png'];
         if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
         if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
         image = await cloudinary(image.path);
+        // eslint-disable-next-line no-console
         console.log('await cloudinary', image);
         return WorkoutSession.findOneAndUpdate(
           { _id: sessionId },

@@ -39,6 +39,7 @@ describe('Exercise data loader', () => {
         }
       }
     `, testUser.token);
+    // eslint-disable-next-line no-console
     console.log(firstWorkout);
     // dataloader must only run once even when fetching more than 1 unit
     expect(DLSpy).toHaveBeenCalledTimes(1);

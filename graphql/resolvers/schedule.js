@@ -121,6 +121,7 @@ module.exports = {
   Subscription: {
     scheduledWorkoutAlert: {
       subscribe: () => {
+        // eslint-disable-next-line no-console
         console.log(SCHEDULED_WORKOUTS);
         return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
       }
