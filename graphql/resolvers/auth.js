@@ -27,6 +27,11 @@ module.exports = {
       }
       return genAuthResponse(user, remember);
     },
+    user: async (_, { input }, context) => {
+      const userId = context.user.id;
+      const user = await User.findById(userId);
+      return user;
+    }
   },
   Mutation: {
     addUser: async (_, { input }) => {
@@ -101,11 +106,11 @@ module.exports = {
         return error;
       }
     },
-    updateUser: async (_, { input }) => {
+    updateUser: async (_, { input }, context) => {
       const newData = { ...input };
       delete newData.id;
       try {
-        const updatedUser = await User.findByIdAndUpdate(input.id, newData, { new: true });
+        const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });
         if (updatedUser) {
           return { ...updatedUser._doc, password: null, id: updatedUser.id };
         }
