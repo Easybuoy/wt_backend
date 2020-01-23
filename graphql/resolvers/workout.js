@@ -138,33 +138,63 @@ module.exports = {
     },
     customWorkout: async (_, { input }, context) => {
       const {
-        name, description, intensity, picture, exercises,
-        equipment, muscles, types, experience
+        name, description, workoutId, intensity, picture,
+        exercises, equipment, muscles, types, experience
       } = input;
-      let customWorkout = new Workout({
-        userId: context.user.id,
-        name,
-        description,
-        intensity,
-        picture,
-        exercises,
-        equipment,
-        muscles,
-        types,
-        experience
-      });
-      exercises.map(async (exerciseId) => {
-        let eachWorkoutExercise = new WorkoutExercises({
-          workoutId: customWorkout.id,
-          exerciseId,
-          time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+      let customWorkout = Workout.findOne({ id: workoutId });
+      if (!customWorkout) {
+        customWorkout = new Workout({
+          userId: context.user.id,
+          name,
+          description,
+          intensity,
+          picture,
+          exercises,
+          equipment,
+          muscles,
+          types,
+          experience
         });
-        eachWorkoutExercise = await eachWorkoutExercise.save();
-        return eachWorkoutExercise;
-      });
-      customWorkout = await customWorkout.save();
-      ExerciseDataLoader(context).load(customWorkout.id);
-      return customWorkout;
+        exercises.map(async (exerciseId) => {
+          let eachWorkoutExercise = new WorkoutExercises({
+            workoutId: customWorkout.id,
+            exerciseId,
+            time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+          });
+          eachWorkoutExercise = await eachWorkoutExercise.save();
+          return eachWorkoutExercise;
+        });
+        customWorkout = await customWorkout.save();
+        ExerciseDataLoader(context).load(customWorkout.id);
+      } else {
+        customWorkout = {
+          userId: context.user.id,
+          name,
+          description,
+          intensity,
+          picture,
+          exercises,
+          equipment,
+          muscles,
+          types,
+          experience
+        };
+        exercises.map(async (exerciseId) => {
+          let excercise = WorkoutExercises.findById(exerciseId);
+          if (!excercise) {
+            let eachWorkoutExercise = new WorkoutExercises({
+              workoutId,
+              exerciseId,
+              time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+            });
+            eachWorkoutExercise = await eachWorkoutExercise.save();
+            return eachWorkoutExercise;
+          } return excercise;
+        });
+        customWorkout = Workout.findByIdAndUpdate({ _id: workoutId }, customWorkout, { new: true });
+        ExerciseDataLoader(context).load(workoutId);
+      }
+      return customWorkout
     }
   },
   Workout: {
