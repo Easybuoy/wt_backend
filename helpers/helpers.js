@@ -61,7 +61,7 @@ module.exports = {
     }
     return filter;
   },
-  sendMail: async (notification, user) => {
+  sendMail: async (notification, user, buttonAction) => {
     console.log('sendmail called');
     await transporter.verify();
     await transporter.sendMail({
@@ -77,8 +77,8 @@ module.exports = {
             instructions: notification.message,
             button: {
               color: '#22BC66',
-              text: 'Scheduled workouts',
-              link: `http://app.trackdrills.com/workout/${notification.topic.split('_')[1]}`
+              text: buttonAction.text,
+              link: buttonAction.link
             }
           },
           outro: 'Good luck!'
