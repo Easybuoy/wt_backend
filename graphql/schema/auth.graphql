@@ -2,6 +2,7 @@ const authSchema = `
   extend type Query {
     "Login - Authenticates a user with a json web token"
     authForm(input: UserFormLoginInput!): UserAuthResponse!
+    "find user from token"
     user: User!
   }
 
@@ -14,6 +15,10 @@ const authSchema = `
     authFacebook(input: UserPlatformAuthInput!): UserAuthResponse!
     "Login with Google account - Authenticates a user with a json web token"
     authGoogle(input: UserPlatformAuthInput!): UserAuthResponse!
+    "Send email to user with link to password reset page"
+    accountRecovery(input: String!): UserAuthResponse!
+    "Edits the password for users with reset token"
+    resetPassword(input: resetPasswordInput): UserAuthResponse!
   }
 
   "Application user"
@@ -93,6 +98,11 @@ const authSchema = `
   "Object parameter for user platform authentication"
   input UserPlatformAuthInput {
     accessToken: String!
+  }
+
+  input resetPasswordInput {
+    password: String!
+    rePassword: String!
   }
 
 `;

@@ -30,6 +30,16 @@ const validators = {
         throw new UserInputError('Password is not strong enough!');
       }
       return resolve(parent, args, context);
+    },
+    resetPassword: (resolve, parent, args, context) => {
+      const { password, rePassword } = args.input;
+      if (password !== rePassword) {
+        throw new UserInputError('Passwords don\'t match!');
+      }
+      if (!passwordSchema.validate(password)) {
+        throw new UserInputError('Password is not strong enough!');
+      }
+      return resolve(parent, args, context);
     }
   }
 };
