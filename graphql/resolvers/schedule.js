@@ -82,6 +82,10 @@ module.exports = {
         id: workout.id,
         experience: workoutsExperience[index]
       })).filter((workout) => workout.experience === user.experience);
+    },
+    notifications: async (_, args, context) => {
+      const notifications = await Notification.find({ userId: context.user.id });
+      return notifications;
     }
   },
   Mutation: {
@@ -117,6 +121,7 @@ module.exports = {
   Subscription: {
     scheduledWorkoutAlert: {
       subscribe: () => {
+        // eslint-disable-next-line no-console
         console.log(SCHEDULED_WORKOUTS);
         return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
       }

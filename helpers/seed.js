@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const { removeAllCollections } = require('./helpers');
 const connect = require('../api/database');
+// eslint-disable-next-line no-unused-vars
 const { isProduction } = require('../config');
 const User = require('../models/user');
 const Unit = require('../models/unit');

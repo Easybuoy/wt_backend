@@ -3,6 +3,7 @@ const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
 const { searchBy } = require('../../helpers/helpers');
 const cloudinary = require('../../helpers/cloudinary');
+const WorkoutExercises = require('../../models/workoutExercise');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
@@ -15,6 +16,12 @@ const exerciseDifficultyToInt = (difficulty) => {
     return 2;
   }
   return 3;
+};
+
+const exerciseTimeByWorkoutIntensity = (intensity) => {
+  if (intensity === 'Low') return 20;
+  if (intensity === 'Moderate') return 30;
+  return 40; // high
 };
 
 module.exports = {
@@ -91,8 +98,10 @@ module.exports = {
     },
     updateCompletedWorkout: async (_, { input: { sessionId, file, weight } }) => {
       try {
+        // eslint-disable-next-line no-console
         console.log('received:', sessionId, file);
         let image = await file;
+        // eslint-disable-next-line no-console
         console.log('await file before upload', image);
         const upload = new Promise((resolves, rejects) => {
           const { filename, mimetype, createReadStream } = image;
@@ -110,11 +119,13 @@ module.exports = {
           stream.on('error', rejects);
         });
         image = await upload;
+        // eslint-disable-next-line no-console
         console.log('await upload', image);
         const allowedFileTypes = ['image/jpeg', 'image/png'];
         if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
         if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
         image = await cloudinary(image.path);
+        // eslint-disable-next-line no-console
         console.log('await cloudinary', image);
         return WorkoutSession.findOneAndUpdate(
           { _id: sessionId },
@@ -125,6 +136,36 @@ module.exports = {
         throw new Error(err.message);
       }
     },
+    customWorkout: async (_, { input }, context) => {
+      const {
+        userId, name, description, intensity, picture, exercises,
+        equipment, muscles, types, experience
+      } = input;
+      let customWorkout = new Workout({
+        userId,
+        name,
+        description,
+        intensity,
+        picture,
+        exercises,
+        equipment,
+        muscles,
+        types,
+        experience
+      });
+      exercises.map(async (exerciseId) => {
+        let eachWorkoutExercise = new WorkoutExercises({
+          workoutId: customWorkout.id,
+          exerciseId,
+          time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+        });
+        eachWorkoutExercise = await eachWorkoutExercise.save();
+        return eachWorkoutExercise;
+      });
+      customWorkout = await customWorkout.save();
+      ExerciseDataLoader(context).load(customWorkout.id);
+      return customWorkout;
+    }
   },
   Workout: {
     exercises: (workout, args, context) => ExerciseDataLoader(context).load(workout.id),
