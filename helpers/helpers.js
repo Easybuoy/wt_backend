@@ -2,6 +2,7 @@
 const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 const { isProduction, smtpUser, smtpPass } = require('../config');
 
 const mailGenerator = new Mailgen({
@@ -51,12 +52,19 @@ module.exports = {
     if (input && input.search && input.fields.length) {
       filter = { $or: [] };
       input.fields.forEach((field) => {
-        filter.$or.push({
-          [field]: {
-            $regex: input.search,
-            $options: 'gi'
-          }
-        });
+        if (input.fields[0].includes('Id')) {
+          filter.$or.push({
+            [field]: new ObjectId(input.search)
+          });
+        } else {
+          filter.$or.push({
+            [field]: {
+              $regex: input.search,
+              $options: 'gi'
+            },
+            userId: null
+          });
+        }
       });
     }
     return filter;
