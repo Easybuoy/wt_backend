@@ -19,11 +19,11 @@ const genAuthResponse = (user, remember = false) => ({
 });
 
 const accountRecoveryMessage = {
-  topic: "Link To Reset Password",
-  message: "You are receiving this because you (or someone else) have requested a password reset.\n\n"
-    + "Please click this button to complete the process within 15 minutes.\n\n"
-    + "If you did not request this, kindly ignore this email to keep your password unchanged.\n"
-}
+  topic: 'Link To Reset Password',
+  message: 'You are receiving this because you (or someone else) have requested a password reset.\n\n'
+    + 'Please click this button to complete the process within 15 minutes.\n\n'
+    + 'If you did not request this, kindly ignore this email to keep your password unchanged.\n'
+};
 
 module.exports = {
   Query: {
@@ -142,12 +142,12 @@ module.exports = {
             { expiresIn: '20m' }
           );
           const buttonAction = {
-            //link needs to be edited to redirect to password input page
+            // link needs to be edited to redirect to password input page
             link: `http://app.trackdrills.com/reset/${token}`,
-            text: `Reset Password`
-          }
-          sendMail(accountRecoveryMessage, user, buttonAction)
-          return user
+            text: 'Reset Password'
+          };
+          sendMail(accountRecoveryMessage, user, buttonAction);
+          return user;
         } throw new Error('Email not found in database!');
       }
     },
