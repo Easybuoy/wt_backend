@@ -4,6 +4,8 @@ const authSchema = `
     authForm(input: UserFormLoginInput!): UserAuthResponse!
     "find user from token"
     user: User!
+    "Send email to user with link to password reset page"
+    accountRecovery(input: String!): UserAuthResponse!
   }
 
   extend type Mutation {
@@ -15,8 +17,6 @@ const authSchema = `
     authFacebook(input: UserPlatformAuthInput!): UserAuthResponse!
     "Login with Google account - Authenticates a user with a json web token"
     authGoogle(input: UserPlatformAuthInput!): UserAuthResponse!
-    "Send email to user with link to password reset page"
-    accountRecovery(input: String!): UserAuthResponse!
     "Edits the password for users with reset token"
     resetPassword(input: resetPasswordInput): UserAuthResponse!
   }
