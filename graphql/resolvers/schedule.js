@@ -101,7 +101,11 @@ module.exports = {
       if (user.reminderType === 'notification') {
         sendNotification(newNotification);
       } else {
-        await sendMail(newNotification, user);
+        const buttonAction = {
+          link: `http://app.trackdrills.com/workout/${newNotification.topic.split('_')[1]}`,
+          text: 'Scheduled workouts'
+        };
+        await sendMail(newNotification, user, buttonAction);
       }
       return newNotification;
     },
