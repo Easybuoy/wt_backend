@@ -45,7 +45,6 @@ const authSchema = `
   input UserUpdateInput {
     firstname: String
     lastname: String
-    password: String
     height: Float
     heightUnit: String
     weight: Float

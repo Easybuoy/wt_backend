@@ -138,33 +138,66 @@ module.exports = {
     },
     customWorkout: async (_, { input }, context) => {
       const {
-        userId, name, description, intensity, picture, exercises,
-        equipment, muscles, types, experience
+        name, description, workoutId, intensity, picture, exercises, remove
       } = input;
-      let customWorkout = new Workout({
-        userId,
-        name,
-        description,
-        intensity,
-        picture,
-        exercises,
-        equipment,
-        muscles,
-        types,
-        experience
-      });
-      exercises.map(async (exerciseId) => {
-        let eachWorkoutExercise = new WorkoutExercises({
-          workoutId: customWorkout.id,
-          exerciseId,
-          time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
-        });
-        eachWorkoutExercise = await eachWorkoutExercise.save();
-        return eachWorkoutExercise;
-      });
-      customWorkout = await customWorkout.save();
-      ExerciseDataLoader(context).load(customWorkout.id);
-      return customWorkout;
+      try {
+        let customWorkout = await Workout.findOne({ _id: workoutId });
+        if (remove === true) {
+          if (customWorkout) {
+            await Workout.deleteOne({ _id: workoutId });
+            return customWorkout;
+          }
+          throw new Error('The workout cannot be deleted because it doesn\'t exist!');
+        }
+        if (!customWorkout) {
+          customWorkout = new Workout({
+            userId: context.user.id,
+            name,
+            description,
+            intensity,
+            picture,
+          });
+          customWorkout = await customWorkout.save();
+          const customWorkouExercises = exercises.map((exerciseId) => new WorkoutExercises({
+            workoutId: customWorkout.id,
+            exerciseId,
+            time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+          }).save());
+          await Promise.all(customWorkouExercises);
+        } else {
+          // List of exercises don't update immediately on response
+          const workoutExercises = await ExerciseDataLoader(context).load(workoutId);
+          const workoutExercisesIds = workoutExercises.map((we) => we.id.toString());
+
+          const newConnections = exercises.filter(
+            (exerciseId) => !workoutExercisesIds.includes(exerciseId)
+          );
+          const deletedConnections = workoutExercisesIds.filter(
+            (exerciseId) => !exercises.includes(exerciseId)
+          );
+
+          await WorkoutExercises.deleteMany({ exerciseId: { $in: deletedConnections } });
+
+          const newCustomWorkouExercises = newConnections.map(
+            (exerciseId) => (new WorkoutExercises({
+              workoutId,
+              exerciseId,
+              time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+            })).save()
+          );
+          await Promise.all(newCustomWorkouExercises);
+
+          customWorkout = await Workout.findByIdAndUpdate(workoutId, {
+            name,
+            description,
+            intensity,
+            picture,
+          }, { new: true });
+        }
+        return customWorkout;
+      } catch (err) {
+        throw new Error(err.message);
+      }
     }
   },
   Workout: {
