@@ -56,7 +56,7 @@ module.exports = {
           );
           const buttonAction = {
             // link needs to be edited to redirect to password input page
-            link: `http://app.trackdrills.com/reset/${token}`,
+            link: `http://app.trackdrills.com/accountrecovery/${token}`,
             text: 'Reset Password'
           };
           sendMail(accountRecoveryMessage, user, buttonAction);
