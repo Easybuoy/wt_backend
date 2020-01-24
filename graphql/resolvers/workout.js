@@ -183,7 +183,8 @@ module.exports = {
               workoutId,
               exerciseId,
               time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
-            })).save());
+            })).save()
+          );
           await Promise.all(newCustomWorkouExercises);
 
           customWorkout = await Workout.findByIdAndUpdate(workoutId, {
