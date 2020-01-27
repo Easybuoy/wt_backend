@@ -51,10 +51,10 @@ module.exports = {
         }
       }));
   },
-  searchBy: (input) => {
+  searchBy: (input, query = {}) => {
     let filter = null;
     if (input && input.search && input.fields.length) {
-      filter = { $or: [] };
+      filter = { $or: [], ...query };
       input.fields.forEach((field) => {
         if (input.fields[0].includes('Id')) {
           filter.$or.push({
