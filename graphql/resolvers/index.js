@@ -4,6 +4,7 @@ const workoutResolver = require('./workout');
 const exerciseResolver = require('./exercise');
 const scheduleResolver = require('./schedule');
 const dashboardResolver = require('./dashboard');
+const friendResolver = require('./friend');
 
 const rootResolver = [
   authResolver,
@@ -11,7 +12,8 @@ const rootResolver = [
   workoutResolver,
   exerciseResolver,
   scheduleResolver,
-  dashboardResolver
+  dashboardResolver,
+  friendResolver
 ].reduce((rootR, resolver) => {
   const finalResolver = rootR;
   Object.keys(resolver).forEach((key) => {

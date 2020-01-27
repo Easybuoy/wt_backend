@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const axios = require('axios');
 const { isProduction, port, notificationsCronTimer } = require('../config');
+const { SCHEDULED_WORKOUTS } = require('../helpers/helpers');
 const Cron = require('../models/cron');
 const Schedule = require('../models/schedule');
 
@@ -9,6 +10,7 @@ const pushNotificationQuery = (schedule) => `mutation {
     userId: "${schedule.userId}",
     message: "You have a scheduled workout in ${schedule.reminderTime} minutes!",
     topic: "Workout_${schedule.workoutId}"
+    subscription: "${SCHEDULED_WORKOUTS}"
   }) {
     userId
     message

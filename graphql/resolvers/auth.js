@@ -8,7 +8,7 @@ const {
 
 const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
-const { sendMail } = require('../../helpers/helpers');
+const { sendMail, ACCOUNT_RECOVERY } = require('../../helpers/helpers');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -18,12 +18,12 @@ const genAuthResponse = (user, remember = false) => ({
   isNewUser: !user.goal,
 });
 
-const accountRecoveryMessage = {
-  topic: 'Link To Reset Password',
+const accountRecoveryMessage = (token) => ({
+  topic: `Link To Reset Password_${token}`,
   message: 'You are receiving this because you (or someone else) have requested a password reset.\n\n'
     + 'Please click this button to complete the process within 15 minutes.\n\n'
     + 'If you did not request this, kindly ignore this email to keep your password unchanged.\n'
-};
+});
 
 module.exports = {
   Query: {
@@ -54,12 +54,7 @@ module.exports = {
             jwtSecret,
             { expiresIn: '20m' }
           );
-          const buttonAction = {
-            // link needs to be edited to redirect to password input page
-            link: `http://app.trackdrills.com/accountrecovery/${token}`,
-            text: 'Reset Password'
-          };
-          sendMail(accountRecoveryMessage, user, buttonAction);
+          sendMail(accountRecoveryMessage(token), user, ACCOUNT_RECOVERY);
           return user;
         } throw new Error('Email not found in database!');
       }

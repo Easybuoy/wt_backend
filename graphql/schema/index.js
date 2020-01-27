@@ -5,6 +5,7 @@ const exerciseSchema = require('./exercise.graphql');
 const workoutSchema = require('./workout.graphql');
 const scheduleSchema = require('./schedule.graphql');
 const dashboardSchema = require('./dashboard.graphql');
+const friendSchema = require('./friend.graphql');
 
 const rootSchema = gql`
   scalar Upload
@@ -37,6 +38,7 @@ const rootSchema = gql`
     userId: String
     message: String
     topic: String
+    subscription: String
   }
 
   ${authSchema}
@@ -45,6 +47,7 @@ const rootSchema = gql`
   ${workoutSchema}
   ${scheduleSchema}
   ${dashboardSchema}
+  ${friendSchema}
 `;
 
 module.exports = rootSchema;
