@@ -7,6 +7,7 @@ const { Schema } = mongoose;
 const NotificationSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
+    ref: 'User',
     require: true,
   },
   message: {

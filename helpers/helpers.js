@@ -28,6 +28,10 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
+const FRIEND_REQUEST = 'friendRequests';
+const ACCOUNT_RECOVERY = 'accountRecoveries';
+
 module.exports = {
   removeAllCollections: async (excludeCollections = []) => {
     let collections = await mongoose.connection.db.listCollections().toArray();
@@ -69,13 +73,54 @@ module.exports = {
     }
     return filter;
   },
-  sendMail: async (notification, user, buttonAction) => {
+  SCHEDULED_WORKOUTS,
+  FRIEND_REQUEST,
+  sendNotification: async (notification, pubsub, subscription) => {
+    switch (subscription) {
+      case SCHEDULED_WORKOUTS:
+        pubsub.publish(subscription, {
+          scheduledWorkoutAlert: { ...notification._doc, id: notification.id }
+        });
+        return true;
+      case FRIEND_REQUEST:
+        pubsub.publish(subscription, {
+          friendRequest: { ...notification._doc, id: notification.id }
+        });
+        return true;
+      default:
+        return false;
+    }
+  },
+  sendMail: async (notification, user, subscription) => {
     console.log('sendmail called');
+    let buttonAction = null;
+    switch (subscription) {
+      case SCHEDULED_WORKOUTS:
+        buttonAction = {
+          link: `http://app.trackdrills.com/workout/${notification.topic.split('_')[1]}`,
+          text: 'Scheduled workouts'
+        };
+        break;
+      case FRIEND_REQUEST:
+        buttonAction = {
+          link: 'http://app.trackdrills.com/friends/requests',
+          text: 'View friend requests'
+        };
+        break;
+      case ACCOUNT_RECOVERY:
+        buttonAction = {
+          link: `http://app.trackdrills.com/accountrecovery/${notification.topic.split('_')[1]}`,
+          text: 'Reset Password'
+        };
+        break;
+      default:
+        break;
+    }
     await transporter.verify();
     await transporter.sendMail({
       from: smtpUser,
       to: user.email,
-      subject: notification.topic,
+      subject: notification.topic.split('_')[0],
       text: notification.message,
       html: mailGenerator.generate({
         body: {
@@ -92,7 +137,7 @@ module.exports = {
           outro: 'Good luck!'
         }
       }),
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     }, (err, info) => {
       if (err) console.error(err.message);
     });
