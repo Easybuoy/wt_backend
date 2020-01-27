@@ -7,14 +7,33 @@ const {
 
 module.exports = {
   Query: {
-    /*
-    friends: async (_, args, context) => {
+    // endpoint to find friends
+    // findFriends: async (_, args, context) => {
 
+    // },
+    friends: async (_, args, context) => {
+      const currUser = context.user.id;
+      const friends = await Friend.find(
+        {
+          $or: [
+            { receiver: currUser },
+            { sender: currUser },
+          ],
+          accepted: true
+        },
+      ).populate('sender').populate('receiver');
+      return friends.map((fr) => (fr.sender.id === currUser ? fr.receiver : fr.sender));
     },
     friendRequests: async (_, args, context) => {
-
+      const currUser = context.user.id;
+      const friendRequests = await Friend.find(
+        {
+          receiver: currUser,
+          accepted: null
+        },
+      ).populate('sender');
+      return friendRequests.map((friendRequest) => friendRequest.sender);
     },
-    */
   },
   Mutation: {
     manageFriends: async (_, { userId, task }, context) => {
