@@ -1,16 +1,33 @@
 const User = require('../../models/user');
 const Friend = require('../../models/friend');
-const { FRIEND_REQUEST } = require('../../helpers/helpers');
+const { FRIEND_REQUEST, searchBy } = require('../../helpers/helpers');
 const {
   Mutation: { pushNotification }
 } = require('./schedule');
 
 module.exports = {
   Query: {
-    // endpoint to find friends
-    // findFriends: async (_, args, context) => {
-
-    // },
+    findFriends: async (_, { input }, context) => {
+      let friends = await Friend.find(
+        {
+          $or: [
+            { receiver: context.user.id },
+            { sender: context.user.id },
+          ],
+          accepted: true
+        },
+      );
+      friends = friends.map((fr) => (fr.sender === context.user.id ? fr.receiver : fr.sender));
+      if (!input.search) {
+        const currUser = await User.findById(context.user.id);
+        const suggestedFriends = await User.find({
+          goal: currUser.goal,
+          _id: { $nin: [context.user.id, ...friends] }
+        });
+        return suggestedFriends;
+      }
+      return User.find(searchBy(input, { _id: { $nin: [context.user.id, ...friends] } }));
+    },
     friends: async (_, args, context) => {
       const currUser = context.user.id;
       const friends = await Friend.find(

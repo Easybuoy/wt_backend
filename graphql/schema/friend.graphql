@@ -2,6 +2,7 @@ const friendSchema = `
   extend type Query {
     friends: [User!]!
     friendRequests: [User!]!
+    findFriends(input: Filter): [User!]!
   }
 
   extend type Mutation {
