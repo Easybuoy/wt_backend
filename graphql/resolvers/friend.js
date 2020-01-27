@@ -1,7 +1,9 @@
 const User = require('../../models/user');
 const Friend = require('../../models/friend');
 const { FRIEND_REQUEST } = require('../../helpers/helpers');
-const { Mutation: { pushNotification } } = require('./schedule');
+const {
+  Mutation: { pushNotification }
+} = require('./schedule');
 
 module.exports = {
   Query: {
@@ -22,7 +24,7 @@ module.exports = {
       if (task === 'add') {
         let newFriend = new Friend({
           sender: currUser,
-          receiver: userId,
+          receiver: userId
         });
         newFriend = await newFriend.save();
         await pushNotification(_, {
@@ -36,15 +38,19 @@ module.exports = {
         res = newFriend !== null;
       } else if (task.includes('response')) {
         const userAnswer = Boolean(Number(task.split('_')[1]));
-        const friendRequest = await Friend.findOneAndUpdate({
-          receiver: currUser,
-          sender: userId,
-          accepted: null,
-        }, {
-          accepted: userAnswer
-        }, {
-          new: true
-        });
+        const friendRequest = await Friend.findOneAndUpdate(
+          {
+            receiver: currUser,
+            sender: userId,
+            accepted: null
+          },
+          {
+            accepted: userAnswer
+          },
+          {
+            new: true
+          }
+        );
         if (friendRequest && friendRequest.accepted) {
           await pushNotification(_, {
             input: {
@@ -56,10 +62,14 @@ module.exports = {
           });
         }
         res = friendRequest && friendRequest.accepted === userAnswer;
-      } else {
-        // remove friend
+      } else if (task === 'remove') {
+        const deleteFriend = await Friend.findOneAndDelete({
+          receiver: { $in: [currUser, userId] },
+          sender: { $in: [currUser, userId] }
+        });
+        res = deleteFriend && deleteFriend.id;
       }
       return res;
-    },
+    }
   }
 };
