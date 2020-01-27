@@ -1,4 +1,3 @@
-const { PubSub } = require('apollo-server-express');
 const Schedule = require('../../models/schedule');
 const User = require('../../models/user');
 const Workout = require('../../models/workout');
@@ -10,8 +9,6 @@ const {
 } = require('../../helpers/helpers');
 
 const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
-
-const pubsub = new PubSub();
 
 module.exports = {
   Query: {
@@ -86,7 +83,7 @@ module.exports = {
       input: {
         userId, message, topic, subscription
       }
-    }) => {
+    }, { pubsub }) => {
       const user = await User.findById(userId);
       let newNotification = new Notification({
         userId,
@@ -117,7 +114,7 @@ module.exports = {
   },
   Subscription: {
     scheduledWorkoutAlert: {
-      subscribe: () => {
+      subscribe: (_, args, { pubsub }) => {
         // eslint-disable-next-line no-console
         console.log(SCHEDULED_WORKOUTS);
         return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
