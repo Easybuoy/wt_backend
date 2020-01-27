@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { jwtSecret } = require('../../config');
 const {
   authenticateFacebook,
   authenticateGoogle
@@ -5,6 +8,7 @@ const {
 
 const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
+const { sendMail } = require('../../helpers/helpers');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -13,6 +17,13 @@ const genAuthResponse = (user, remember = false) => ({
   token: user.generateJWT(remember),
   isNewUser: !user.goal,
 });
+
+const accountRecoveryMessage = {
+  topic: 'Link To Reset Password',
+  message: 'You are receiving this because you (or someone else) have requested a password reset.\n\n'
+    + 'Please click this button to complete the process within 15 minutes.\n\n'
+    + 'If you did not request this, kindly ignore this email to keep your password unchanged.\n'
+};
 
 module.exports = {
   Query: {
@@ -27,6 +38,32 @@ module.exports = {
       }
       return genAuthResponse(user, remember);
     },
+    user: async (_, { input }, context) => {
+      const userId = context.user.id;
+      const user = await User.findById(userId);
+      return user;
+    },
+    accountRecovery: async (_, { input }, context) => {
+      if (!input) {
+        throw new Error('Enter registered email to update password!');
+      } else {
+        const user = await User.findOne({ email: input });
+        if (user) {
+          const token = jwt.sign(
+            { id: user.id, firstname: user.firstname },
+            jwtSecret,
+            { expiresIn: '20m' }
+          );
+          const buttonAction = {
+            // link needs to be edited to redirect to password input page
+            link: `http://app.trackdrills.com/accountrecovery/${token}`,
+            text: 'Reset Password'
+          };
+          sendMail(accountRecoveryMessage, user, buttonAction);
+          return user;
+        } throw new Error('Email not found in database!');
+      }
+    }
   },
   Mutation: {
     addUser: async (_, { input }) => {
@@ -58,7 +95,7 @@ module.exports = {
         if (data) {
           const user = await User.asFacebookUser(data);
           if (user) {
-            return genAuthResponse(user);
+            return genAuthResponse(user, true);
           }
         }
         if (info) {
@@ -85,7 +122,7 @@ module.exports = {
         if (data) {
           const user = await User.asGoogleUser(data);
           if (user) {
-            return genAuthResponse(user);
+            return genAuthResponse(user, true);
           }
         }
         if (info) {
@@ -101,17 +138,32 @@ module.exports = {
         return error;
       }
     },
-    updateUser: async (_, { input }) => {
+    updateUser: async (_, { input }, context) => {
       const newData = { ...input };
       delete newData.id;
       try {
-        const updatedUser = await User.findByIdAndUpdate(input.id, newData, { new: true });
+        const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });
         if (updatedUser) {
           return { ...updatedUser._doc, password: null, id: updatedUser.id };
         }
         throw new Error('Could not update user!');
       } catch (err) {
         throw err;
+      }
+    },
+    resetPassword: async (_, { input }, context) => {
+      if (!input.password) {
+        throw new Error('Field is empty');
+      } else {
+        let user = await User.findById(context.user.id);
+        if (user) {
+          user = User.findByIdAndUpdate(
+            context.user.id,
+            { password: await bcrypt.hash(input.password, 12) },
+            { new: true }
+          );
+          return user;
+        } throw new Error('An error occured');
       }
     }
   },

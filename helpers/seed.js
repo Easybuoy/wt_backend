@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const { removeAllCollections } = require('./helpers');
 const connect = require('../api/database');
+// eslint-disable-next-line no-unused-vars
 const { isProduction } = require('../config');
 const User = require('../models/user');
 const Unit = require('../models/unit');
@@ -95,6 +96,7 @@ module.exports = async (onEnd = false) => {
         email: 'test@user1.com',
         password: 'testUser1!',
         experience: 'Beginner',
+        reminderType: 'email',
         height: 1.69,
         weight: 80,
         weightUnit: units[0].id,

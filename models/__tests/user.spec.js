@@ -1,6 +1,7 @@
 const {
   initTest,
   query,
+  // eslint-disable-next-line no-unused-vars
   createUser,
   testUser
 } = require('../../helpers/tests');
@@ -10,8 +11,9 @@ initTest();
 
 describe('User model', () => {
   it('Should save user to database', async (done) => {
-    await createUser();
-    const user = await User.findOne({ email: testUser.email });
+    const newUser = new User(testUser);
+    await newUser.save();
+    const user = await User.findById(newUser.id);
     expect(user).toBeDefined();
     expect(user.firstname).toBe(testUser.firstname);
     done();

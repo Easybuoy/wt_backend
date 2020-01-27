@@ -4,6 +4,7 @@ const User = require('../../models/user');
 const Workout = require('../../models/workout');
 const Notification = require('../../models/notification');
 const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
+
 const { sendMail } = require('../../helpers/helpers');
 
 const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
@@ -62,15 +63,6 @@ module.exports = {
               id: schedule.id,
               startDate: new Date(day).setHours(sDate.h, sDate.m, sDate.s, sDate.ms)
             });
-          } else if (schedule.routine === 'monthly') {
-            if (new Date(schedule.startDate).getDate() === new Date(dayTime).getDate()) {
-              response.push({
-                ...schedule._doc,
-                id: schedule.id,
-                startDate: new Date(schedule.startDate)
-                  .setMonth(new Date(dayTime).getMonth())
-              });
-            }
           } else if (schedule.startDate >= dayTime && schedule.startDate < nextDay) {
             response.push(schedule);
           }
@@ -90,6 +82,10 @@ module.exports = {
         id: workout.id,
         experience: workoutsExperience[index]
       })).filter((workout) => workout.experience === user.experience);
+    },
+    notifications: async (_, args, context) => {
+      const notifications = await Notification.find({ userId: context.user.id });
+      return notifications;
     }
   },
   Mutation: {
@@ -105,7 +101,11 @@ module.exports = {
       if (user.reminderType === 'notification') {
         sendNotification(newNotification);
       } else {
-        sendMail(newNotification, user);
+        const buttonAction = {
+          link: `http://app.trackdrills.com/workout/${newNotification.topic.split('_')[1]}`,
+          text: 'Scheduled workouts'
+        };
+        await sendMail(newNotification, user, buttonAction);
       }
       return newNotification;
     },
@@ -125,6 +125,7 @@ module.exports = {
   Subscription: {
     scheduledWorkoutAlert: {
       subscribe: () => {
+        // eslint-disable-next-line no-console
         console.log(SCHEDULED_WORKOUTS);
         return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
       }

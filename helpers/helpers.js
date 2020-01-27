@@ -1,6 +1,8 @@
+/* eslint-disable no-console */
 const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 const { isProduction, smtpUser, smtpPass } = require('../config');
 
 const mailGenerator = new Mailgen({
@@ -50,19 +52,27 @@ module.exports = {
     if (input && input.search && input.fields.length) {
       filter = { $or: [] };
       input.fields.forEach((field) => {
-        filter.$or.push({
-          [field]: {
-            $regex: input.search,
-            $options: 'gi'
-          }
-        });
+        if (input.fields[0].includes('Id')) {
+          filter.$or.push({
+            [field]: new ObjectId(input.search)
+          });
+        } else {
+          filter.$or.push({
+            [field]: {
+              $regex: input.search,
+              $options: 'gi'
+            },
+            userId: null
+          });
+        }
       });
     }
     return filter;
   },
-  sendMail: async (notification, user) => {
+  sendMail: async (notification, user, buttonAction) => {
+    console.log('sendmail called');
     await transporter.verify();
-    transporter.sendMail({
+    await transporter.sendMail({
       from: smtpUser,
       to: user.email,
       subject: notification.topic,
@@ -75,13 +85,16 @@ module.exports = {
             instructions: notification.message,
             button: {
               color: '#22BC66',
-              text: 'Scheduled workouts',
-              link: `http://app.trackdrills.com/workout/${notification.topic.split('_')[1]}`
+              text: buttonAction.text,
+              link: buttonAction.link
             }
           },
           outro: 'Good luck!'
         }
       }),
+    // eslint-disable-next-line no-unused-vars
+    }, (err, info) => {
+      if (err) console.error(err.message);
     });
   }
 };

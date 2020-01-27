@@ -2,6 +2,10 @@ const authSchema = `
   extend type Query {
     "Login - Authenticates a user with a json web token"
     authForm(input: UserFormLoginInput!): UserAuthResponse!
+    "find user from token"
+    user: User!
+    "Send email to user with link to password reset page"
+    accountRecovery(input: String!): UserAuthResponse!
   }
 
   extend type Mutation {
@@ -13,6 +17,8 @@ const authSchema = `
     authFacebook(input: UserPlatformAuthInput!): UserAuthResponse!
     "Login with Google account - Authenticates a user with a json web token"
     authGoogle(input: UserPlatformAuthInput!): UserAuthResponse!
+    "Edits the password for users with reset token"
+    resetPassword(input: resetPasswordInput): UserAuthResponse!
   }
 
   "Application user"
@@ -37,10 +43,8 @@ const authSchema = `
 
   "Object parameter for updating user"
   input UserUpdateInput {
-    id: String!
     firstname: String
     lastname: String
-    password: String
     height: Float
     heightUnit: String
     weight: Float
@@ -94,5 +98,11 @@ const authSchema = `
   input UserPlatformAuthInput {
     accessToken: String!
   }
+
+  input resetPasswordInput {
+    password: String!
+    rePassword: String!
+  }
+
 `;
 module.exports = authSchema;

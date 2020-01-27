@@ -8,6 +8,7 @@ const workoutSchema = `
   extend type Mutation {
     workoutSession(input: WorkoutSessionInput!): WorkoutSession
     updateCompletedWorkout(input: UpdateCompletedWorkoutInput!): WorkoutSession!
+    customWorkout(input: WorkoutInput!): Workout
   }
 
   type Workout {
@@ -52,6 +53,16 @@ const workoutSchema = `
     sessionId: String!
     file: Upload
     weight: Float
+  }
+
+  input WorkoutInput {
+    name: String!
+    workoutId: String
+    description: String!
+    intensity: String!
+    picture: String
+    remove: Boolean
+    exercises: [String!]!
   }
 
 `;

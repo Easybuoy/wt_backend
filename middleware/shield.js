@@ -13,12 +13,14 @@ const permissions = shield(
       units: allow,
       unitById: allow,
       authForm: allow,
+      accountRecovery: allow,
     },
     Mutation: {
       '*': isAuthenticated,
       addUser: allow,
       authGoogle: allow,
       authFacebook: allow,
+      pushNotification: allow,
     },
   },
   {

@@ -3,6 +3,7 @@ const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
 const { searchBy } = require('../../helpers/helpers');
 const cloudinary = require('../../helpers/cloudinary');
+const WorkoutExercises = require('../../models/workoutExercise');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
@@ -15,6 +16,12 @@ const exerciseDifficultyToInt = (difficulty) => {
     return 2;
   }
   return 3;
+};
+
+const exerciseTimeByWorkoutIntensity = (intensity) => {
+  if (intensity === 'Low') return 20;
+  if (intensity === 'Moderate') return 30;
+  return 40; // high
 };
 
 module.exports = {
@@ -50,25 +57,33 @@ module.exports = {
             weight: null
           });
           workoutSession = await workoutSession.save();
-        }
-      } else if (typeof end === 'undefined') {
-        // pause session
-        if (workoutSession && workoutSession._doc.pause !== pause) {
-          workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
-          workoutSession = await WorkoutSession.updateOne(
+        } else {
+          workoutSession = await WorkoutSession.findOneAndUpdate(
             { _id: workoutSession.id },
             {
               exerciseId,
               exerciseTimer,
-              pause: true
+              pause: false
+            },
+            { new: true }
+          );
+        }
+      } else if (typeof end === 'undefined') {
+        // pause session
+        if (workoutSession && workoutSession._doc.pause !== pause) {
+          workoutSession = await WorkoutSession.findOneAndUpdate(
+            { _id: workoutSession.id },
+            {
+              exerciseId,
+              exerciseTimer,
+              pause
             },
             { new: true }
           );
         }
       } else if (workoutSession && workoutSession._doc.endDate === null) {
         // end session
-        workoutSession = await WorkoutSessionDataLoader(context).load({ userId, workoutId });
-        workoutSession = await WorkoutSession.updateOne(
+        workoutSession = await WorkoutSession.findOneAndUpdate(
           { _id: workoutSession.id },
           {
             exerciseId,
@@ -83,8 +98,10 @@ module.exports = {
     },
     updateCompletedWorkout: async (_, { input: { sessionId, file, weight } }) => {
       try {
+        // eslint-disable-next-line no-console
         console.log('received:', sessionId, file);
         let image = await file;
+        // eslint-disable-next-line no-console
         console.log('await file before upload', image);
         const upload = new Promise((resolves, rejects) => {
           const { filename, mimetype, createReadStream } = image;
@@ -102,11 +119,13 @@ module.exports = {
           stream.on('error', rejects);
         });
         image = await upload;
+        // eslint-disable-next-line no-console
         console.log('await upload', image);
         const allowedFileTypes = ['image/jpeg', 'image/png'];
         if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
         if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
         image = await cloudinary(image.path);
+        // eslint-disable-next-line no-console
         console.log('await cloudinary', image);
         return WorkoutSession.findOneAndUpdate(
           { _id: sessionId },
@@ -117,6 +136,69 @@ module.exports = {
         throw new Error(err.message);
       }
     },
+    customWorkout: async (_, { input }, context) => {
+      const {
+        name, description, workoutId, intensity, picture, exercises, remove
+      } = input;
+      try {
+        let customWorkout = await Workout.findOne({ _id: workoutId });
+        if (remove === true) {
+          if (customWorkout) {
+            await Workout.deleteOne({ _id: workoutId });
+            return customWorkout;
+          }
+          throw new Error('The workout cannot be deleted because it doesn\'t exist!');
+        }
+        if (!customWorkout) {
+          customWorkout = new Workout({
+            userId: context.user.id,
+            name,
+            description,
+            intensity,
+            picture,
+          });
+          customWorkout = await customWorkout.save();
+          const customWorkouExercises = exercises.map((exerciseId) => new WorkoutExercises({
+            workoutId: customWorkout.id,
+            exerciseId,
+            time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+          }).save());
+          await Promise.all(customWorkouExercises);
+        } else {
+          // List of exercises don't update immediately on response
+          const workoutExercises = await ExerciseDataLoader(context).load(workoutId);
+          const workoutExercisesIds = workoutExercises.map((we) => we.id.toString());
+
+          const newConnections = exercises.filter(
+            (exerciseId) => !workoutExercisesIds.includes(exerciseId)
+          );
+          const deletedConnections = workoutExercisesIds.filter(
+            (exerciseId) => !exercises.includes(exerciseId)
+          );
+
+          await WorkoutExercises.deleteMany({ exerciseId: { $in: deletedConnections } });
+
+          const newCustomWorkouExercises = newConnections.map(
+            (exerciseId) => (new WorkoutExercises({
+              workoutId,
+              exerciseId,
+              time: exerciseTimeByWorkoutIntensity(customWorkout.intensity)
+            })).save()
+          );
+          await Promise.all(newCustomWorkouExercises);
+
+          customWorkout = await Workout.findByIdAndUpdate(workoutId, {
+            name,
+            description,
+            intensity,
+            picture,
+          }, { new: true });
+        }
+        return customWorkout;
+      } catch (err) {
+        throw new Error(err.message);
+      }
+    }
   },
   Workout: {
     exercises: (workout, args, context) => ExerciseDataLoader(context).load(workout.id),
