@@ -1,0 +1,12 @@
+const friendSchema = `
+  extend type Query {
+    friends: [User!]!
+    friendRequests: [User!]!
+  }
+
+  extend type Mutation {
+    manageFriends(userId: String!, task: String!): Boolean!
+  }
+  
+`;
+module.exports = friendSchema;
