@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { ApolloServer, makeExecutableSchema } = require('apollo-server-express');
 const { applyMiddleware } = require('graphql-middleware');
+const { createServer } = require('http');
 const connect = require('./database');
 const { graphiql, port } = require('../config');
 const typeDefs = require('../graphql/schema');
@@ -29,10 +30,11 @@ const apolloServer = new ApolloServer({
   schema: schemaWithMiddleware,
   context,
   subscriptions: {
-    path: '/api/subscriptions',
-    // eslint-disable-next-line no-unused-vars
-    onConnect: (connectionParams, webSocket) => {
-      console.log('SUBS');
+    onConnect: () => {
+      console.log(`Subscriptions successfully connected to ${apolloServer.subscriptionsPath}`);
+    },
+    onDisconnect: () => {
+      console.log('Subscriptions successfully disconnected!');
     }
   },
   cacheControl: {
@@ -44,11 +46,14 @@ const apolloServer = new ApolloServer({
 
 apolloServer.applyMiddleware({ app, path: '/api' });
 
+const server = createServer(app);
+
+apolloServer.installSubscriptionHandlers(server);
+
 connect.then(() => {
   console.log('Database successfully connected!');
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`ApolloServer successfully connected to http://localhost:${port}${apolloServer.graphqlPath}`);
-    console.log(`Subscriptions successfully connected to http://localhost:${port}${apolloServer.subscriptionsPath}`);
   });
 }).catch((err) => { throw err; });
 

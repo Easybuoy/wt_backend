@@ -7,7 +7,7 @@ const pubsub = new PubSub();
 
 module.exports = async (args) => {
   const { req, res, connection } = args;
-  if (connection) return connection.context;
+  if (connection) return { ...connection.context, pubsub };
   // if an authorization token is sent
   // authentication token will be validated
   const token = req.headers.authorization;
