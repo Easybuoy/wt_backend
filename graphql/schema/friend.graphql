@@ -16,6 +16,7 @@ const friendSchema = `
   }
 
   type Message {
+    id: String
     sender: String
     receiver: String
     message: String
