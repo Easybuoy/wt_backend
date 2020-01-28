@@ -1,3 +1,4 @@
+const { withFilter } = require('apollo-server-express');
 const User = require('../../models/user');
 const Friend = require('../../models/friend');
 const Chat = require('../../models/chat');
@@ -55,7 +56,7 @@ module.exports = {
     friendChat: async (_, { receiver }, context) => Chat.find({
       sender: { $in: [receiver, context.user.id] },
       receiver: { $in: [receiver, context.user.id] }
-    }).sort({ sent: 'asc' })
+    }).sort({ sent: 'desc' })
   },
   Mutation: {
     manageFriends: async (_, { userId, task }, context) => {
@@ -117,7 +118,8 @@ module.exports = {
       const newMessage = await (new Chat({
         sender,
         receiver,
-        message
+        message,
+        sent: Date.now()
       })).save();
       pubsub.publish('CHAT_CHANNEL', { newMessage });
       return newMessage;
@@ -125,9 +127,10 @@ module.exports = {
   },
   Subscription: {
     newMessage: {
-      subscribe: (_, args, { pubsub }) => {
-        return pubsub.asyncIterator('CHAT_CHANNEL');
-      }
+      subscribe: withFilter(
+        (_, args, { pubsub }) => pubsub.asyncIterator('CHAT_CHANNEL'),
+        ({ newMessage }, { receiver }) => newMessage.receiver.toString() === receiver
+      )
     }
   }
 };
