@@ -3,11 +3,24 @@ const friendSchema = `
     friends: [User!]!
     friendRequests: [User!]!
     findFriends(input: Filter): [User!]!
+    friendChat(receiver: String!): [Message!]!
   }
 
   extend type Mutation {
     manageFriends(userId: String!, task: String!): Boolean!
+    sendMessage(receiver: String!, message: String!): Message!
   }
   
+  extend type Subscription {
+    newMessage(receiver: String!): Message!
+  }
+
+  type Message {
+    id: String
+    sender: String
+    receiver: String
+    message: String
+    sent: Float
+  }
 `;
 module.exports = friendSchema;

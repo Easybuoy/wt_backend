@@ -1,5 +1,7 @@
+const { withFilter } = require('apollo-server-express');
 const User = require('../../models/user');
 const Friend = require('../../models/friend');
+const Chat = require('../../models/chat');
 const { FRIEND_REQUEST, searchBy } = require('../../helpers/helpers');
 const {
   Mutation: { pushNotification }
@@ -51,6 +53,10 @@ module.exports = {
       ).populate('sender');
       return friendRequests.map((friendRequest) => friendRequest.sender);
     },
+    friendChat: async (_, { receiver }, context) => Chat.find({
+      sender: { $in: [receiver, context.user.id] },
+      receiver: { $in: [receiver, context.user.id] }
+    }).sort({ sent: 'asc' })
   },
   Mutation: {
     manageFriends: async (_, { userId, task }, context) => {
@@ -70,7 +76,7 @@ module.exports = {
             topic: 'Trackdrills - New Friend Request',
             subscription: FRIEND_REQUEST
           }
-        });
+        }, context);
         res = newFriend !== null;
       } else if (task.includes('response')) {
         const userAnswer = Boolean(Number(task.split('_')[1]));
@@ -106,6 +112,25 @@ module.exports = {
         res = deleteFriend && deleteFriend.id;
       }
       return res;
+    },
+    sendMessage: async (_, { receiver, message }, { user, pubsub }) => {
+      const sender = user.id;
+      const newMessage = await (new Chat({
+        sender,
+        receiver,
+        message,
+        sent: Date.now()
+      })).save();
+      pubsub.publish('CHAT_CHANNEL', { newMessage });
+      return newMessage;
+    }
+  },
+  Subscription: {
+    newMessage: {
+      subscribe: withFilter(
+        (_, args, { pubsub }) => pubsub.asyncIterator('CHAT_CHANNEL'),
+        ({ newMessage }, { receiver }) => newMessage.receiver.toString() === receiver
+      )
     }
   }
 };

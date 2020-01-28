@@ -1,10 +1,13 @@
+const { PubSub } = require('apollo-server-express');
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config');
 const User = require('../models/user');
 
+const pubsub = new PubSub();
+
 module.exports = async (args) => {
   const { req, res, connection } = args;
-  if (connection) return connection.context;
+  if (connection) return { ...connection.context, pubsub };
   // if an authorization token is sent
   // authentication token will be validated
   const token = req.headers.authorization;
@@ -22,5 +25,7 @@ module.exports = async (args) => {
       throw err;
     }
   }
-  return { req, res, user };
+  return {
+    req, res, user, pubsub
+  };
 };
