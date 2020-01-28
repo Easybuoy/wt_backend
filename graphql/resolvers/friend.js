@@ -76,7 +76,7 @@ module.exports = {
             topic: 'Trackdrills - New Friend Request',
             subscription: FRIEND_REQUEST
           }
-        });
+        }, context);
         res = newFriend !== null;
       } else if (task.includes('response')) {
         const userAnswer = Boolean(Number(task.split('_')[1]));
