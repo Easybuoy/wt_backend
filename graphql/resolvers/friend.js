@@ -56,7 +56,7 @@ module.exports = {
     friendChat: async (_, { receiver }, context) => Chat.find({
       sender: { $in: [receiver, context.user.id] },
       receiver: { $in: [receiver, context.user.id] }
-    }).sort({ sent: 'desc' })
+    }).sort({ sent: 'asc' })
   },
   Mutation: {
     manageFriends: async (_, { userId, task }, context) => {
