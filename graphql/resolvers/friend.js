@@ -106,7 +106,7 @@ module.exports = {
               topic: 'Trackdrills - You have a new friend!',
               subscription: FRIEND_REQUEST
             }
-          });
+          }, context);
         }
         res = friendRequest && friendRequest.accepted === userAnswer;
       } else if (task === 'remove') {
