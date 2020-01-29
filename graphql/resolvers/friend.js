@@ -19,7 +19,9 @@ module.exports = {
           accepted: true
         },
       );
-      friends = friends.map((fr) => (fr.sender === context.user.id ? fr.receiver : fr.sender));
+      friends = friends.map((fr) => (
+        fr.sender === context.user.id ? fr.receiver.toString() : fr.sender.toString()
+      ));
       if (!input.search) {
         const currUser = await User.findById(context.user.id);
         const suggestedFriends = await User.find({
