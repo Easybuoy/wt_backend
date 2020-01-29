@@ -93,7 +93,8 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
-      photo: profile._json.picture || null,
+      photo: profile._json.picture
+      || 'https://cdn1.vectorstock.com/i/thumb-large/22/05/male-profile-picture-vector-1862205.jpg',
     });
     return newUser;
   }
@@ -114,7 +115,8 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
-      photo: profile._json.picture || null,
+      photo: profile._json.picture
+      || 'https://cdn1.vectorstock.com/i/thumb-large/22/05/male-profile-picture-vector-1862205.jpg',
     });
     return newUser;
   }
