@@ -9,12 +9,24 @@ const {
   Mutation: { pushNotification }
 } = require('./schedule');
 
+const friendRequests = async (_, args, context) => {
+  const currUser = context.user.id;
+  const friendReqs = await Friend.find(
+    {
+      receiver: currUser,
+      accepted: null
+    },
+  ).populate('sender');
+  return friendReqs.map((friendRequest) => friendRequest.sender);
+};
+
 const friendChat = async (_, { receiver }, context) => ChatDataLoader(context)
   .load([receiver, context.user.id]);
 
 module.exports = {
   Query: {
     findFriends: async (_, { input }, context) => {
+      // list of friend ids
       let friends = await Friend.find(
         {
           $or: [
@@ -27,11 +39,16 @@ module.exports = {
       friends = friends.map((fr) => (
         fr.sender === context.user.id ? fr.receiver.toString() : fr.sender.toString()
       ));
+      // list of friend requests
+      let friendReqs = await friendRequests(null, null, context);
+      friendReqs = friendReqs.map((fr) => fr.id);
+      // if not searching anything
       if (!input.search) {
         const currUser = await User.findById(context.user.id);
+        // send suggestions without referring to friends, friend requests or the user itself
         const suggestedFriends = await User.find({
           goal: currUser.goal,
-          _id: { $nin: [context.user.id, ...friends] }
+          _id: { $nin: [context.user.id, ...friends, ...friendReqs] }
         });
         return suggestedFriends;
       }
@@ -72,16 +89,7 @@ module.exports = {
       });
       return friends;
     },
-    friendRequests: async (_, args, context) => {
-      const currUser = context.user.id;
-      const friendRequests = await Friend.find(
-        {
-          receiver: currUser,
-          accepted: null
-        },
-      ).populate('sender');
-      return friendRequests.map((friendRequest) => friendRequest.sender);
-    },
+    friendRequests,
     friendChat
   },
   Mutation: {
