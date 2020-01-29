@@ -56,7 +56,7 @@ module.exports = {
       friends = friends.map((fr, i) => {
         const user = (fr.sender.id === currUser ? fr.receiver : fr.sender);
         return {
-          ...user,
+          ...user._doc,
           id: user.id,
           messages: friendsMessages[i],
         };
