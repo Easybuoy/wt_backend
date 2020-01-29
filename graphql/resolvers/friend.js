@@ -64,6 +64,11 @@ module.exports = {
       const user = await User.findById(currUser);
       let res = false;
       if (task === 'add') {
+        const friendRequest = await Friend.findOne({
+          sender: { $in: [currUser, userId] },
+          receiver: { $in: [currUser, userId] }
+        });
+        if (friendRequest) return false;
         let newFriend = new Friend({
           sender: currUser,
           receiver: userId
