@@ -93,6 +93,7 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
+      photo: profile._json.picture || null,
     });
     return newUser;
   }
@@ -113,6 +114,7 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
+      photo: profile._json.picture || null,
     });
     return newUser;
   }
