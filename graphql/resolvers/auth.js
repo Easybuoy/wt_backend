@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { jwtSecret } = require('../../config');
+const { jwtSecret, defaultProfilePicture } = require('../../config');
 const {
   authenticateFacebook,
   authenticateGoogle
@@ -69,7 +69,8 @@ module.exports = {
         }
 
         const user = new User({
-          ...input
+          ...input,
+          photo: defaultProfilePicture
         });
 
         const savedUser = await user.save();

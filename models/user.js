@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { jwtSecret } = require('../config');
+const { jwtSecret, defaultProfilePicture } = require('../config');
 
 mongoose.promise = global.Promise;
 
@@ -94,7 +94,7 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         token: accessToken,
       },
       photo: profile._json.picture
-      || 'https://cdn1.vectorstock.com/i/thumb-large/22/05/male-profile-picture-vector-1862205.jpg',
+      || defaultProfilePicture,
     });
     return newUser;
   }
@@ -116,7 +116,7 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
         token: accessToken,
       },
       photo: profile._json.picture
-      || 'https://cdn1.vectorstock.com/i/thumb-large/22/05/male-profile-picture-vector-1862205.jpg',
+      || defaultProfilePicture,
     });
     return newUser;
   }
