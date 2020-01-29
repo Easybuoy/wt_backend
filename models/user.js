@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { jwtSecret } = require('../config');
+const { jwtSecret, defaultProfilePicture } = require('../config');
 
 mongoose.promise = global.Promise;
 
@@ -93,6 +93,8 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
+      photo: profile._json.picture
+      || defaultProfilePicture,
     });
     return newUser;
   }
@@ -113,6 +115,8 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
+      photo: profile._json.picture
+      || defaultProfilePicture,
     });
     return newUser;
   }

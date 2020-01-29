@@ -3,13 +3,30 @@ const User = require('../../models/user');
 const Friend = require('../../models/friend');
 const Chat = require('../../models/chat');
 const { FRIEND_REQUEST, searchBy } = require('../../helpers/helpers');
+const { createChatDL: ChatDataLoader } = require('../dataloaders/chat');
+
 const {
   Mutation: { pushNotification }
 } = require('./schedule');
 
+const friendRequests = async (_, args, context) => {
+  const currUser = context.user.id;
+  const friendReqs = await Friend.find(
+    {
+      receiver: currUser,
+      accepted: null
+    },
+  ).populate('sender');
+  return friendReqs.map((friendRequest) => friendRequest.sender);
+};
+
+const friendChat = async (_, { receiver }, context) => ChatDataLoader(context)
+  .load([receiver, context.user.id]);
+
 module.exports = {
   Query: {
     findFriends: async (_, { input }, context) => {
+      // list of friend ids
       let friends = await Friend.find(
         {
           $or: [
@@ -19,12 +36,19 @@ module.exports = {
           accepted: true
         },
       );
-      friends = friends.map((fr) => (fr.sender === context.user.id ? fr.receiver : fr.sender));
+      friends = friends.map((fr) => (
+        fr.sender === context.user.id ? fr.receiver.toString() : fr.sender.toString()
+      ));
+      // list of friend requests
+      let friendReqs = await friendRequests(null, null, context);
+      friendReqs = friendReqs.map((fr) => fr.id);
+      // if not searching anything
       if (!input.search) {
         const currUser = await User.findById(context.user.id);
+        // send suggestions without referring to friends, friend requests or the user itself
         const suggestedFriends = await User.find({
           goal: currUser.goal,
-          _id: { $nin: [context.user.id, ...friends] }
+          _id: { $nin: [context.user.id, ...friends, ...friendReqs] }
         });
         return suggestedFriends;
       }
@@ -32,7 +56,7 @@ module.exports = {
     },
     friends: async (_, args, context) => {
       const currUser = context.user.id;
-      const friends = await Friend.find(
+      let friends = await Friend.find(
         {
           $or: [
             { receiver: currUser },
@@ -41,22 +65,32 @@ module.exports = {
           accepted: true
         },
       ).populate('sender').populate('receiver');
-      return friends.map((fr) => (fr.sender.id === currUser ? fr.receiver : fr.sender));
+      const friendsMessages = await Promise.all(
+        friends.map((fr) => friendChat(_, {
+          receiver: (fr.sender.id === currUser ? fr.receiver.id : fr.sender.id)
+        }, context))
+      );
+      friends = friends.map((fr, i) => {
+        const user = (fr.sender.id === currUser ? fr.receiver : fr.sender);
+        return {
+          ...user._doc,
+          id: user.id,
+          messages: friendsMessages[i],
+        };
+      });
+      friends.sort((f1, f2) => {
+        const newestF1Message = f1.messages[f1.messages.length - 1];
+        const newestF2Message = f2.messages[f2.messages.length - 1];
+        if (!newestF1Message) return 1;
+        if (!newestF2Message) return -1;
+        if (newestF1Message.sent > newestF2Message.sent) return 1;
+        if (newestF1Message.sent < newestF2Message.sent) return -1;
+        return 0;
+      });
+      return friends;
     },
-    friendRequests: async (_, args, context) => {
-      const currUser = context.user.id;
-      const friendRequests = await Friend.find(
-        {
-          receiver: currUser,
-          accepted: null
-        },
-      ).populate('sender');
-      return friendRequests.map((friendRequest) => friendRequest.sender);
-    },
-    friendChat: async (_, { receiver }, context) => Chat.find({
-      sender: { $in: [receiver, context.user.id] },
-      receiver: { $in: [receiver, context.user.id] }
-    }).sort({ sent: 'asc' })
+    friendRequests,
+    friendChat
   },
   Mutation: {
     manageFriends: async (_, { userId, task }, context) => {
@@ -64,6 +98,11 @@ module.exports = {
       const user = await User.findById(currUser);
       let res = false;
       if (task === 'add') {
+        const friendRequest = await Friend.findOne({
+          sender: { $in: [currUser, userId] },
+          receiver: { $in: [currUser, userId] }
+        });
+        if (friendRequest) return false;
         let newFriend = new Friend({
           sender: currUser,
           receiver: userId
@@ -101,7 +140,7 @@ module.exports = {
               topic: 'Trackdrills - You have a new friend!',
               subscription: FRIEND_REQUEST
             }
-          });
+          }, context);
         }
         res = friendRequest && friendRequest.accepted === userAnswer;
       } else if (task === 'remove') {
@@ -132,5 +171,8 @@ module.exports = {
         ({ newMessage }, { receiver }) => newMessage.receiver.toString() === receiver
       )
     }
-  }
+  },
+  /* User: {
+    messages: async (user, args, context) => friendChat(null, { receiver: user.id }, context)
+  } */
 };

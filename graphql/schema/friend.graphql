@@ -22,5 +22,9 @@ const friendSchema = `
     message: String
     sent: Float
   }
+
+  extend type User {
+    messages: [Message!]
+  }
 `;
 module.exports = friendSchema;
