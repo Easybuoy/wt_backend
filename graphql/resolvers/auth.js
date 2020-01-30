@@ -8,7 +8,7 @@ const {
 
 const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
-const { sendMail, ACCOUNT_RECOVERY } = require('../../helpers/helpers');
+const { sendMail, ACCOUNT_RECOVERY, uploadFile } = require('../../helpers/helpers');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -38,12 +38,12 @@ module.exports = {
       }
       return genAuthResponse(user, remember);
     },
-    user: async (_, { input }, context) => {
+    user: async (_, args, context) => {
       const userId = context.user.id;
       const user = await User.findById(userId);
       return user;
     },
-    accountRecovery: async (_, { input }, context) => {
+    accountRecovery: async (_, { input }) => {
       if (!input) {
         throw new Error('Enter registered email to update password!');
       } else {
@@ -135,7 +135,11 @@ module.exports = {
       }
     },
     updateUser: async (_, { input }, context) => {
-      const newData = { ...input };
+      let photo = null;
+      if (input.photo) {
+        photo = await uploadFile(input.photo);
+      }
+      const newData = { ...input, photo: photo.url };
       delete newData.id;
       try {
         const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });
