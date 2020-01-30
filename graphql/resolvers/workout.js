@@ -35,6 +35,8 @@ module.exports = {
       return { ...workout._doc, id: workout.id };
     },
     completedWorkouts: async (_, args, context) => WorkoutSession.find({ userId: context.user.id, endDate: { $ne: null } }).sort({ endDate: -1 }).populate('workoutId'),
+    completedWorkoutsGallery: async () => WorkoutSession.find({ picture: { $ne: null } })
+      .sort({ endDate: -1 }).populate('workoutId')
   },
   Mutation: {
     workoutSession: async (_, { input }, context) => {
