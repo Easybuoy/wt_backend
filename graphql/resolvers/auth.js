@@ -3,7 +3,8 @@ const bcrypt = require('bcryptjs');
 const { jwtSecret, defaultProfilePicture } = require('../../config');
 const {
   authenticateFacebook,
-  authenticateGoogle
+  authenticateGoogle,
+  authenticateGoogleId
 } = require('../../middleware/passport');
 
 const User = require('../../models/user');
@@ -107,12 +108,31 @@ module.exports = {
         return error;
       }
     },
-    authGoogle: async (_, { input: { accessToken } }, { req, res }) => {
+    authGoogle: async (_, { input: { accessToken, idToken } }, { req, res }) => {
       req.body = {
         ...req.body,
         access_token: accessToken,
+        id_token: idToken,
       };
       try {
+        if (!accessToken && idToken) {
+          const { data, info } = await authenticateGoogleId(req, res);
+          if (data) {
+            const user = await User.asGoogleIdUser(data, idToken);
+            if (user) {
+              return genAuthResponse(user, true);
+            }
+          }
+          if (info) {
+            switch (info.code) {
+              case 'ETIMEDOUT':
+                return (new Error('Failed to reach Google: Try Again'));
+              default:
+                return (new Error('Something went wrong while logging in with your account!'));
+            }
+          }
+          return (new Error('Server error'));
+        }
         // data contains the accessToken, refreshToken and profile from passport
         const { data, info } = await authenticateGoogle(req, res);
         if (data) {
