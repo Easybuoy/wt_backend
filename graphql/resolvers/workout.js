@@ -1,8 +1,7 @@
 const { GraphQLUpload } = require('graphql-upload');
 const Workout = require('../../models/workout');
 const WorkoutSession = require('../../models/workoutSession');
-const { searchBy } = require('../../helpers/helpers');
-const cloudinary = require('../../helpers/cloudinary');
+const { searchBy, uploadFile } = require('../../helpers/helpers');
 const WorkoutExercises = require('../../models/workoutExercise');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
@@ -35,6 +34,8 @@ module.exports = {
       return { ...workout._doc, id: workout.id };
     },
     completedWorkouts: async (_, args, context) => WorkoutSession.find({ userId: context.user.id, endDate: { $ne: null } }).sort({ endDate: -1 }).populate('workoutId'),
+    completedWorkoutsGallery: async () => WorkoutSession.find({ picture: { $ne: null } })
+      .sort({ endDate: -1 }).populate('workoutId')
   },
   Mutation: {
     workoutSession: async (_, { input }, context) => {
@@ -100,33 +101,7 @@ module.exports = {
       try {
         // eslint-disable-next-line no-console
         console.log('received:', sessionId, file);
-        let image = await file;
-        // eslint-disable-next-line no-console
-        console.log('await file before upload', image);
-        const upload = new Promise((resolves, rejects) => {
-          const { filename, mimetype, createReadStream } = image;
-          let filesize = 0;
-          const stream = createReadStream();
-          stream.on('data', (chunk) => {
-            filesize += chunk.length;
-          });
-          stream.once('end', () => resolves({
-            filename,
-            mimetype,
-            filesize,
-            path: stream.path
-          }));
-          stream.on('error', rejects);
-        });
-        image = await upload;
-        // eslint-disable-next-line no-console
-        console.log('await upload', image);
-        const allowedFileTypes = ['image/jpeg', 'image/png'];
-        if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
-        if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
-        image = await cloudinary(image.path);
-        // eslint-disable-next-line no-console
-        console.log('await cloudinary', image);
+        const image = await uploadFile(file);
         return WorkoutSession.findOneAndUpdate(
           { _id: sessionId },
           { picture: image.url, weight },

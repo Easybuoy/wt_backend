@@ -54,7 +54,7 @@ const authSchema = `
     experience: String
     google: UserPlatformInput
     facebook: UserPlatformInput
-    photo: String
+    photo: Upload
     reminderType: String
   }
 

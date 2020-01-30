@@ -4,6 +4,7 @@ const Mailgen = require('mailgen');
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongoose').Types;
 const { isProduction, smtpUser, smtpPass } = require('../config');
+const cloudinary = require('./cloudinary');
 
 const mailGenerator = new Mailgen({
   theme: 'default',
@@ -141,5 +142,39 @@ module.exports = {
     }, (err, info) => {
       if (err) console.error(err.message);
     });
+  },
+  uploadFile: async (file) => {
+    try {
+      let image = await file;
+      // eslint-disable-next-line no-console
+      console.log('await file before upload', image);
+      const upload = new Promise((resolves, rejects) => {
+        const { filename, mimetype, createReadStream } = image;
+        let filesize = 0;
+        const stream = createReadStream();
+        stream.on('data', (chunk) => {
+          filesize += chunk.length;
+        });
+        stream.once('end', () => resolves({
+          filename,
+          mimetype,
+          filesize,
+          path: stream.path
+        }));
+        stream.on('error', rejects);
+      });
+      image = await upload;
+      // eslint-disable-next-line no-console
+      console.log('await upload', image);
+      const allowedFileTypes = ['image/jpeg', 'image/png'];
+      if (!allowedFileTypes.includes(image.mimetype)) throw new Error('Invalid file mimetype');
+      if (image.filesize > 1000000) throw new Error('File exceeded maximum allowed size');
+      image = await cloudinary(image.path);
+      // eslint-disable-next-line no-console
+      console.log('await cloudinary', image);
+      return image;
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 };
