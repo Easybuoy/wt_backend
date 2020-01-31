@@ -75,7 +75,12 @@ UserSchema.methods.generateJWT = function (remember = false) {
 };
 
 UserSchema.methods.validPassword = async function (password) {
-  const isEqual = await bcrypt.compare(password, this.password);
+  let isEqual = false;
+  if (this.password) {
+    isEqual = await bcrypt.compare(password, this.password);
+  } else {
+    throw new Error('Password not connected. Login with your google/facebook account!');
+  }
   return isEqual;
 };
 
@@ -94,7 +99,7 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         token: accessToken,
       },
       photo: profile._json.picture
-      || defaultProfilePicture,
+        || defaultProfilePicture,
     });
     return newUser;
   }
@@ -116,7 +121,7 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
         token: accessToken,
       },
       photo: profile._json.picture
-      || defaultProfilePicture,
+        || defaultProfilePicture,
     });
     return newUser;
   }
