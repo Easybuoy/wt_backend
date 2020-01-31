@@ -125,12 +125,13 @@ module.exports = {
           throw new Error('The workout cannot be deleted because it doesn\'t exist!');
         }
         if (!customWorkout) {
+          const image = await uploadFile(picture);
           customWorkout = new Workout({
             userId: context.user.id,
             name,
             description,
             intensity,
-            picture,
+            picture: image.url,
           });
           customWorkout = await customWorkout.save();
           const customWorkouExercises = exercises.map((exerciseId) => new WorkoutExercises({
@@ -166,7 +167,7 @@ module.exports = {
             name,
             description,
             intensity,
-            picture,
+            picture: picture !== customWorkout.picture ? (await uploadFile(picture)).url : picture,
           }, { new: true });
         }
         return customWorkout;
