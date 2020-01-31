@@ -9,15 +9,18 @@ const {
   Mutation: { pushNotification }
 } = require('./schedule');
 
-const friendRequests = async (_, args, context) => {
+const allFriendRequests = async (context) => {
   const currUser = context.user.id;
   const friendReqs = await Friend.find(
     {
-      receiver: currUser,
+      $or: [
+        { sender: currUser },
+        { receiver: currUser },
+      ],
       accepted: null
     },
-  ).populate('sender');
-  return friendReqs.map((friendRequest) => friendRequest.sender);
+  );
+  return friendReqs.map((fr) => (fr.sender === currUser ? fr.receiver : fr.sender));
 };
 
 const friendChat = async (_, { receiver }, context) => ChatDataLoader(context)
@@ -40,8 +43,7 @@ module.exports = {
         fr.sender === context.user.id ? fr.receiver.toString() : fr.sender.toString()
       ));
       // list of friend requests
-      let friendReqs = await friendRequests(null, null, context);
-      friendReqs = friendReqs.map((fr) => fr.id);
+      const friendReqs = await allFriendRequests(context);
       // if not searching anything
       if (!input.search) {
         const currUser = await User.findById(context.user.id);
@@ -89,7 +91,16 @@ module.exports = {
       });
       return friends;
     },
-    friendRequests,
+    friendRequests: async (_, args, context) => {
+      const currUser = context.user.id;
+      const friendReqs = await Friend.find(
+        {
+          receiver: currUser,
+          accepted: null
+        },
+      ).populate('sender');
+      return friendReqs.map((friendRequest) => friendRequest.sender);
+    },
     friendChat
   },
   Mutation: {
