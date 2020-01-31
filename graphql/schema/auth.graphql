@@ -54,7 +54,7 @@ const authSchema = `
     experience: String
     google: UserPlatformInput
     facebook: UserPlatformInput
-    photo: String
+    photo: Upload
     reminderType: String
   }
 
@@ -96,7 +96,8 @@ const authSchema = `
 
   "Object parameter for user platform authentication"
   input UserPlatformAuthInput {
-    accessToken: String!
+    accessToken: String
+    idToken: String
   }
 
   input resetPasswordInput {

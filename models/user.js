@@ -123,4 +123,27 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
   return existingUser;
 };
 
+
+UserSchema.statics.asGoogleIdUser = async function (data, idToken) {
+  const User = this;
+  const { googleId, parsedToken: { payload } } = data;
+  const existingUser = await User.findOne({ 'google.id': googleId });
+  // no user was found, create a new one
+  if (!existingUser) {
+    const newUser = await User.create({
+      firstname: payload.given_name || payload.name,
+      lastname: null,
+      email: payload.email,
+      google: {
+        id: googleId,
+        token: idToken,
+        idToken
+      },
+      photo: payload.picture || defaultProfilePicture,
+    });
+    return newUser;
+  }
+  return existingUser;
+};
+
 module.exports = mongoose.model('User', UserSchema);

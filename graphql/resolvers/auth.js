@@ -3,12 +3,13 @@ const bcrypt = require('bcryptjs');
 const { jwtSecret, defaultProfilePicture } = require('../../config');
 const {
   authenticateFacebook,
-  authenticateGoogle
+  authenticateGoogle,
+  authenticateGoogleId
 } = require('../../middleware/passport');
 
 const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
-const { sendMail, ACCOUNT_RECOVERY } = require('../../helpers/helpers');
+const { sendMail, ACCOUNT_RECOVERY, uploadFile } = require('../../helpers/helpers');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -38,12 +39,12 @@ module.exports = {
       }
       return genAuthResponse(user, remember);
     },
-    user: async (_, { input }, context) => {
+    user: async (_, args, context) => {
       const userId = context.user.id;
       const user = await User.findById(userId);
       return user;
     },
-    accountRecovery: async (_, { input }, context) => {
+    accountRecovery: async (_, { input }) => {
       if (!input) {
         throw new Error('Enter registered email to update password!');
       } else {
@@ -107,12 +108,31 @@ module.exports = {
         return error;
       }
     },
-    authGoogle: async (_, { input: { accessToken } }, { req, res }) => {
+    authGoogle: async (_, { input: { accessToken, idToken } }, { req, res }) => {
       req.body = {
         ...req.body,
         access_token: accessToken,
+        id_token: idToken,
       };
       try {
+        if (!accessToken && idToken) {
+          const { data, info } = await authenticateGoogleId(req, res);
+          if (data) {
+            const user = await User.asGoogleIdUser(data, idToken);
+            if (user) {
+              return genAuthResponse(user, true);
+            }
+          }
+          if (info) {
+            switch (info.code) {
+              case 'ETIMEDOUT':
+                return (new Error('Failed to reach Google: Try Again'));
+              default:
+                return (new Error('Something went wrong while logging in with your account!'));
+            }
+          }
+          return (new Error('Server error'));
+        }
         // data contains the accessToken, refreshToken and profile from passport
         const { data, info } = await authenticateGoogle(req, res);
         if (data) {
@@ -135,7 +155,11 @@ module.exports = {
       }
     },
     updateUser: async (_, { input }, context) => {
-      const newData = { ...input };
+      let photo = null;
+      if (input.photo) {
+        photo = await uploadFile(input.photo);
+      }
+      const newData = { ...input, photo: photo.url };
       delete newData.id;
       try {
         const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });

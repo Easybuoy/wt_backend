@@ -3,6 +3,7 @@ const workoutSchema = `
     workouts(input: Filter): [Workout!]!
     workout(id: String!): Workout!
     completedWorkouts: [WorkoutSession!]!
+    completedWorkoutsGallery: [WorkoutSession!]!
   }
   
   extend type Mutation {
