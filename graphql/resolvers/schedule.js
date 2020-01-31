@@ -79,23 +79,23 @@ module.exports = {
     }
   },
   Mutation: {
-    pushNotification: async (_, {
+    pushNotification: async ({ user }, {
       input: {
         userId, message, topic, subscription
       }
     }, { pubsub }) => {
-      const user = await User.findById(userId);
+      const receiver = user || await User.findById(userId);
       let newNotification = new Notification({
         userId,
         message,
         topic,
-        type: user.reminderType
+        type: receiver.reminderType
       });
       newNotification = await newNotification.save();
-      if (user.reminderType === 'notification') {
+      if (receiver.reminderType === 'notification') {
         sendNotification(newNotification, pubsub, subscription);
       } else {
-        sendMail(newNotification, user, subscription);
+        sendMail(newNotification, receiver, subscription);
       }
       return newNotification;
     },

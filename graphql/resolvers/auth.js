@@ -9,7 +9,8 @@ const {
 
 const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
-const { sendMail, ACCOUNT_RECOVERY, uploadFile } = require('../../helpers/helpers');
+const { ACCOUNT_RECOVERY, uploadFile } = require('../../helpers/helpers');
+const { pushNotification } = require('./schedule').Mutation;
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -55,7 +56,15 @@ module.exports = {
             jwtSecret,
             { expiresIn: '20m' }
           );
-          sendMail(accountRecoveryMessage(token), user, ACCOUNT_RECOVERY);
+          await pushNotification({
+            user: { ...user._doc, reminderType: 'email' }
+          }, {
+            input: {
+              userId: user.id,
+              ...accountRecoveryMessage(token),
+              ACCOUNT_RECOVERY
+            }
+          });
           return user;
         } throw new Error('Email not found in database!');
       }
