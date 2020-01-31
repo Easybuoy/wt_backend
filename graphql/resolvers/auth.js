@@ -164,12 +164,14 @@ module.exports = {
       }
     },
     updateUser: async (_, { input }, context) => {
-      let photo = { url: null };
+      const newData = { ...input };
+      let photo;
       if (input.photo) {
         photo = await uploadFile(input.photo);
+        photo = photo.url;
       }
-      const newData = { ...input, photo: photo.url };
       delete newData.id;
+      if (photo) newData.photo = photo;
       try {
         const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });
         if (updatedUser) {
