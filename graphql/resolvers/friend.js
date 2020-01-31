@@ -20,7 +20,11 @@ const allFriendRequests = async (context) => {
       accepted: null
     },
   );
-  return friendReqs.map((fr) => (fr.sender === currUser ? fr.receiver : fr.sender));
+  return friendReqs.map((fr) => (
+    fr.sender.toString() === currUser
+      ? fr.receiver.toString()
+      : fr.sender.toString()
+  ));
 };
 
 const friendChat = async (_, { receiver }, context) => ChatDataLoader(context)
@@ -121,7 +125,7 @@ module.exports = {
         newFriend = await newFriend.save();
         let userName = user.firstname || '';
         userName += user.lastname || '';
-        await pushNotification(_, {
+        await pushNotification({}, {
           input: {
             userId,
             message: `${userName} just sent you a friend request!`,
@@ -146,7 +150,7 @@ module.exports = {
           }
         );
         if (friendRequest && friendRequest.accepted) {
-          await pushNotification(_, {
+          await pushNotification({}, {
             input: {
               userId,
               message: `${user.firstname} ${user.lastname} accepted your friend request!`,

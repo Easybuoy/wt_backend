@@ -79,12 +79,12 @@ module.exports = {
     }
   },
   Mutation: {
-    pushNotification: async ({ user }, {
+    pushNotification: async (_, {
       input: {
         userId, message, topic, subscription
       }
     }, { pubsub }) => {
-      const receiver = user || await User.findById(userId);
+      const receiver = _.user || await User.findById(userId);
       let newNotification = new Notification({
         userId,
         message,
