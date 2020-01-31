@@ -79,6 +79,42 @@ module.exports = async (onEnd = false) => {
       picture:
         'https://www.bodybuilding.com/exercises/exerciseImages/sequences/4361/Female/l/4361_2.jpg',
       intensity: 'Moderate'
+    },
+    {
+      userId: null,
+      name: 'Upper-Chest',
+      description:
+        'If you want to sport a powerful, thick, and full chest, then you have to start at the top. In other words, make your upper pecs the top priority.',
+      picture:
+        'https://www.bodybuilding.com/images/2018/april/upper-chest-training-made-simple-header-muscletech-400x225.jpg',
+      intensity: 'High'
+    },
+    {
+      userId: null,
+      name: 'Biceps, Triceps and Calves',
+      description:
+        'This is a workout that allows for a great deal of flexibility on your part with overall structural design',
+      picture:
+        'https://www.bodybuilding.com/exercises/exerciseImages/sequences/147/Male/100sq/147_2.jpg',
+      intensity: 'Moderate'
+    },
+    {
+      userId: null,
+      name: 'Chest and Triceps',
+      description:
+        'This is a workout that allows for a great deal of flexibility on your part with overall structural design',
+      picture:
+        'https://www.bodybuilding.com/exercises/exerciseImages/sequences/380/Male/100sq/380_2.jpg',
+      intensity: 'Low'
+    },
+    {
+      userId: null,
+      name: 'Upper Chest and Biceps',
+      description:
+        'This workout will get you moving in multiple directions. It\'s not about focusing on one body part, it\'s about getting everything moving and working together to burn calories while building up strength endurance.',
+      picture:
+        'https://www.bodybuilding.com/exercises/exerciseImages/sequences/147/Male/100sq/147_2.jpg',
+      intensity: 'High'
     }
   ];
   try {
@@ -160,6 +196,8 @@ module.exports = async (onEnd = false) => {
     console.log('Seeding workouts collection...');
     const workouts = await Workout.create(workoutsData);
     console.log('Seeding workoutexercises collection...');
+    const exerciseIntermediate = await Exercise.find({ difficulty: 'Intermediate' });
+    const exerciseExpert = await Exercise.find({ difficulty: 'Expert' });
     const workoutExercisesData = [
       {
         workoutId: workouts[0].id,
@@ -235,6 +273,66 @@ module.exports = async (onEnd = false) => {
         workoutId: workouts[4].id,
         exerciseId: exercises[8].id,
         time: exerciseTimeByWorkoutIntensity(workouts[4].intensity)
+      },
+      {
+        workoutId: workouts[5].id,
+        exerciseId: exerciseIntermediate[0].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[5].intensity)
+      },
+      {
+        workoutId: workouts[5].id,
+        exerciseId: exerciseIntermediate[1].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[5].intensity)
+      },
+      {
+        workoutId: workouts[5].id,
+        exerciseId: exerciseIntermediate[2].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[5].intensity)
+      },
+      {
+        workoutId: workouts[6].id,
+        exerciseId: exerciseIntermediate[1].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[6].intensity)
+      },
+      {
+        workoutId: workouts[6].id,
+        exerciseId: exerciseIntermediate[3].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[6].intensity)
+      },
+      {
+        workoutId: workouts[6].id,
+        exerciseId: exerciseIntermediate[4].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[6].intensity)
+      },
+      {
+        workoutId: workouts[7].id,
+        exerciseId: exerciseExpert[0].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[7].intensity)
+      },
+      {
+        workoutId: workouts[7].id,
+        exerciseId: exerciseExpert[1].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[7].intensity)
+      },
+      {
+        workoutId: workouts[7].id,
+        exerciseId: exerciseExpert[2].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[7].intensity)
+      },
+      {
+        workoutId: workouts[8].id,
+        exerciseId: exerciseExpert[2].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[8].intensity)
+      },
+      {
+        workoutId: workouts[8].id,
+        exerciseId: exerciseExpert[4].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[8].intensity)
+      },
+      {
+        workoutId: workouts[8].id,
+        exerciseId: exerciseExpert[3].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[8].intensity)
       }
     ];
     await WorkoutExercise.insertMany(workoutExercisesData);
