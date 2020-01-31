@@ -108,10 +108,12 @@ module.exports = {
           receiver: userId
         });
         newFriend = await newFriend.save();
+        let userName = user.firstname || '';
+        userName += user.lastname || '';
         await pushNotification(_, {
           input: {
             userId,
-            message: `${user.firstname} ${user.lastname} just sent you a friend request!`,
+            message: `${userName} just sent you a friend request!`,
             topic: 'Trackdrills - New Friend Request',
             subscription: FRIEND_REQUEST
           }

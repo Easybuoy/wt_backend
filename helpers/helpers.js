@@ -134,18 +134,18 @@ module.exports = {
     await transporter.sendMail({
       from: smtpUser,
       to: user.email,
-      subject: notification.topic.split('_')[0],
-      text: notification.message,
+      subject: notification.topic.split('_')[0] || '',
+      text: notification.message || '',
       html: mailGenerator.generate({
         body: {
-          name: user.firstname,
-          intro: notification.topic,
+          name: user.firstname || '',
+          intro: notification.topic || '',
           action: {
-            instructions: notification.message,
+            instructions: notification.message || '',
             button: {
               color: '#22BC66',
-              text: buttonAction.text,
-              link: buttonAction.link
+              text: buttonAction.text || '',
+              link: buttonAction.link || ''
             }
           },
           outro: 'Good luck!'
