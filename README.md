@@ -2,6 +2,41 @@
 [![Coverage Status](https://coveralls.io/repos/github/LABS-EU3/wt_backend/badge.svg)](https://coveralls.io/github/LABS-EU3/wt_backend)
 # wt_backend
 
+# Getting Started
+Follow the instructions below:
+- Create a folder for this project and open it in your terminal - `cd <folder-name>`.
+- Clone the project files - `git clone https://github.com/LABS-EU3/wt_backend.git .`
+- Install dependencies - `npm i`.
+- Open `.env.example` file and create your own `.env` using the same key variables.
+
+<details>
+  <summary><strong>Environment Variables</strong></summary>
+ 
+  * [PORT]() - The server port to run on.
+  * [MONGO_CONNECT]() - Connection string to a production mongo database.
+  * [MONGO_CONNECT_TEST]() - Connection string to a testing mongo database.
+  * [FACEBOOK_APP_ID]() - Facebook application id.
+  * [FACEBOOK_APP_SECRET]() - Facebook application secret.
+  * [GOOGLE_APP_ID]() - Google application id.
+  * [GOOGLE_APP_SECRET]() - Google application secret.
+  * [JWT_SECRET]() - A random secret string to generate user passwords.
+  * [GRAPHIQL_PLAYGROUND]() - A boolean value that enables/disables the graphiql playground.
+  * [CLOUD_NAME]() - A cloudinary folder for image uploading.
+  * [CLOUDINARY_API_KEY]() - A cloudinary api key.
+  * [CLOUDINARY_API_SECRET]() - A cloudinary api secret.
+  * [SMTP_USERNAME]() - A google email account.
+  * [SMTP_PASSWORD]() - That same account's password
+  * [NOTIFICATIONS_CRON_TIMER]() - A string indicating the frequency of the cron that schedules user reminders before their workouts - See https://www.npmjs.com/package/node-cron for format details.
+</details>
+
+<details>
+  <summary><strong>Resources</strong></summary>
+
+  * [Trackdrills Server Staging Playground](https://trackdrills-staging.herokuapp.com/api)
+  * [Trackdrills Repository](https://github.com/LABS-EU3/wt_frontend)
+  * [Trackdrills Landing Page](https://trackdrills.com/)
+  * [Trackdrills Application Page](https://app.trackdrills.com/)
+</details>
 
 <!-- START graphql-markdown -->
 
@@ -17,6 +52,7 @@
     * [Exercise](#exercise)
     * [Graph](#graph)
     * [GraphData](#graphdata)
+    * [Message](#message)
     * [Notification](#notification)
     * [Schedule](#schedule)
     * [Stats](#stats)
@@ -37,7 +73,9 @@
     * [UserPlatformInput](#userplatforminput)
     * [UserSignupInput](#usersignupinput)
     * [UserUpdateInput](#userupdateinput)
+    * [WorkoutInput](#workoutinput)
     * [WorkoutSessionInput](#workoutsessioninput)
+    * [resetPasswordInput](#resetpasswordinput)
   * [Scalars](#scalars)
     * [Boolean](#boolean)
     * [Float](#float)
@@ -75,6 +113,29 @@ Login - Authenticates a user with a json web token
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#userformlogininput">UserFormLoginInput</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>user</strong></td>
+<td valign="top"><a href="#user">User</a>!</td>
+<td>
+
+find user from token
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>accountRecovery</strong></td>
+<td valign="top"><a href="#userauthresponse">UserAuthResponse</a>!</td>
+<td>
+
+Send email to user with link to password reset page
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 <tr>
@@ -154,6 +215,11 @@ Get a specific of exercise
 <td></td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>completedWorkoutsGallery</strong></td>
+<td valign="top">[<a href="#workoutsession">WorkoutSession</a>!]!</td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>userSchedule</strong></td>
 <td valign="top">[<a href="#schedule">Schedule</a>!]!</td>
 <td></td>
@@ -171,6 +237,36 @@ Get a specific of exercise
 <tr>
 <td colspan="2" valign="top"><strong>dashboard</strong></td>
 <td valign="top"><a href="#dashboard">Dashboard</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>friends</strong></td>
+<td valign="top">[<a href="#user">User</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>friendRequests</strong></td>
+<td valign="top">[<a href="#user">User</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>findFriends</strong></td>
+<td valign="top">[<a href="#user">User</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#filter">Filter</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>friendChat</strong></td>
+<td valign="top">[<a href="#message">Message</a>!]!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">receiver</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -249,6 +345,20 @@ Login with Google account - Authenticates a user with a json web token
 <td></td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>resetPassword</strong></td>
+<td valign="top"><a href="#userauthresponse">UserAuthResponse</a>!</td>
+<td>
+
+Edits the password for users with reset token
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#resetpasswordinput">resetPasswordInput</a></td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>workoutSession</strong></td>
 <td valign="top"><a href="#workoutsession">WorkoutSession</a></td>
 <td></td>
@@ -269,6 +379,16 @@ Login with Google account - Authenticates a user with a json web token
 <td></td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>customWorkout</strong></td>
+<td valign="top"><a href="#workout">Workout</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#workoutinput">WorkoutInput</a>!</td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>pushNotification</strong></td>
 <td valign="top"><a href="#notification">Notification</a>!</td>
 <td></td>
@@ -286,6 +406,36 @@ Login with Google account - Authenticates a user with a json web token
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#scheduleinput">ScheduleInput</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>manageFriends</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">userId</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">task</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>sendMessage</strong></td>
+<td valign="top"><a href="#message">Message</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">receiver</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">message</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -455,6 +605,46 @@ Object parameter for fetching exercises
 </tbody>
 </table>
 
+### Message
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>sender</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>receiver</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>message</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>sent</strong></td>
+<td valign="top"><a href="#float">Float</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ### Notification
 
 <table>
@@ -579,6 +769,16 @@ A informative field describing relevant content and its ID
 <tr>
 <td colspan="2" valign="top"><strong>scheduledWorkoutAlert</strong></td>
 <td valign="top"><a href="#notification">Notification</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>newMessage</strong></td>
+<td valign="top"><a href="#message">Message</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">receiver</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -708,6 +908,11 @@ Application user
 <tr>
 <td colspan="2" valign="top"><strong>reminderType</strong></td>
 <td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>messages</strong></td>
+<td valign="top">[<a href="#message">Message</a>!]</td>
 <td></td>
 </tr>
 </tbody>
@@ -983,6 +1188,11 @@ Application user login platform
 <td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>subscription</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -1095,7 +1305,12 @@ Object parameter for user platform authentication
 <tbody>
 <tr>
 <td colspan="2" valign="top"><strong>accessToken</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>idToken</strong></td>
+<td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
 </tbody>
@@ -1180,22 +1395,12 @@ Object parameter for updating user
 </thead>
 <tbody>
 <tr>
-<td colspan="2" valign="top"><strong>id</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
-<td></td>
-</tr>
-<tr>
 <td colspan="2" valign="top"><strong>firstname</strong></td>
 <td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>lastname</strong></td>
-<td valign="top"><a href="#string">String</a></td>
-<td></td>
-</tr>
-<tr>
-<td colspan="2" valign="top"><strong>password</strong></td>
 <td valign="top"><a href="#string">String</a></td>
 <td></td>
 </tr>
@@ -1246,12 +1451,61 @@ Object parameter for updating user
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>photo</strong></td>
-<td valign="top"><a href="#string">String</a></td>
+<td valign="top"><a href="#upload">Upload</a></td>
 <td></td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>reminderType</strong></td>
 <td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### WorkoutInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>name</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>workoutId</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>description</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>intensity</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>picture</strong></td>
+<td valign="top"><a href="#upload">Upload</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>remove</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>exercises</strong></td>
+<td valign="top">[<a href="#string">String</a>!]!</td>
 <td></td>
 </tr>
 </tbody>
@@ -1296,6 +1550,30 @@ Object parameter for updating user
 <tr>
 <td colspan="2" valign="top"><strong>end</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### resetPasswordInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>password</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>rePassword</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
