@@ -61,7 +61,7 @@ const workoutSchema = `
     workoutId: String
     description: String!
     intensity: String!
-    picture: String
+    picture: Upload
     remove: Boolean
     exercises: [String!]!
   }

@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 const { ObjectId } = require('mongoose').Types;
 const { isProduction, smtpUser, smtpPass } = require('../config');
 const cloudinary = require('./cloudinary');
+const Log = require('../models/log');
+
+const LogError = (info) => (new Log(info)).save();
 
 const mailGenerator = new Mailgen({
   theme: 'default',
@@ -89,6 +92,11 @@ module.exports = {
         });
         return true;
       default:
+        LogError({
+          topic: 'sendNotification',
+          message: `Unknown notification type ${subscription}!`,
+          file: `${__dirname}/${__filename}`
+        });
         return false;
     }
   },
@@ -115,24 +123,29 @@ module.exports = {
         };
         break;
       default:
-        break;
+        LogError({
+          topic: 'sendMail',
+          message: `Unknown email type ${subscription}!`,
+          file: `${__dirname}/${__filename}`
+        });
+        return false;
     }
     await transporter.verify();
     await transporter.sendMail({
       from: smtpUser,
       to: user.email,
-      subject: notification.topic.split('_')[0],
-      text: notification.message,
+      subject: notification.topic.split('_')[0] || '',
+      text: notification.message || '',
       html: mailGenerator.generate({
         body: {
-          name: user.firstname,
-          intro: notification.topic,
+          name: user.firstname || '',
+          intro: notification.topic || '',
           action: {
-            instructions: notification.message,
+            instructions: notification.message || '',
             button: {
               color: '#22BC66',
-              text: buttonAction.text,
-              link: buttonAction.link
+              text: buttonAction.text || '',
+              link: buttonAction.link || ''
             }
           },
           outro: 'Good luck!'
@@ -140,10 +153,18 @@ module.exports = {
       }),
       // eslint-disable-next-line no-unused-vars
     }, (err, info) => {
-      if (err) console.error(err.message);
+      if (err) {
+        LogError({
+          topic: 'sendMail Failed',
+          message: err.message,
+          file: `${__dirname}/${__filename}`
+        });
+      }
     });
+    return true;
   },
   uploadFile: async (file) => {
+    if (typeof file === 'undefined' || !file) return { url: null };
     try {
       let image = await file;
       // eslint-disable-next-line no-console
