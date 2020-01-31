@@ -164,7 +164,7 @@ module.exports = {
       }
     },
     updateUser: async (_, { input }, context) => {
-      let photo = null;
+      let photo = { url: null };
       if (input.photo) {
         photo = await uploadFile(input.photo);
       }
