@@ -164,6 +164,7 @@ module.exports = {
     return true;
   },
   uploadFile: async (file) => {
+    if (typeof file === 'undefined' || !file) return { url: null };
     try {
       let image = await file;
       // eslint-disable-next-line no-console
