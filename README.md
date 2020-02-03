@@ -2,6 +2,22 @@
 [![Coverage Status](https://coveralls.io/repos/github/LABS-EU3/wt_backend/badge.svg)](https://coveralls.io/github/LABS-EU3/wt_backend)
 # wt_backend
 
+# About Trackdrills
+
+Trackdrills is an application that gives you access to over 500 workouts and exercises to choose from to suit your fitness goals. It is a health-focused app that also gives you the ability to create your own customized workout plans and track your progress.
+
+# Meet the Team
+
+|                                          [Ezekiel Ekunola](https://github.com/easybuoy)                                          |                                                [Amira Adediran](https://github.com/amxra)                                                 |                                         [Modurotolu Olokode](https://github.com/durotolu)                                          |                                       [Folasade Agbaje](https://github.com/estheragbaje)                                       |                                   [Melquisedeque Pereira](https://github.com/melquip)                                    |
+| :------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------: |
+|    [<img src="https://ca.slack-edge.com/T4JUEB3ME-UHQMX3CLS-4607ead88481-512" width = "200" />](https://github.com/easybuoy)     |          [<img src="https://ca.slack-edge.com/T4JUEB3ME-ULJJ9BPPD-e5a7c1cc71bf-512" width = "200" />](https://github.com/amxra)           |     [<img src="https://ca.slack-edge.com/T4JUEB3ME-ULPJMSH9P-eedde51dbb77-512" width = "200" />](https://github.com/durotolu)      | [<img src="https://ca.slack-edge.com/T4JUEB3ME-ULVMV2R29-7103c65528c4-5122" width = "200" />](https://github.com/estheragbaje) | [<img src="https://ca.slack-edge.com/T4JUEB3ME-ULJ9RFUFM-36a61875911d-512" width = "200" />](https://github.com/melquip) |
+|                      [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/easybuoy)                       |                            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/amxra)                             |                       [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/durotolu)                        |                   [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/estheragbaje)                    |                   [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/melquip)                   |
+|     [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/easybuoy)     | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/amira-adediran-8308b4196/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/modurotoluolokode/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/folasadeagbaje) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/melquip/) |
+|                                    [**Sandrava Philips**](https://github.com/Sandravaphilips)                                    |                                           [**Oluwafemi Anjorin**](https://github.com/Leelsmuth)                                           |                                                                                                                                    |
+| [<img src="https://ca.slack-edge.com/T4JUEB3ME-ULVJMEELU-2b21a1df08ff-512" width = "200" />](https://github.com/Sandravaphilips) |        [<img src="https://ca.slack-edge.com/T4JUEB3ME-ULPHCUQF3-48914af04c69-512" width = "200" />](https://github.com/Leelsmuth)         |                                                                                                                                    |
+|                   [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Sandravaphilips)                   |                          [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Leelsmuth)                           |                                                                                                                                    |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/sandravaphilips)  |     [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/oluwafemi-anjorin)     |
+
 # Getting Started
 Follow the instructions below:
 - Create a folder for this project and open it in your terminal - `cd <folder-name>`.
@@ -29,14 +45,14 @@ Follow the instructions below:
   * [NOTIFICATIONS_CRON_TIMER]() - A string indicating the frequency of the cron that schedules user reminders before their workouts - See https://www.npmjs.com/package/node-cron for format details.
 </details>
 
-<details>
-  <summary><strong>Resources</strong></summary>
+# Project Overview
 
-  * [Trackdrills Server Staging Playground](https://trackdrills-staging.herokuapp.com/api)
-  * [Trackdrills Repository](https://github.com/LABS-EU3/wt_frontend)
-  * [Trackdrills Landing Page](https://trackdrills.com/)
-  * [Trackdrills Application Page](https://app.trackdrills.com/)
-</details>
+[Trello Board](https://trello.com/b/iTrFFYwu/labseu3-workout-tracker) <br>
+[Product Canvas](https://www.notion.so/EU3-Workout-Tracker-07d713eeab674a938ea65ce065462384) <br>
+[UX Design files](https://www.figma.com/file/r3J1gqHSg2Mci8tHb6vXdd/Trackdrills) <br>
+[Landing Page](https://trackdrills.com/) <br>
+[API](https://trackdrills.herokuapp.com/) <br>
+
 
 <!-- START graphql-markdown -->
 
@@ -216,7 +232,7 @@ Get a specific of exercise
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>completedWorkoutsGallery</strong></td>
-<td valign="top">[<a href="#workoutsession">WorkoutSession</a>!]!</td>
+<td valign="top">[<a href="#user">User</a>!]!</td>
 <td></td>
 </tr>
 <tr>
@@ -908,6 +924,11 @@ Application user
 <tr>
 <td colspan="2" valign="top"><strong>reminderType</strong></td>
 <td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>gallery</strong></td>
+<td valign="top">[<a href="#workoutsession">WorkoutSession</a>]!</td>
 <td></td>
 </tr>
 <tr>
