@@ -345,7 +345,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-6),
         endDate: newDate(-6) + 1,
         pause: false,
-        weight: 80
+        weight: 80,
+        picture: 'https://www.t-nation.com/system/publishing/articles/10005344/original/The-500-Workout.jpg?1505510812',
       },
       {
         userId: users[0].id,
@@ -355,7 +356,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-5),
         endDate: newDate(-5) + 1,
         pause: false,
-        weight: 79.5
+        weight: 79.5,
+        picture: 'https://cdn2.coachmag.co.uk/sites/coachmag/files/styles/16x9_480/public/2016/08/upper-body-workout.jpg?itok=g-ApZTwU&timestamp=1471872001',
       },
       {
         userId: users[0].id,
@@ -365,7 +367,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-4),
         endDate: newDate(-4) + 1,
         pause: false,
-        weight: 79
+        weight: 79,
+        picture: 'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F35%2F2019%2F02%2F17140100%2Fstrength-hiit-workout-videos.jpg&q=85',
       },
       {
         userId: users[0].id,
@@ -375,7 +378,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-3),
         endDate: newDate(-3) + 1,
         pause: false,
-        weight: 78.5
+        weight: 78.5,
+        picture: 'https://media4.s-nbcnews.com/j/newscms/2019_26/2909556/190625-yoga-stock-cs-1245p_446d66606391ef5abb6f27856216325a.fit-760w.jpg',
       },
       {
         userId: users[0].id,
@@ -385,7 +389,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-2),
         endDate: newDate(-2) + 1,
         pause: false,
-        weight: 78
+        weight: 78,
+        picture: 'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F35%2F2019%2F02%2F17140100%2Fstrength-hiit-workout-videos.jpg&q=85',
       },
       {
         userId: users[0].id,
@@ -395,7 +400,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-1),
         endDate: newDate(-1) + 1,
         pause: false,
-        weight: 77.5
+        weight: 77.5,
+        picture: 'https://media4.s-nbcnews.com/j/newscms/2019_26/2909556/190625-yoga-stock-cs-1245p_446d66606391ef5abb6f27856216325a.fit-760w.jpg',
       },
       {
         userId: users[0].id,
@@ -405,7 +411,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(),
         endDate: newDate() + 1,
         pause: false,
-        weight: 77
+        weight: 77,
+        picture: 'https://cdn-ami-drupal.heartyhosting.com/sites/muscleandfitness.com/files/styles/full_node_image_1090x614/public/media/Young-Muscular-Man-Doing-Lunges-In-Dark-Gym.jpg?itok=16y2c2v8',
       },
       {
         userId: users[0].id,
@@ -415,7 +422,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(),
         endDate: newDate() + 1,
         pause: false,
-        weight: 76.5
+        weight: 76.5,
+        picture: 'https://cdn1.coachmag.co.uk/sites/coachmag/files/styles/16x9_480/public/2018/03/home-dumbbell-workout-plan.jpg?itok=2rSFbB9H&timestamp=1520599000',
       },
       {
         userId: users[0].id,
@@ -425,7 +433,8 @@ module.exports = async (onEnd = false) => {
         startDate: Date.now(),
         endDate: null,
         pause: false,
-        weight: 76
+        weight: 76,
+        picture: 'https://media1.popsugar-assets.com/files/thumbor/DwuRAXRaR7-TXSsEbA0U7L0GfXg/fit-in/728xorig/filters:format_auto-!!-:strip_icc-!!-/2019/07/31/044/n/1922729/8c189b805d422c81c9ba55.76538773_/i/3-Minute-Ab-Workout-Runners.jpg',
       },
       {
         userId: users[0].id,
