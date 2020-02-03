@@ -5,8 +5,7 @@ const helmet = require('helmet');
 const { ApolloServer, makeExecutableSchema } = require('apollo-server-express');
 const { applyMiddleware } = require('graphql-middleware');
 const { createServer } = require('http');
-const connect = require('./database');
-const { graphiql, port } = require('../config');
+const { graphiql, isTesting } = require('../config');
 const typeDefs = require('../graphql/schema');
 const resolvers = require('../graphql/resolvers');
 const context = require('../graphql/context');
@@ -14,7 +13,10 @@ const validators = require('../middleware/validator');
 const permissions = require('../middleware/shield');
 
 const app = express();
-require('../helpers/cron');
+if (!isTesting) {
+  // eslint-disable-next-line global-require
+  require('../helpers/cron');
+}
 
 app.use(helmet());
 app.use(cors());
@@ -50,11 +52,4 @@ const server = createServer(app);
 
 apolloServer.installSubscriptionHandlers(server);
 
-connect.then(() => {
-  console.log('Database successfully connected!');
-  server.listen(port, () => {
-    console.log(`ApolloServer successfully connected to http://localhost:${port}${apolloServer.graphqlPath}`);
-  });
-}).catch((err) => { throw err; });
-
-module.exports = app;
+module.exports = server;
