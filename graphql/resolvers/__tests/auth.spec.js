@@ -11,7 +11,7 @@ describe('authentication', () => {
   });
   it('it should update user', async (done) => {
     const user = await createUser();
-    const updatedUser = await authResolver.Mutation.updateUser(null, { input: { id: user.id, firstname: 'Sandrava' } });
+    const updatedUser = await authResolver.Mutation.updateUser(null, { input: { id: user.id, firstname: 'Sandrava' } }, { user: { id: user.id } });
     expect(updatedUser.id).toBeDefined();
     done();
   });
@@ -36,15 +36,6 @@ describe('authentication', () => {
       null,
       { input: { accessToken: true } },
       { req: { body: null }, res: null }
-    );
-    expect(user).toBeDefined();
-    done();
-  });
-  it('it should update user', async (done) => {
-    const newUser = await createUser();
-    const user = await authResolver.Mutation.updateUser(
-      null,
-      { input: { id: newUser.id, firstname: 'Sandrava' } }
     );
     expect(user).toBeDefined();
     done();

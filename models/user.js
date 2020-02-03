@@ -98,8 +98,7 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
-      photo: profile._json.picture
-        || defaultProfilePicture,
+      photo: (profile._json ? profile._json.picture : defaultProfilePicture),
     });
     return newUser;
   }
@@ -120,7 +119,7 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
-      photo: (profile._json.picture || defaultProfilePicture),
+      photo: (profile._json ? profile._json.picture : defaultProfilePicture),
     });
     return newUser;
   }
@@ -143,7 +142,7 @@ UserSchema.statics.asGoogleIdUser = async function (data, idToken) {
         token: idToken,
         idToken
       },
-      photo: (payload.picture || defaultProfilePicture),
+      photo: (payload.picture ? payload.picture : defaultProfilePicture),
     });
     return newUser;
   }
