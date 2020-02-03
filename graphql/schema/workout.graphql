@@ -3,7 +3,7 @@ const workoutSchema = `
     workouts(input: Filter): [Workout!]!
     workout(id: String!): Workout!
     completedWorkouts: [WorkoutSession!]!
-    completedWorkoutsGallery: [WorkoutSession!]!
+    completedWorkoutsGallery: [User!]!
   }
   
   extend type Mutation {
@@ -66,5 +66,8 @@ const workoutSchema = `
     exercises: [String!]!
   }
 
+  extend type User {
+    gallery: [WorkoutSession]!
+  }
 `;
 module.exports = workoutSchema;

@@ -34,8 +34,24 @@ module.exports = {
       return { ...workout._doc, id: workout.id };
     },
     completedWorkouts: async (_, args, context) => WorkoutSession.find({ userId: context.user.id, endDate: { $ne: null } }).sort({ endDate: -1 }).populate('workoutId'),
-    completedWorkoutsGallery: async () => WorkoutSession.find({ picture: { $ne: null } })
-      .sort({ endDate: -1 }).populate('workoutId')
+    completedWorkoutsGallery: async () => {
+      const images = await WorkoutSession.find({ picture: { $ne: null } })
+        .sort({ endDate: -1 })
+        .populate('workoutId')
+        .populate('userId');
+      const userGallery = images.reduce((users, img) => {
+        const _users = users;
+        if (!users[img.userId.id.toString()]) {
+          _users[img.userId.id.toString()] = { ...img.userId._doc, gallery: [] };
+        }
+        users[img.userId.id.toString()].gallery.push({
+          ...img,
+          userId: img.userId.id.toString()
+        });
+        return _users;
+      }, {});
+      return Object.values(userGallery);
+    },
   },
   Mutation: {
     workoutSession: async (_, { input }, context) => {
