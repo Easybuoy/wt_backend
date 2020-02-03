@@ -6,6 +6,7 @@ const WorkoutExercises = require('../../models/workoutExercise');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
+const { defaultCustomWorkoutPicture } = require('../../config');
 
 const exerciseDifficultyToInt = (difficulty) => {
   if (difficulty === 'Beginner') {
@@ -34,8 +35,29 @@ module.exports = {
       return { ...workout._doc, id: workout.id };
     },
     completedWorkouts: async (_, args, context) => WorkoutSession.find({ userId: context.user.id, endDate: { $ne: null } }).sort({ endDate: -1 }).populate('workoutId'),
-    completedWorkoutsGallery: async () => WorkoutSession.find({ picture: { $ne: null } })
-      .sort({ endDate: -1 }).populate('workoutId')
+    completedWorkoutsGallery: async () => {
+      const images = await WorkoutSession.find({ picture: { $ne: null } })
+        .sort({ endDate: -1 })
+        .populate('workoutId')
+        .populate('userId');
+      const userGallery = images.reduce((users, img) => {
+        const _users = users;
+        if (!users[img.userId.id.toString()]) {
+          _users[img.userId.id.toString()] = {
+            ...img.userId._doc,
+            id: img.userId.id,
+            gallery: []
+          };
+        }
+        users[img.userId.id.toString()].gallery.push({
+          ...img._doc,
+          id: img.id.toString(),
+          userId: img.userId.id.toString()
+        });
+        return _users;
+      }, {});
+      return Object.values(userGallery);
+    },
   },
   Mutation: {
     workoutSession: async (_, { input }, context) => {
@@ -131,7 +153,7 @@ module.exports = {
             name,
             description,
             intensity,
-            picture: image.url,
+            picture: image.url || defaultCustomWorkoutPicture,
           });
           customWorkout = await customWorkout.save();
           const customWorkouExercises = exercises.map((exerciseId) => new WorkoutExercises({
@@ -167,7 +189,9 @@ module.exports = {
             name,
             description,
             intensity,
-            picture: picture !== customWorkout.picture ? (await uploadFile(picture)).url : picture,
+            picture: picture && picture !== customWorkout.picture
+              ? (await uploadFile(picture)).url
+              : (picture || defaultCustomWorkoutPicture),
           }, { new: true });
         }
         return customWorkout;

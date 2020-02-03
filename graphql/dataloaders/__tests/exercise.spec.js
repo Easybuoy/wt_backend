@@ -24,7 +24,7 @@ describe('Exercise data loader', () => {
     const exercises = await Exercise.find();
     expect(exercises).toHaveLength(2);
     // update user with new units
-    const firstWorkout = await query(`
+    await query(`
       query { 
         workout( 
            id: "${workout._id}"
@@ -39,8 +39,6 @@ describe('Exercise data loader', () => {
         }
       }
     `, testUser.token);
-    // eslint-disable-next-line no-console
-    console.log(firstWorkout);
     // dataloader must only run once even when fetching more than 1 unit
     expect(DLSpy).toHaveBeenCalledTimes(1);
     done();
