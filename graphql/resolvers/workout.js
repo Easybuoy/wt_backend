@@ -189,7 +189,9 @@ module.exports = {
             name,
             description,
             intensity,
-            picture: picture !== customWorkout.picture ? (await uploadFile(picture)).url : picture,
+            picture: picture && picture !== customWorkout.picture
+              ? (await uploadFile(picture)).url
+              : (picture || defaultCustomWorkoutPicture),
           }, { new: true });
         }
         return customWorkout;
