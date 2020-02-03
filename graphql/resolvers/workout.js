@@ -6,6 +6,7 @@ const WorkoutExercises = require('../../models/workoutExercise');
 
 const { createExerciseDL: ExerciseDataLoader } = require('../dataloaders/exercise');
 const { createWorkoutSessionDL: WorkoutSessionDataLoader } = require('../dataloaders/workoutSession');
+const { defaultCustomWorkoutPicture } = require('../../config');
 
 const exerciseDifficultyToInt = (difficulty) => {
   if (difficulty === 'Beginner') {
@@ -152,7 +153,7 @@ module.exports = {
             name,
             description,
             intensity,
-            picture: image.url,
+            picture: image.url || defaultCustomWorkoutPicture,
           });
           customWorkout = await customWorkout.save();
           const customWorkouExercises = exercises.map((exerciseId) => new WorkoutExercises({
