@@ -42,10 +42,15 @@ module.exports = {
       const userGallery = images.reduce((users, img) => {
         const _users = users;
         if (!users[img.userId.id.toString()]) {
-          _users[img.userId.id.toString()] = { ...img.userId._doc, gallery: [] };
+          _users[img.userId.id.toString()] = {
+            ...img.userId._doc,
+            id: img.userId.id,
+            gallery: []
+          };
         }
         users[img.userId.id.toString()].gallery.push({
-          ...img,
+          ...img._doc,
+          id: img.id.toString(),
           userId: img.userId.id.toString()
         });
         return _users;
