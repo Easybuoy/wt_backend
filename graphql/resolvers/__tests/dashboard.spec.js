@@ -1,4 +1,4 @@
-const { initTest, createUser } = require('../../../helpers/tests');
+const { initTest } = require('../../../helpers/tests');
 const dashboardResolver = require('../dashboard');
 const User = require('../../../models/user');
 const context = require('../../../graphql/context');
