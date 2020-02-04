@@ -33,7 +33,7 @@ module.exports = {
   initTest: () => {
     // wait for the DB to connect
     beforeAll(async (done) => {
-      jest.setTimeout(10000);
+      jest.setTimeout(100000);
       await connect;
       done();
     });
