@@ -11,6 +11,7 @@ const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
 const { ACCOUNT_RECOVERY, uploadFile } = require('../../helpers/helpers');
 const { pushNotification } = require('./schedule').Mutation;
+const dashboard = require('./dashboard');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -43,7 +44,8 @@ module.exports = {
     user: async (_, args, context) => {
       const userId = context.user.id;
       const user = await User.findById(userId);
-      return user;
+      const userDashboard = dashboard.Query.dashboard(null, null, { user: { id: userId } });
+      return { ...user._doc, id: user.id, streak: userDashboard.streak };
     },
     accountRecovery: async (_, { input }) => {
       if (!input) {
