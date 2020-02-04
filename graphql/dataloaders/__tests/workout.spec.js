@@ -9,7 +9,7 @@ describe('Workout data loader', () => {
   it('Should only make one database request when getting user schedules', async (done) => {
     const DLSpy = jest.spyOn(WorkoutDL, 'workoutDataLoader');
     await seed();
-    const randomUser = await User.findOne();
+    const randomUser = await User.findOne({ email: 'test@user1.com' });
     expect(randomUser.id).toBeDefined();
     await query(`
       query { 

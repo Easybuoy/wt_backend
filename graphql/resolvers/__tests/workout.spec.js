@@ -33,7 +33,7 @@ describe('workout resolver', () => {
   describe('find completed workouts endpoint', () => {
     it('should get a list of specific user\'s completed workouts', async (done) => {
       await seed();
-      const randomUser = await User.findOne();
+      const randomUser = await User.findOne({ email: 'test@user1.com' });
       const completedWorkouts = await workoutResolver.Query.completedWorkouts(null, null, {
         user: { id: randomUser.id }
       });
