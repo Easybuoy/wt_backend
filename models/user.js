@@ -87,7 +87,12 @@ UserSchema.methods.validPassword = async function (password) {
 // refreshToken is also available along with the accessToken
 UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
   const User = this;
-  const user = await User.findOne({ 'facebook.id': profile.id });
+  const user = await User.findOne({
+    $or: [
+      { 'facebook.id': profile.id },
+      { email: profile.emails[0].value }
+    ]
+  });
   // no user was found, create a new one
   if (!user) {
     const newUser = await User.create({
@@ -102,13 +107,30 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
     });
     return newUser;
   }
+  if (!user.facebook.id) {
+    await User.findOneAndUpdate({ email: profile.emails[0].value }, {
+      facebook: {
+        id: profile.id,
+        token: accessToken,
+      },
+      photo: user.picture === defaultProfilePicture && profile._json
+        ? profile._json.picture
+        : user.photo,
+    });
+  }
+
   return user;
 };
 
 // refreshToken is also available along with the accessToken
 UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
   const User = this;
-  const existingUser = await User.findOne({ 'google.id': profile.id });
+  const existingUser = await User.findOne({
+    $or: [
+      { 'google.id': profile.id },
+      { email: profile.emails[0].value }
+    ]
+  });
   // no user was found, create a new one
   if (!existingUser) {
     const newUser = await User.create({
@@ -123,6 +145,18 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
     });
     return newUser;
   }
+  if (!existingUser.google.id) {
+    await User.findOneAndUpdate({ email: profile.emails[0].value }, {
+      google: {
+        id: profile.id,
+        token: accessToken,
+      },
+      photo: existingUser.picture === defaultProfilePicture && profile._json
+        ? profile._json.picture
+        : existingUser.photo,
+    });
+  }
+
   return existingUser;
 };
 
@@ -130,7 +164,12 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
 UserSchema.statics.asGoogleIdUser = async function (data, idToken) {
   const User = this;
   const { googleId, parsedToken: { payload } } = data;
-  const existingUser = await User.findOne({ 'google.id': googleId });
+  const existingUser = await User.findOne({
+    $or: [
+      { 'google.id': googleId },
+      { email: payload.email }
+    ]
+  });
   // no user was found, create a new one
   if (!existingUser) {
     const newUser = await User.create({
@@ -146,6 +185,19 @@ UserSchema.statics.asGoogleIdUser = async function (data, idToken) {
     });
     return newUser;
   }
+  if (!existingUser.google.id) {
+    await User.findOneAndUpdate({ email: payload.email }, {
+      google: {
+        id: googleId,
+        token: idToken,
+        idToken
+      },
+      photo: existingUser.picture === defaultProfilePicture && payload.picture
+        ? payload.picture
+        : existingUser.photo,
+    });
+  }
+
   return existingUser;
 };
 
