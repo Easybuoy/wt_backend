@@ -167,7 +167,7 @@ module.exports = async (onEnd = false) => {
     ];
     // if (!isProduction) {
     console.log('Seeding users collection...');
-    const users = await User.insertMany(usersData);
+    const users = await User.create(usersData);
     // } else {
     //   users = await User.find();
     // }
