@@ -44,7 +44,7 @@ module.exports = {
     user: async (_, args, context) => {
       const userId = context.user.id;
       const user = await User.findById(userId);
-      const userDashboard = dashboard.Query.dashboard(null, null, { user: { id: userId } });
+      const userDashboard = await dashboard.Query.dashboard(null, null, { user: { id: userId } });
       return { ...user._doc, id: user.id, streak: userDashboard.streak };
     },
     accountRecovery: async (_, { input }) => {
@@ -167,14 +167,13 @@ module.exports = {
     },
     updateUser: async (_, { input }, context) => {
       const newData = { ...input };
-      let photo;
-      if (input.photo) {
-        photo = await uploadFile(input.photo);
-        photo = photo.url;
-      }
       delete newData.id;
-      if (photo) newData.photo = photo;
+      delete newData.photo;
       try {
+        if (input.photo) {
+          newData.photo = await uploadFile(input.photo);
+          newData.photo = newData.photo.url;
+        }
         const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });
         if (updatedUser) {
           return { ...updatedUser._doc, password: null, id: updatedUser.id };
