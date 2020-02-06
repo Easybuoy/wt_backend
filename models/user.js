@@ -95,6 +95,9 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
   });
   // no user was found, create a new one
   if (!user) {
+    const uploadImg = (profile.photos && profile.photos.length
+      ? profile.photos[0].value
+      : defaultProfilePicture);
     const newUser = await User.create({
       firstname: profile.displayName || profile.givenName,
       lastname: profile.familyName,
@@ -103,19 +106,22 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
-      photo: (profile._json ? profile._json.picture : defaultProfilePicture),
+      photo: uploadImg,
     });
     return newUser;
   }
   if (!user.facebook.id) {
+    const uploadImg = (user.picture === defaultProfilePicture
+      && profile.photos
+      && profile.photos.length
+      ? profile.photos[0].value
+      : user.photo);
     await User.findOneAndUpdate({ email: profile.emails[0].value }, {
       facebook: {
         id: profile.id,
         token: accessToken,
       },
-      photo: user.picture === defaultProfilePicture && profile._json
-        ? profile._json.picture
-        : user.photo,
+      photo: uploadImg,
     });
   }
 
