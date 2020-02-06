@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { jwtSecret, defaultProfilePicture } = require('../config');
-const { uploadFile } = require('../helpers/helpers');
 
 mongoose.promise = global.Promise;
 
@@ -96,7 +95,9 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
   });
   // no user was found, create a new one
   if (!user) {
-    const uploadImg = (profile.photos.length ? profile.photos[0].value : defaultProfilePicture);
+    const uploadImg = (profile.photos && profile.photos.length
+      ? profile.photos[0].value
+      : defaultProfilePicture);
     const newUser = await User.create({
       firstname: profile.displayName || profile.givenName,
       lastname: profile.familyName,
@@ -110,9 +111,11 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
     return newUser;
   }
   if (!user.facebook.id) {
-    const uploadImg = user.picture === defaultProfilePicture && profile.photos.length
+    const uploadImg = (user.picture === defaultProfilePicture
+      && profile.photos
+      && profile.photos.length
       ? profile.photos[0].value
-      : user.photo;
+      : user.photo);
     await User.findOneAndUpdate({ email: profile.emails[0].value }, {
       facebook: {
         id: profile.id,
