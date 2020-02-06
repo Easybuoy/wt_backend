@@ -79,6 +79,42 @@ module.exports = async (onEnd = false) => {
       picture:
         'https://www.bodybuilding.com/exercises/exerciseImages/sequences/4361/Female/l/4361_2.jpg',
       intensity: 'Moderate'
+    },
+    {
+      userId: null,
+      name: 'Upper-Chest',
+      description:
+        'If you want to sport a powerful, thick, and full chest, then you have to start at the top. In other words, make your upper pecs the top priority.',
+      picture:
+        'https://www.bodybuilding.com/images/2018/april/upper-chest-training-made-simple-header-muscletech-400x225.jpg',
+      intensity: 'High'
+    },
+    {
+      userId: null,
+      name: 'Biceps, Triceps and Calves',
+      description:
+        'This is a workout that allows for a great deal of flexibility on your part with overall structural design',
+      picture:
+        'https://www.bodybuilding.com/exercises/exerciseImages/sequences/147/Male/100sq/147_2.jpg',
+      intensity: 'Moderate'
+    },
+    {
+      userId: null,
+      name: 'Chest and Triceps',
+      description:
+        'This is a workout that allows for a great deal of flexibility on your part with overall structural design',
+      picture:
+        'https://www.bodybuilding.com/exercises/exerciseImages/sequences/380/Male/100sq/380_2.jpg',
+      intensity: 'Low'
+    },
+    {
+      userId: null,
+      name: 'Upper Chest and Biceps',
+      description:
+        'This workout will get you moving in multiple directions. It\'s not about focusing on one body part, it\'s about getting everything moving and working together to burn calories while building up strength endurance.',
+      picture:
+        'https://www.bodybuilding.com/exercises/exerciseImages/sequences/147/Male/100sq/147_2.jpg',
+      intensity: 'High'
     }
   ];
   try {
@@ -87,7 +123,7 @@ module.exports = async (onEnd = false) => {
     console.log('Clearing data from all collections...');
     await removeAllCollections(); // isProduction ? ['users'] : []
     console.log('Seeding units collection...');
-    const units = await Unit.create(unitsData);
+    const units = await Unit.insertMany(unitsData);
     // let users;
     const usersData = [
       {
@@ -97,6 +133,7 @@ module.exports = async (onEnd = false) => {
         password: 'testUser1!',
         experience: 'Beginner',
         reminderType: 'email',
+        goal: 'Muscle Gain',
         height: 1.69,
         weight: 80,
         weightUnit: units[0].id,
@@ -108,6 +145,7 @@ module.exports = async (onEnd = false) => {
         email: 'test@user2.com',
         password: 'testUser2!',
         experience: 'Intermediate',
+        goal: 'Athletic',
         reminderType: 'email',
         height: 66.535433071,
         weight: 176.368,
@@ -120,6 +158,7 @@ module.exports = async (onEnd = false) => {
         email: 'test@user3.com',
         password: 'testUser3!',
         experience: 'Expert',
+        goal: 'Muscle Gain',
         height: 1.69,
         weight: 80,
         weightUnit: units[0].id,
@@ -155,8 +194,10 @@ module.exports = async (onEnd = false) => {
       })
     );
     console.log('Seeding workouts collection...');
-    const workouts = await Workout.create(workoutsData);
+    const workouts = await Workout.insertMany(workoutsData);
     console.log('Seeding workoutexercises collection...');
+    const exerciseIntermediate = await Exercise.find({ difficulty: 'Intermediate' });
+    const exerciseExpert = await Exercise.find({ difficulty: 'Expert' });
     const workoutExercisesData = [
       {
         workoutId: workouts[0].id,
@@ -232,6 +273,66 @@ module.exports = async (onEnd = false) => {
         workoutId: workouts[4].id,
         exerciseId: exercises[8].id,
         time: exerciseTimeByWorkoutIntensity(workouts[4].intensity)
+      },
+      {
+        workoutId: workouts[5].id,
+        exerciseId: exerciseIntermediate[0].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[5].intensity)
+      },
+      {
+        workoutId: workouts[5].id,
+        exerciseId: exerciseIntermediate[1].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[5].intensity)
+      },
+      {
+        workoutId: workouts[5].id,
+        exerciseId: exerciseIntermediate[2].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[5].intensity)
+      },
+      {
+        workoutId: workouts[6].id,
+        exerciseId: exerciseIntermediate[1].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[6].intensity)
+      },
+      {
+        workoutId: workouts[6].id,
+        exerciseId: exerciseIntermediate[3].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[6].intensity)
+      },
+      {
+        workoutId: workouts[6].id,
+        exerciseId: exerciseIntermediate[4].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[6].intensity)
+      },
+      {
+        workoutId: workouts[7].id,
+        exerciseId: exerciseExpert[0].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[7].intensity)
+      },
+      {
+        workoutId: workouts[7].id,
+        exerciseId: exerciseExpert[1].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[7].intensity)
+      },
+      {
+        workoutId: workouts[7].id,
+        exerciseId: exerciseExpert[2].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[7].intensity)
+      },
+      {
+        workoutId: workouts[8].id,
+        exerciseId: exerciseExpert[2].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[8].intensity)
+      },
+      {
+        workoutId: workouts[8].id,
+        exerciseId: exerciseExpert[4].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[8].intensity)
+      },
+      {
+        workoutId: workouts[8].id,
+        exerciseId: exerciseExpert[3].id,
+        time: exerciseTimeByWorkoutIntensity(workouts[8].intensity)
       }
     ];
     await WorkoutExercise.insertMany(workoutExercisesData);
@@ -244,7 +345,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-6),
         endDate: newDate(-6) + 1,
         pause: false,
-        weight: 80
+        weight: 80,
+        picture: 'https://www.t-nation.com/system/publishing/articles/10005344/original/The-500-Workout.jpg?1505510812',
       },
       {
         userId: users[0].id,
@@ -254,7 +356,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-5),
         endDate: newDate(-5) + 1,
         pause: false,
-        weight: 79.5
+        weight: 79.5,
+        picture: 'https://cdn2.coachmag.co.uk/sites/coachmag/files/styles/16x9_480/public/2016/08/upper-body-workout.jpg?itok=g-ApZTwU&timestamp=1471872001',
       },
       {
         userId: users[0].id,
@@ -264,7 +367,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-4),
         endDate: newDate(-4) + 1,
         pause: false,
-        weight: 79
+        weight: 79,
+        picture: 'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F35%2F2019%2F02%2F17140100%2Fstrength-hiit-workout-videos.jpg&q=85',
       },
       {
         userId: users[0].id,
@@ -274,7 +378,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-3),
         endDate: newDate(-3) + 1,
         pause: false,
-        weight: 78.5
+        weight: 78.5,
+        picture: 'https://media4.s-nbcnews.com/j/newscms/2019_26/2909556/190625-yoga-stock-cs-1245p_446d66606391ef5abb6f27856216325a.fit-760w.jpg',
       },
       {
         userId: users[0].id,
@@ -284,7 +389,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-2),
         endDate: newDate(-2) + 1,
         pause: false,
-        weight: 78
+        weight: 78,
+        picture: 'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F35%2F2019%2F02%2F17140100%2Fstrength-hiit-workout-videos.jpg&q=85',
       },
       {
         userId: users[0].id,
@@ -294,7 +400,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(-1),
         endDate: newDate(-1) + 1,
         pause: false,
-        weight: 77.5
+        weight: 77.5,
+        picture: 'https://media4.s-nbcnews.com/j/newscms/2019_26/2909556/190625-yoga-stock-cs-1245p_446d66606391ef5abb6f27856216325a.fit-760w.jpg',
       },
       {
         userId: users[0].id,
@@ -304,7 +411,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(),
         endDate: newDate() + 1,
         pause: false,
-        weight: 77
+        weight: 77,
+        picture: 'https://cdn-ami-drupal.heartyhosting.com/sites/muscleandfitness.com/files/styles/full_node_image_1090x614/public/media/Young-Muscular-Man-Doing-Lunges-In-Dark-Gym.jpg?itok=16y2c2v8',
       },
       {
         userId: users[0].id,
@@ -314,7 +422,8 @@ module.exports = async (onEnd = false) => {
         startDate: newDate(),
         endDate: newDate() + 1,
         pause: false,
-        weight: 76.5
+        weight: 76.5,
+        picture: 'https://cdn1.coachmag.co.uk/sites/coachmag/files/styles/16x9_480/public/2018/03/home-dumbbell-workout-plan.jpg?itok=2rSFbB9H&timestamp=1520599000',
       },
       {
         userId: users[0].id,
@@ -324,7 +433,8 @@ module.exports = async (onEnd = false) => {
         startDate: Date.now(),
         endDate: null,
         pause: false,
-        weight: 76
+        weight: 76,
+        picture: 'https://media1.popsugar-assets.com/files/thumbor/DwuRAXRaR7-TXSsEbA0U7L0GfXg/fit-in/728xorig/filters:format_auto-!!-:strip_icc-!!-/2019/07/31/044/n/1922729/8c189b805d422c81c9ba55.76538773_/i/3-Minute-Ab-Workout-Runners.jpg',
       },
       {
         userId: users[0].id,
@@ -410,7 +520,7 @@ module.exports = async (onEnd = false) => {
         routine: 'no'
       },
     ];
-    await Schedule.create(schedule);
+    await Schedule.insertMany(schedule);
 
     console.log('Seeding workoutsessionexercises collection...');
     await WorkoutSessionExercise.insertMany([

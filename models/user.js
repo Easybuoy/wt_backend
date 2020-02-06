@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { jwtSecret } = require('../config');
+const { jwtSecret, defaultProfilePicture } = require('../config');
 
 mongoose.promise = global.Promise;
 
@@ -75,14 +75,24 @@ UserSchema.methods.generateJWT = function (remember = false) {
 };
 
 UserSchema.methods.validPassword = async function (password) {
-  const isEqual = await bcrypt.compare(password, this.password);
+  let isEqual = false;
+  if (this.password) {
+    isEqual = await bcrypt.compare(password, this.password);
+  } else {
+    throw new Error('Password not connected. Login with your google/facebook account!');
+  }
   return isEqual;
 };
 
 // refreshToken is also available along with the accessToken
 UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
   const User = this;
-  const user = await User.findOne({ 'facebook.id': profile.id });
+  const user = await User.findOne({
+    $or: [
+      { 'facebook.id': profile.id },
+      { email: profile.emails[0].value }
+    ]
+  });
   // no user was found, create a new one
   if (!user) {
     const newUser = await User.create({
@@ -93,16 +103,34 @@ UserSchema.statics.asFacebookUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
+      photo: (profile._json ? profile._json.picture : defaultProfilePicture),
     });
     return newUser;
   }
+  if (!user.facebook.id) {
+    await User.findOneAndUpdate({ email: profile.emails[0].value }, {
+      facebook: {
+        id: profile.id,
+        token: accessToken,
+      },
+      photo: user.picture === defaultProfilePicture && profile._json
+        ? profile._json.picture
+        : user.photo,
+    });
+  }
+
   return user;
 };
 
 // refreshToken is also available along with the accessToken
 UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
   const User = this;
-  const existingUser = await User.findOne({ 'google.id': profile.id });
+  const existingUser = await User.findOne({
+    $or: [
+      { 'google.id': profile.id },
+      { email: profile.emails[0].value }
+    ]
+  });
   // no user was found, create a new one
   if (!existingUser) {
     const newUser = await User.create({
@@ -113,9 +141,63 @@ UserSchema.statics.asGoogleUser = async function ({ accessToken, profile }) {
         id: profile.id,
         token: accessToken,
       },
+      photo: (profile._json ? profile._json.picture : defaultProfilePicture),
     });
     return newUser;
   }
+  if (!existingUser.google.id) {
+    await User.findOneAndUpdate({ email: profile.emails[0].value }, {
+      google: {
+        id: profile.id,
+        token: accessToken,
+      },
+      photo: existingUser.picture === defaultProfilePicture && profile._json
+        ? profile._json.picture
+        : existingUser.photo,
+    });
+  }
+
+  return existingUser;
+};
+
+
+UserSchema.statics.asGoogleIdUser = async function (data, idToken) {
+  const User = this;
+  const { googleId, parsedToken: { payload } } = data;
+  const existingUser = await User.findOne({
+    $or: [
+      { 'google.id': googleId },
+      { email: payload.email }
+    ]
+  });
+  // no user was found, create a new one
+  if (!existingUser) {
+    const newUser = await User.create({
+      firstname: payload.given_name || payload.name,
+      lastname: null,
+      email: payload.email,
+      google: {
+        id: googleId,
+        token: idToken,
+        idToken
+      },
+      photo: (payload.picture ? payload.picture : defaultProfilePicture),
+    });
+    return newUser;
+  }
+  if (!existingUser.google.id) {
+    await User.findOneAndUpdate({ email: payload.email }, {
+      google: {
+        id: googleId,
+        token: idToken,
+        idToken
+      },
+      photo: existingUser.picture === defaultProfilePicture && payload.picture
+        ? payload.picture
+        : existingUser.photo,
+    });
+  }
+
   return existingUser;
 };
 

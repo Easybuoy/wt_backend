@@ -4,8 +4,13 @@ mongoose.promise = global.Promise;
 
 const { Schema } = mongoose;
 
-const NotificationSchema = new Schema({
-  userId: {
+const ChatSchema = new Schema({
+  sender: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    require: true,
+  },
+  receiver: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     require: true,
@@ -14,15 +19,11 @@ const NotificationSchema = new Schema({
     type: String,
     require: true,
   },
-  topic: {
-    type: String,
+  sent: {
+    type: Number,
+    default: Date.now(),
     require: true,
-  },
-  type: {
-    type: String,
-    require: true,
-    default: 'notification'
   }
 });
 
-module.exports = mongoose.model('Notification', NotificationSchema);
+module.exports = mongoose.model('Chat', ChatSchema);

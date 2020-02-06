@@ -1,24 +1,14 @@
-const { PubSub } = require('apollo-server-express');
 const Schedule = require('../../models/schedule');
 const User = require('../../models/user');
 const Workout = require('../../models/workout');
 const Notification = require('../../models/notification');
 const WorkoutResolver = require('../../graphql/resolvers/workout').Workout;
 
-const { sendMail } = require('../../helpers/helpers');
+const {
+  sendNotification, sendMail, SCHEDULED_WORKOUTS
+} = require('../../helpers/helpers');
 
 const { createWorkoutDL: WorkoutDataLoader } = require('../dataloaders/workout');
-
-const pubsub = new PubSub();
-const SCHEDULED_WORKOUTS = 'scheduledWorkoutAlerts';
-
-const sendNotification = (notification) => {
-  if (notification.topic.includes('Workout')) {
-    pubsub.publish(SCHEDULED_WORKOUTS, {
-      scheduledWorkoutAlert: { ...notification._doc, id: notification.id }
-    });
-  }
-};
 
 module.exports = {
   Query: {
@@ -89,23 +79,23 @@ module.exports = {
     }
   },
   Mutation: {
-    pushNotification: async (_, { input: { userId, message, topic } }) => {
-      const user = await User.findById(userId);
+    pushNotification: async (_, {
+      input: {
+        userId, message, topic, subscription
+      }
+    }, { pubsub }) => {
+      const receiver = _.user || await User.findById(userId);
       let newNotification = new Notification({
         userId,
         message,
         topic,
-        type: user.reminderType
+        type: receiver.reminderType
       });
       newNotification = await newNotification.save();
-      if (user.reminderType === 'notification') {
-        sendNotification(newNotification);
+      if (receiver.reminderType === 'notification') {
+        sendNotification(newNotification, pubsub, subscription);
       } else {
-        const buttonAction = {
-          link: `http://app.trackdrills.com/workout/${newNotification.topic.split('_')[1]}`,
-          text: 'Scheduled workouts'
-        };
-        await sendMail(newNotification, user, buttonAction);
+        sendMail(newNotification, receiver, subscription);
       }
       return newNotification;
     },
@@ -124,11 +114,7 @@ module.exports = {
   },
   Subscription: {
     scheduledWorkoutAlert: {
-      subscribe: () => {
-        // eslint-disable-next-line no-console
-        console.log(SCHEDULED_WORKOUTS);
-        return pubsub.asyncIterator(SCHEDULED_WORKOUTS);
-      }
+      subscribe: (_, args, { pubsub }) => pubsub.asyncIterator(SCHEDULED_WORKOUTS)
     }
   },
   Schedule: {

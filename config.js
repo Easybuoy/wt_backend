@@ -37,5 +37,7 @@ module.exports = {
   cloudinaryApiSecret: CLOUDINARY_API_SECRET,
   smtpUser: SMTP_USERNAME,
   smtpPass: SMTP_PASSWORD,
-  notificationsCronTimer: NOTIFICATIONS_CRON_TIMER
+  notificationsCronTimer: NOTIFICATIONS_CRON_TIMER,
+  defaultProfilePicture: 'https://cdn1.vectorstock.com/i/thumb-large/22/05/male-profile-picture-vector-1862205.jpg',
+  defaultCustomWorkoutPicture: 'https://raw.githubusercontent.com/LABS-EU3/wt_frontend/develop/src/assets/banner.jpg'
 };

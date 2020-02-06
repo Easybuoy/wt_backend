@@ -22,6 +22,9 @@ const permissions = shield(
       authFacebook: allow,
       pushNotification: allow,
     },
+    Subscription: {
+      '*': allow
+    }
   },
   {
     debug: true,

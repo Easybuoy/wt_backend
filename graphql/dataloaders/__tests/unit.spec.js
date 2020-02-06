@@ -23,10 +23,9 @@ describe('Unit data loader', () => {
     // update user with new units
     await query(`
       mutation {
-        updateUser(input: { 
-          id: "${testUser.id}", 
-          weightUnit: "${weight.id}", 
-          heightUnit: "${height.id}"
+        updateUser(input: {
+          weightUnit: "${weight.id.toString()}", 
+          heightUnit: "${height.id.toString()}"
         }) {
           id
           weightUnit {

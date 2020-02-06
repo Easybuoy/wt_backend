@@ -25,6 +25,10 @@ const dashboardSchema = `
     sets: Float
     amountLifted: Float
   }
+
+  extend type User {
+    streak: Float
+  }
   
 `;
 module.exports = dashboardSchema;

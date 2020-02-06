@@ -1,14 +1,17 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { jwtSecret } = require('../../config');
+const { jwtSecret, defaultProfilePicture } = require('../../config');
 const {
   authenticateFacebook,
-  authenticateGoogle
+  authenticateGoogle,
+  authenticateGoogleId
 } = require('../../middleware/passport');
 
 const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
-const { sendMail } = require('../../helpers/helpers');
+const { ACCOUNT_RECOVERY, uploadFile } = require('../../helpers/helpers');
+const { pushNotification } = require('./schedule').Mutation;
+const dashboard = require('./dashboard');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -18,12 +21,12 @@ const genAuthResponse = (user, remember = false) => ({
   isNewUser: !user.goal,
 });
 
-const accountRecoveryMessage = {
-  topic: 'Link To Reset Password',
+const accountRecoveryMessage = (token) => ({
+  topic: `Link To Reset Password_${token}`,
   message: 'You are receiving this because you (or someone else) have requested a password reset.\n\n'
     + 'Please click this button to complete the process within 15 minutes.\n\n'
     + 'If you did not request this, kindly ignore this email to keep your password unchanged.\n'
-};
+});
 
 module.exports = {
   Query: {
@@ -38,12 +41,13 @@ module.exports = {
       }
       return genAuthResponse(user, remember);
     },
-    user: async (_, { input }, context) => {
+    user: async (_, args, context) => {
       const userId = context.user.id;
       const user = await User.findById(userId);
-      return user;
+      const userDashboard = await dashboard.Query.dashboard(null, null, { user: { id: userId } });
+      return { ...user._doc, id: user.id, streak: userDashboard.streak };
     },
-    accountRecovery: async (_, { input }, context) => {
+    accountRecovery: async (_, { input }) => {
       if (!input) {
         throw new Error('Enter registered email to update password!');
       } else {
@@ -54,12 +58,15 @@ module.exports = {
             jwtSecret,
             { expiresIn: '20m' }
           );
-          const buttonAction = {
-            // link needs to be edited to redirect to password input page
-            link: `http://app.trackdrills.com/accountrecovery/${token}`,
-            text: 'Reset Password'
-          };
-          sendMail(accountRecoveryMessage, user, buttonAction);
+          await pushNotification({
+            user: { ...user._doc, reminderType: 'email' }
+          }, {
+            input: {
+              userId: user.id,
+              ...accountRecoveryMessage(token),
+              ACCOUNT_RECOVERY
+            }
+          });
           return user;
         } throw new Error('Email not found in database!');
       }
@@ -74,7 +81,8 @@ module.exports = {
         }
 
         const user = new User({
-          ...input
+          ...input,
+          photo: defaultProfilePicture
         });
 
         const savedUser = await user.save();
@@ -111,12 +119,31 @@ module.exports = {
         return error;
       }
     },
-    authGoogle: async (_, { input: { accessToken } }, { req, res }) => {
+    authGoogle: async (_, { input: { accessToken, idToken } }, { req, res }) => {
       req.body = {
         ...req.body,
         access_token: accessToken,
+        id_token: idToken,
       };
       try {
+        if (!accessToken && idToken) {
+          const { data, info } = await authenticateGoogleId(req, res);
+          if (data) {
+            const user = await User.asGoogleIdUser(data, idToken);
+            if (user) {
+              return genAuthResponse(user, true);
+            }
+          }
+          if (info) {
+            switch (info.code) {
+              case 'ETIMEDOUT':
+                return (new Error('Failed to reach Google: Try Again'));
+              default:
+                return (new Error('Something went wrong while logging in with your account!'));
+            }
+          }
+          return (new Error('Server error'));
+        }
         // data contains the accessToken, refreshToken and profile from passport
         const { data, info } = await authenticateGoogle(req, res);
         if (data) {
@@ -141,7 +168,12 @@ module.exports = {
     updateUser: async (_, { input }, context) => {
       const newData = { ...input };
       delete newData.id;
+      delete newData.photo;
       try {
+        if (input.photo) {
+          newData.photo = await uploadFile(input.photo);
+          newData.photo = newData.photo.url;
+        }
         const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });
         if (updatedUser) {
           return { ...updatedUser._doc, password: null, id: updatedUser.id };

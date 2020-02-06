@@ -4,8 +4,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { ApolloServer, makeExecutableSchema } = require('apollo-server-express');
 const { applyMiddleware } = require('graphql-middleware');
-const connect = require('./database');
-const { graphiql, port } = require('../config');
+const { createServer } = require('http');
+const { graphiql, isTesting } = require('../config');
 const typeDefs = require('../graphql/schema');
 const resolvers = require('../graphql/resolvers');
 const context = require('../graphql/context');
@@ -13,7 +13,10 @@ const validators = require('../middleware/validator');
 const permissions = require('../middleware/shield');
 
 const app = express();
-require('../helpers/cron');
+if (!isTesting) {
+  // eslint-disable-next-line global-require
+  require('../helpers/cron');
+}
 
 app.use(helmet());
 app.use(cors());
@@ -29,10 +32,11 @@ const apolloServer = new ApolloServer({
   schema: schemaWithMiddleware,
   context,
   subscriptions: {
-    path: '/api/subscriptions',
-    // eslint-disable-next-line no-unused-vars
-    onConnect: (connectionParams, webSocket) => {
-      console.log('SUBS');
+    onConnect: () => {
+      console.log(`Subscriptions successfully connected to ${apolloServer.subscriptionsPath}`);
+    },
+    onDisconnect: () => {
+      console.log('Subscriptions successfully disconnected!');
     }
   },
   cacheControl: {
@@ -44,12 +48,8 @@ const apolloServer = new ApolloServer({
 
 apolloServer.applyMiddleware({ app, path: '/api' });
 
-connect.then(() => {
-  console.log('Database successfully connected!');
-  app.listen(port, () => {
-    console.log(`ApolloServer successfully connected to http://localhost:${port}${apolloServer.graphqlPath}`);
-    console.log(`Subscriptions successfully connected to http://localhost:${port}${apolloServer.subscriptionsPath}`);
-  });
-}).catch((err) => { throw err; });
+const server = createServer(app);
 
-module.exports = app;
+apolloServer.installSubscriptionHandlers(server);
+
+module.exports = server;

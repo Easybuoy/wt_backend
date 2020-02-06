@@ -51,6 +51,7 @@
     "graphql-shield": "^7.0.5",
     "graphql-upload": "^9.0.0",
     "helmet": "^3.21.2",
+    "http": "0.0.0",
     "jsonwebtoken": "^8.5.1",
     "mailgen": "^2.0.10",
     "mongoose": "^5.8.1",
@@ -58,6 +59,7 @@
     "nodemailer": "^6.4.2",
     "passport": "^0.4.1",
     "passport-facebook-token": "^3.3.0",
+    "passport-google-id-token": "^0.4.6",
     "passport-google-token": "^0.1.2",
     "password-validator": "^5.0.3",
     "validator": "^12.1.0"
