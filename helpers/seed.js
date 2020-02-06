@@ -123,7 +123,7 @@ module.exports = async (onEnd = false) => {
     console.log('Clearing data from all collections...');
     await removeAllCollections(); // isProduction ? ['users'] : []
     console.log('Seeding units collection...');
-    const units = await Unit.create(unitsData);
+    const units = await Unit.insertMany(unitsData);
     // let users;
     const usersData = [
       {
@@ -194,7 +194,7 @@ module.exports = async (onEnd = false) => {
       })
     );
     console.log('Seeding workouts collection...');
-    const workouts = await Workout.create(workoutsData);
+    const workouts = await Workout.insertMany(workoutsData);
     console.log('Seeding workoutexercises collection...');
     const exerciseIntermediate = await Exercise.find({ difficulty: 'Intermediate' });
     const exerciseExpert = await Exercise.find({ difficulty: 'Expert' });
@@ -520,7 +520,7 @@ module.exports = async (onEnd = false) => {
         routine: 'no'
       },
     ];
-    await Schedule.create(schedule);
+    await Schedule.insertMany(schedule);
 
     console.log('Seeding workoutsessionexercises collection...');
     await WorkoutSessionExercise.insertMany([

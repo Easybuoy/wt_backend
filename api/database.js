@@ -7,7 +7,7 @@ const {
   isProduction
 } = require('../config');
 
-mongoose.set('debug', !isProduction);
+mongoose.set('debug', !isProduction && !isTesting);
 module.exports = mongoose.connect(
   (isTesting ? mongoConnectTest : mongoConnect),
   {

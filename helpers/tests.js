@@ -33,7 +33,7 @@ module.exports = {
   initTest: () => {
     // wait for the DB to connect
     beforeAll(async (done) => {
-      jest.setTimeout(10000);
+      jest.setTimeout(420000);
       await connect;
       done();
     });
@@ -51,15 +51,15 @@ module.exports = {
   },
   query,
   testUser,
-  createUser: async () => {
+  createUser: async (user = testUser) => {
     const newUser = await query(`
       mutation {
-        addUser(input: { 
-          firstname:"${testUser.firstname}"
-          lastname:"${testUser.lastname}"
-          email:"${testUser.email}"
-          password:"${testUser.password}" 
-          rePassword:"${testUser.password}"
+        addUser(input: {
+          firstname:"${user.firstname}"
+          lastname:"${user.lastname}"
+          email:"${user.email}"
+          password:"${user.password}" 
+          rePassword:"${user.password}"
         }) {
           id
           firstname

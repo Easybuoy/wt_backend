@@ -11,6 +11,7 @@ const User = require('../../models/user');
 const { createUnitDL: UnitDataLoader } = require('../dataloaders/unit');
 const { ACCOUNT_RECOVERY, uploadFile } = require('../../helpers/helpers');
 const { pushNotification } = require('./schedule').Mutation;
+const dashboard = require('./dashboard');
 
 const genAuthResponse = (user, remember = false) => ({
   id: user.id,
@@ -43,7 +44,8 @@ module.exports = {
     user: async (_, args, context) => {
       const userId = context.user.id;
       const user = await User.findById(userId);
-      return user;
+      const userDashboard = await dashboard.Query.dashboard(null, null, { user: { id: userId } });
+      return { ...user._doc, id: user.id, streak: userDashboard.streak };
     },
     accountRecovery: async (_, { input }) => {
       if (!input) {
@@ -165,14 +167,13 @@ module.exports = {
     },
     updateUser: async (_, { input }, context) => {
       const newData = { ...input };
-      let photo;
-      if (input.photo) {
-        photo = await uploadFile(input.photo);
-        photo = photo.url;
-      }
       delete newData.id;
-      if (photo) newData.photo = photo;
+      delete newData.photo;
       try {
+        if (input.photo) {
+          newData.photo = await uploadFile(input.photo);
+          newData.photo = newData.photo.url;
+        }
         const updatedUser = await User.findByIdAndUpdate(context.user.id, newData, { new: true });
         if (updatedUser) {
           return { ...updatedUser._doc, password: null, id: updatedUser.id };
